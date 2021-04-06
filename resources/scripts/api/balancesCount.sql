@@ -1,0 +1,1 @@
+select count(*) balance_count from balances

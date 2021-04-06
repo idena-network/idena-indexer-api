@@ -1,0 +1,1 @@
+select coalesce((select flip_count from epoch_summaries where epoch = $1), 0)

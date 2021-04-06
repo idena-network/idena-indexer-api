@@ -1,0 +1,1 @@
+select coalesce((select invite_count from epoch_summaries where epoch = $1), 0)

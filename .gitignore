@@ -1,0 +1,10 @@
+# IdeaIDE
+.idea
+
+# executables
+/*.exe
+*.exe~
+
+go.sum
+
+*.log
