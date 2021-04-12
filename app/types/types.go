@@ -579,3 +579,14 @@ type OnlineIdentity struct {
 	Penalty      decimal.Decimal `json:"penalty"`
 	Online       bool            `json:"online"`
 }
+
+type Pool struct {
+	Address string `json:"address"`
+	Size    uint64 `json:"size"`
+} // @Name Pool
+
+type Delegator struct {
+	Address string `json:"address"`
+	State   string `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+	Age     uint16 `json:"age"`
+} // @Name Delegator

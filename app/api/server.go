@@ -401,6 +401,12 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/UpgradeVoting")).HandlerFunc(s.upgradeVoting)
 
 	router.Path(strings.ToLower("/Now")).HandlerFunc(s.now)
+
+	router.Path(strings.ToLower("/Pools/Count")).HandlerFunc(s.poolsCount)
+	router.Path(strings.ToLower("/Pools")).HandlerFunc(s.pools)
+	router.Path(strings.ToLower("/Pool/{address}")).HandlerFunc(s.pool)
+	router.Path(strings.ToLower("/Pool/{address}/Delegators/Count")).HandlerFunc(s.poolDelegatorsCount)
+	router.Path(strings.ToLower("/Pool/{address}/Delegators")).HandlerFunc(s.poolDelegators)
 }
 
 func (s *httpServer) dumpLink(w http.ResponseWriter, r *http.Request) {
@@ -2638,4 +2644,101 @@ func (s *httpServer) upgradeVoting(w http.ResponseWriter, r *http.Request) {
 
 func (s *httpServer) now(w http.ResponseWriter, r *http.Request) {
 	WriteResponse(w, time.Now().UTC().Truncate(time.Second), nil, s.logger)
+}
+
+// @Tags Pools
+// @Id PoolsCount
+// @Success 200 {object} api.Response{result=integer}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Pools/Count [get]
+func (s *httpServer) poolsCount(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("poolsCount", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	resp, err := s.service.PoolsCount()
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Pools
+// @Id Pools
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.Pool}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Pools [get]
+func (s *httpServer) pools(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("pools", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.Pools(count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+// @Tags Pools
+// @Id Pool
+// @Param address path string true "address"
+// @Success 200 {object} api.Response{result=types.Pool}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Pool/{address} [get]
+func (s *httpServer) pool(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("pool", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	resp, err := s.service.Pool(mux.Vars(r)["address"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Pools
+// @Id PoolDelegatorsCount
+// @Param address path string true "address"
+// @Success 200 {object} api.Response{result=integer}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Pool/{address}/Delegators/Count [get]
+func (s *httpServer) poolDelegatorsCount(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("poolDelegatorsCount", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	resp, err := s.service.PoolDelegatorsCount(mux.Vars(r)["address"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Pools
+// @Id PoolDelegators
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.Delegator}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Pool/{address}/Delegators [get]
+func (s *httpServer) poolDelegators(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("poolDelegators", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	vars := mux.Vars(r)
+	resp, nextContinuationToken, err := s.service.PoolDelegators(vars["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }

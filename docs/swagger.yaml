@@ -244,6 +244,25 @@ definitions:
         - TerminateContract
         type: string
     type: object
+  Delegator:
+    properties:
+      address:
+        type: string
+      age:
+        type: integer
+      state:
+        enum:
+        - Undefined
+        - Invite
+        - Candidate
+        - Verified
+        - Suspended
+        - Killed
+        - Zombie
+        - Newbie
+        - Human
+        type: string
+    type: object
   Entity:
     properties:
       name:
@@ -738,6 +757,13 @@ definitions:
       timestamp:
         example: "2020-01-01T00:00:00Z"
         type: string
+    type: object
+  Pool:
+    properties:
+      address:
+        type: string
+      size:
+        type: integer
     type: object
   ReportedFlipReward:
     properties:
@@ -3967,6 +3993,162 @@ paths:
           description: Service unavailable
       tags:
       - Contracts
+  /Pool/{address}:
+    get:
+      operationId: Pool
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/Pool'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Pools
+  /Pool/{address}/Delegators:
+    get:
+      operationId: PoolDelegators
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: items to take
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: continuation token to get next page items
+        in: query
+        name: continuationToken
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ResponsePage'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/Delegator'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Pools
+  /Pool/{address}/Delegators/Count:
+    get:
+      operationId: PoolDelegatorsCount
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  type: integer
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Pools
+  /Pools:
+    get:
+      operationId: Pools
+      parameters:
+      - description: items to take
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: continuation token to get next page items
+        in: query
+        name: continuationToken
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ResponsePage'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/Pool'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Pools
+  /Pools/Count:
+    get:
+      operationId: PoolsCount
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  type: integer
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Pools
   /Search:
     get:
       operationId: Search

@@ -167,5 +167,11 @@ type Accessor interface {
 	OracleVotingContract(address, oracle string) (types.OracleVotingContract, error)
 	EstimatedOracleRewards(committeeSize uint64) ([]types.EstimatedOracleReward, error)
 
+	PoolsCount() (uint64, error)
+	Pools(count uint64, continuationToken *string) ([]*types.Pool, *string, error)
+	Pool(address string) (*types.Pool, error)
+	PoolDelegatorsCount(address string) (uint64, error)
+	PoolDelegators(address string, count uint64, continuationToken *string) ([]*types.Delegator, *string, error)
+
 	Destroy()
 }

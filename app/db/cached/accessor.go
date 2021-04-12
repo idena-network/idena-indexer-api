@@ -1112,6 +1112,41 @@ func (a *cachedAccessor) Upgrades(count uint64, continuationToken *string) ([]ty
 	return res.([]types.BlockSummary), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) PoolsCount() (uint64, error) {
+	res, err := a.getOrLoad("PoolsCount", func() (interface{}, error) {
+		return a.accessor.PoolsCount()
+	})
+	return res.(uint64), err
+}
+
+func (a *cachedAccessor) Pools(count uint64, continuationToken *string) ([]*types.Pool, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("Pools", func() (interface{}, *string, error) {
+		return a.accessor.Pools(count, continuationToken)
+	}, count, continuationToken)
+	return res.([]*types.Pool), nextContinuationToken, err
+}
+
+func (a *cachedAccessor) Pool(address string) (*types.Pool, error) {
+	res, err := a.getOrLoad("Pool", func() (interface{}, error) {
+		return a.accessor.Pool(address)
+	}, address)
+	return res.(*types.Pool), err
+}
+
+func (a *cachedAccessor) PoolDelegatorsCount(address string) (uint64, error) {
+	res, err := a.getOrLoad("PoolDelegatorsCount", func() (interface{}, error) {
+		return a.accessor.PoolDelegatorsCount(address)
+	}, address)
+	return res.(uint64), err
+}
+
+func (a *cachedAccessor) PoolDelegators(address string, count uint64, continuationToken *string) ([]*types.Delegator, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("PoolDelegators", func() (interface{}, *string, error) {
+		return a.accessor.PoolDelegators(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]*types.Delegator), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) Destroy() {
 	a.accessor.Destroy()
 }
