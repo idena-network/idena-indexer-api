@@ -19,6 +19,7 @@ FROM (SELECT *
       FROM blocks
       WHERE ($3::bigint IS NULL OR height <= $3::bigint)
         AND epoch = $1
+      ORDER BY height DESC
       LIMIT $2) b
          LEFT JOIN block_proposers p ON p.block_height = b.height
          LEFT JOIN block_proposer_vrf_scores vs ON vs.block_height = b.height

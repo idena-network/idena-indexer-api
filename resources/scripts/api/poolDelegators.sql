@@ -10,6 +10,7 @@ FROM delegations d
         ,
      (SELECT max(epoch) epoch FROM epochs) cur_rpoch
 WHERE d.delegatee_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($4))
-  AND ($2::bigint IS NULL OR coalesce(d.birth_epoch, 9999) >= $3 AND d.delegator_address_id >= $2)
+  AND ($2::bigint IS NULL OR coalesce(d.birth_epoch, 9999) = $3 AND d.delegator_address_id >= $2 OR
+       coalesce(d.birth_epoch, 9999) > $3)
 ORDER BY coalesce(d.birth_epoch, 9999), d.delegator_address_id
 LIMIT $1
