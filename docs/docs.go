@@ -5176,6 +5176,150 @@ var doc = `{
                 }
             }
         },
+        "/Upgrade/{upgrade}/Description": {
+            "get": {
+                "tags": [
+                    "Upgrades"
+                ],
+                "operationId": "UpgradeDescription",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "upgrade number",
+                        "name": "upgrade",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/UpgradeDescription"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
+        "/Upgrade/{upgrade}/VotingHistory": {
+            "get": {
+                "tags": [
+                    "Upgrades"
+                ],
+                "operationId": "UpgradeVotingHistory",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "upgrade number",
+                        "name": "upgrade",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/UpgradeVotingHistoryItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
+        "/UpgradeVoting": {
+            "get": {
+                "tags": [
+                    "Upgrades"
+                ],
+                "operationId": "UpgradeVoting",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/UpgradeVotes"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Upgrades": {
             "get": {
                 "tags": [
@@ -6845,6 +6989,31 @@ var doc = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "UpgradeDescription": {
+            "type": "object"
+        },
+        "UpgradeVotes": {
+            "type": "object",
+            "properties": {
+                "upgrade": {
+                    "type": "integer"
+                },
+                "votes": {
+                    "type": "integer"
+                }
+            }
+        },
+        "UpgradeVotingHistoryItem": {
+            "type": "object",
+            "properties": {
+                "blockHeight": {
+                    "type": "integer"
+                },
+                "votes": {
+                    "type": "integer"
                 }
             }
         },

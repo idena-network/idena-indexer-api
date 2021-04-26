@@ -21,6 +21,7 @@ type Service interface {
 	GetOnlineCount() (uint64, error)
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
+	UpgradeDescription(upgrade uint64) (*types.UpgradeDescription, error)
 }
 
 type MemPool interface {
@@ -162,4 +163,9 @@ func (s *service) SignatureAddress(value, signature string) (string, error) {
 
 func (s *service) UpgradeVoting() ([]*types.UpgradeVotes, error) {
 	return s.indexerApi.UpgradeVoting()
+}
+
+func (s *service) UpgradeDescription(upgrade uint64) (*types.UpgradeDescription, error) {
+	// TODO implement
+	return nil, nil
 }

@@ -1144,6 +1144,22 @@ definitions:
       success:
         type: boolean
     type: object
+  UpgradeDescription:
+    type: object
+  UpgradeVotes:
+    properties:
+      upgrade:
+        type: integer
+      votes:
+        type: integer
+    type: object
+  UpgradeVotingHistoryItem:
+    properties:
+      blockHeight:
+        type: integer
+      votes:
+        type: integer
+    type: object
   types.Contract:
     properties:
       address:
@@ -4272,6 +4288,91 @@ paths:
           description: Service unavailable
       tags:
       - Transaction
+  /Upgrade/{upgrade}/Description:
+    get:
+      operationId: UpgradeDescription
+      parameters:
+      - description: upgrade number
+        in: path
+        name: upgrade
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/UpgradeDescription'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Upgrades
+  /Upgrade/{upgrade}/VotingHistory:
+    get:
+      operationId: UpgradeVotingHistory
+      parameters:
+      - description: upgrade number
+        in: path
+        name: upgrade
+        required: true
+        type: integer
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/UpgradeVotingHistoryItem'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Upgrades
+  /UpgradeVoting:
+    get:
+      operationId: UpgradeVoting
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/UpgradeVotes'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Upgrades
   /Upgrades:
     get:
       operationId: Upgrades

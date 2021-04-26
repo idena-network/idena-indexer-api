@@ -571,7 +571,15 @@ type TxReceipt struct {
 type UpgradeVotes struct {
 	Upgrade uint32 `json:"upgrade"`
 	Votes   uint64 `json:"votes"`
-}
+} // @Name UpgradeVotes
+
+type UpgradeVotingHistoryItem struct {
+	BlockHeight uint64 `json:"blockHeight"`
+	Votes       uint64 `json:"votes"`
+} // @Name UpgradeVotingHistoryItem
+
+type UpgradeDescription struct {
+} // @Name UpgradeDescription
 
 type OnlineIdentity struct {
 	Address      string          `json:"address"`

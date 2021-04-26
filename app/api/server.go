@@ -399,6 +399,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.signatureAddress)
 
 	router.Path(strings.ToLower("/UpgradeVoting")).HandlerFunc(s.upgradeVoting)
+	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}/VotingHistory")).HandlerFunc(s.upgradeVotingHistory)
+	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}/Description")).HandlerFunc(s.upgradeDescription)
 
 	router.Path(strings.ToLower("/Now")).HandlerFunc(s.now)
 
@@ -2637,8 +2639,60 @@ func (s *httpServer) signatureAddress(w http.ResponseWriter, r *http.Request) {
 	WriteResponse(w, resp, err, s.logger)
 }
 
+// @Tags Upgrades
+// @Id UpgradeVoting
+// @Success 200 {object} api.Response{result=[]types.UpgradeVotes}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /UpgradeVoting [get]
 func (s *httpServer) upgradeVoting(w http.ResponseWriter, r *http.Request) {
 	resp, err := s.service.UpgradeVoting()
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Upgrades
+// @Id UpgradeVotingHistory
+// @Param upgrade path integer true "upgrade number"
+// @Success 200 {object} api.Response{result=[]types.UpgradeVotingHistoryItem}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Upgrade/{upgrade}/VotingHistory [get]
+func (s *httpServer) upgradeVotingHistory(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("upgrade", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	upgrade, err := ReadUint(mux.Vars(r), "upgrade")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, err := s.service.UpgradeVotingHistory(upgrade)
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Upgrades
+// @Id UpgradeDescription
+// @Param upgrade path integer true "upgrade number"
+// @Success 200 {object} api.Response{result=types.UpgradeDescription}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Upgrade/{upgrade}/Description [get]
+func (s *httpServer) upgradeDescription(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("upgrade", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	upgrade, err := ReadUint(mux.Vars(r), "upgrade")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, err := s.service.UpgradeDescription(upgrade)
 	WriteResponse(w, resp, err, s.logger)
 }
 

@@ -6,7 +6,10 @@ import (
 	"github.com/lib/pq"
 )
 
-const upgradesQuery = "upgrades.sql"
+const (
+	upgradesQuery             = "upgrades.sql"
+	upgradeVotingHistoryQuery = "upgradeVotingHistory.sql"
+)
 
 func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error) {
 	res, nextContinuationToken, err := a.page(upgradesQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
@@ -53,4 +56,25 @@ func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]
 		return nil, nil, err
 	}
 	return res.([]types.BlockSummary), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) UpgradeVotingHistory(upgrade uint64) ([]*types.UpgradeVotingHistoryItem, error) {
+	rows, err := a.db.Query(a.getQuery(upgradeVotingHistoryQuery), upgrade)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var res []*types.UpgradeVotingHistoryItem
+	for rows.Next() {
+		item := &types.UpgradeVotingHistoryItem{}
+		err := rows.Scan(
+			&item.BlockHeight,
+			&item.Votes,
+		)
+		if err != nil {
+			return nil, err
+		}
+		res = append(res, item)
+	}
+	return res, nil
 }
