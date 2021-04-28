@@ -1144,7 +1144,14 @@ definitions:
       success:
         type: boolean
     type: object
-  UpgradeDescription:
+  Upgrade:
+    properties:
+      endActivationDate:
+        example: "2020-01-01T00:00:00Z"
+        type: string
+      startActivationDate:
+        example: "2020-01-01T00:00:00Z"
+        type: string
     type: object
   UpgradeVotes:
     properties:
@@ -4288,9 +4295,9 @@ paths:
           description: Service unavailable
       tags:
       - Transaction
-  /Upgrade/{upgrade}/Description:
+  /Upgrade/{upgrade}:
     get:
-      operationId: UpgradeDescription
+      operationId: Upgrade
       parameters:
       - description: upgrade number
         in: path
@@ -4305,7 +4312,7 @@ paths:
             - $ref: '#/definitions/Response'
             - properties:
                 result:
-                  $ref: '#/definitions/UpgradeDescription'
+                  $ref: '#/definitions/Upgrade'
               type: object
         "400":
           description: Bad request

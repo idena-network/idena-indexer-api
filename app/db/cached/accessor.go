@@ -39,6 +39,7 @@ const (
 	flipEpochAdjacentFlipsMethod            = "FlipEpochAdjacentFlips"
 	flipAddressAdjacentFlipsMethod          = "FlipAddressAdjacentFlips"
 	flipEpochIdentityAdjacentFlipsMethod    = "FlipEpochIdentityAdjacentFlips"
+	upgradeMethod                           = "Upgrade"
 )
 
 type cachedAccessor struct {
@@ -106,6 +107,7 @@ func createMaxItemLifeTimesByMethod() map[string]time.Duration {
 		epochIdentitiesRewardsOldMethod:         permanentDataLifeTime,
 		epochFundPaymentsMethod:                 permanentDataLifeTime,
 		epochRewardBoundsMethod:                 permanentDataLifeTime,
+		upgradeMethod:                           permanentDataLifeTime,
 	}
 }
 
@@ -1117,6 +1119,13 @@ func (a *cachedAccessor) UpgradeVotingHistory(upgrade uint64) ([]*types.UpgradeV
 		return a.accessor.UpgradeVotingHistory(upgrade)
 	}, upgrade)
 	return res.([]*types.UpgradeVotingHistoryItem), err
+}
+
+func (a *cachedAccessor) Upgrade(upgrade uint64) (*types.Upgrade, error) {
+	res, err := a.getOrLoad(upgradeMethod, func() (interface{}, error) {
+		return a.accessor.Upgrade(upgrade)
+	}, upgrade)
+	return res.(*types.Upgrade), err
 }
 
 func (a *cachedAccessor) PoolsCount() (uint64, error) {

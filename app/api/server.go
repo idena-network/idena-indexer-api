@@ -400,7 +400,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/UpgradeVoting")).HandlerFunc(s.upgradeVoting)
 	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}/VotingHistory")).HandlerFunc(s.upgradeVotingHistory)
-	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}/Description")).HandlerFunc(s.upgradeDescription)
+	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}")).HandlerFunc(s.upgrade)
 
 	router.Path(strings.ToLower("/Now")).HandlerFunc(s.now)
 
@@ -2675,15 +2675,15 @@ func (s *httpServer) upgradeVotingHistory(w http.ResponseWriter, r *http.Request
 }
 
 // @Tags Upgrades
-// @Id UpgradeDescription
+// @Id Upgrade
 // @Param upgrade path integer true "upgrade number"
-// @Success 200 {object} api.Response{result=types.UpgradeDescription}
+// @Success 200 {object} api.Response{result=types.Upgrade}
 // @Failure 400 "Bad request"
 // @Failure 429 "Request number limit exceeded"
 // @Failure 500 "Internal server error"
 // @Failure 503 "Service unavailable"
-// @Router /Upgrade/{upgrade}/Description [get]
-func (s *httpServer) upgradeDescription(w http.ResponseWriter, r *http.Request) {
+// @Router /Upgrade/{upgrade} [get]
+func (s *httpServer) upgrade(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("upgrade", r.RequestURI)
 	defer s.pm.Complete(id)
 
@@ -2692,7 +2692,7 @@ func (s *httpServer) upgradeDescription(w http.ResponseWriter, r *http.Request) 
 		WriteErrorResponse(w, err, s.logger)
 		return
 	}
-	resp, err := s.service.UpgradeDescription(upgrade)
+	resp, err := s.service.Upgrade(upgrade)
 	WriteResponse(w, resp, err, s.logger)
 }
 

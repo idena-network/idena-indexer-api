@@ -9,6 +9,7 @@ import (
 const (
 	upgradesQuery             = "upgrades.sql"
 	upgradeVotingHistoryQuery = "upgradeVotingHistory.sql"
+	upgradeQuery              = "upgrade.sql"
 )
 
 func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error) {
@@ -76,5 +77,23 @@ func (a *postgresAccessor) UpgradeVotingHistory(upgrade uint64) ([]*types.Upgrad
 		}
 		res = append(res, item)
 	}
+	return res, nil
+}
+
+func (a *postgresAccessor) Upgrade(upgrade uint64) (*types.Upgrade, error) {
+	res := &types.Upgrade{}
+	var startActivationDate, endActivationDate int64
+	err := a.db.QueryRow(a.getQuery(upgradeQuery), upgrade).Scan(
+		&startActivationDate,
+		&endActivationDate,
+	)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	res.StartActivationDate = timestampToTimeUTC(startActivationDate)
+	res.EndActivationDate = timestampToTimeUTC(endActivationDate)
 	return res, nil
 }

@@ -578,8 +578,10 @@ type UpgradeVotingHistoryItem struct {
 	Votes       uint64 `json:"votes"`
 } // @Name UpgradeVotingHistoryItem
 
-type UpgradeDescription struct {
-} // @Name UpgradeDescription
+type Upgrade struct {
+	StartActivationDate time.Time `json:"startActivationDate" example:"2020-01-01T00:00:00Z"`
+	EndActivationDate   time.Time `json:"endActivationDate" example:"2020-01-01T00:00:00Z"`
+} // @Name Upgrade
 
 type OnlineIdentity struct {
 	Address      string          `json:"address"`

@@ -5176,12 +5176,12 @@ var doc = `{
                 }
             }
         },
-        "/Upgrade/{upgrade}/Description": {
+        "/Upgrade/{upgrade}": {
             "get": {
                 "tags": [
                     "Upgrades"
                 ],
-                "operationId": "UpgradeDescription",
+                "operationId": "Upgrade",
                 "parameters": [
                     {
                         "type": "integer",
@@ -5203,7 +5203,7 @@ var doc = `{
                                     "type": "object",
                                     "properties": {
                                         "result": {
-                                            "$ref": "#/definitions/UpgradeDescription"
+                                            "$ref": "#/definitions/Upgrade"
                                         }
                                     }
                                 }
@@ -6992,8 +6992,18 @@ var doc = `{
                 }
             }
         },
-        "UpgradeDescription": {
-            "type": "object"
+        "Upgrade": {
+            "type": "object",
+            "properties": {
+                "endActivationDate": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
+                },
+                "startActivationDate": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
+                }
+            }
         },
         "UpgradeVotes": {
             "type": "object",

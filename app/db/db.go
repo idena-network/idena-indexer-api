@@ -16,6 +16,7 @@ type Accessor interface {
 
 	Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error)
 	UpgradeVotingHistory(upgrade uint64) ([]*types.UpgradeVotingHistoryItem, error)
+	Upgrade(upgrade uint64) (*types.Upgrade, error)
 
 	EpochsCount() (uint64, error)
 	Epochs(count uint64, continuationToken *string) ([]types.EpochSummary, *string, error)
