@@ -401,6 +401,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/UpgradeVoting")).HandlerFunc(s.upgradeVoting)
 	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}/VotingHistory")).HandlerFunc(s.upgradeVotingHistory)
 	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}")).HandlerFunc(s.upgrade)
+	router.Path(strings.ToLower("/Node/{version}/ForkChangeLog")).HandlerFunc(s.forkChangeLog)
 
 	router.Path(strings.ToLower("/Now")).HandlerFunc(s.now)
 
@@ -2693,6 +2694,15 @@ func (s *httpServer) upgrade(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp, err := s.service.Upgrade(upgrade)
+	WriteResponse(w, resp, err, s.logger)
+}
+
+func (s *httpServer) forkChangeLog(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("forkChangeLog", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	version := mux.Vars(r)["version"]
+	resp, err := s.service.ForkChangeLog(version)
 	WriteResponse(w, resp, err, s.logger)
 }
 

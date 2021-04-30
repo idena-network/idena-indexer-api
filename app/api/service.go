@@ -6,6 +6,7 @@ import (
 	"github.com/idena-network/idena-go/crypto"
 	"github.com/idena-network/idena-indexer-api/app/db"
 	"github.com/idena-network/idena-indexer-api/app/db/postgres"
+	service2 "github.com/idena-network/idena-indexer-api/app/service"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/idena-network/idena-indexer-api/indexer"
 )
@@ -21,6 +22,8 @@ type Service interface {
 	GetOnlineCount() (uint64, error)
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
+
+	ForkChangeLog(version string) ([]string, error)
 }
 
 type MemPool interface {
@@ -30,11 +33,12 @@ type MemPool interface {
 	GetTransactions(count int) ([]*types.TransactionSummary, error)
 }
 
-func NewService(dbAccessor db.Accessor, memPool MemPool, indexerApi indexer.Api) Service {
+func NewService(dbAccessor db.Accessor, memPool MemPool, indexerApi indexer.Api, changeLog service2.ChangeLog) Service {
 	return &service{
 		Accessor:   dbAccessor,
 		memPool:    memPool,
 		indexerApi: indexerApi,
+		changeLog:  changeLog,
 	}
 }
 
@@ -42,6 +46,7 @@ type service struct {
 	db.Accessor
 	memPool    MemPool
 	indexerApi indexer.Api
+	changeLog  service2.ChangeLog
 }
 
 func (s *service) Search(value string) ([]types.Entity, error) {
@@ -162,4 +167,8 @@ func (s *service) SignatureAddress(value, signature string) (string, error) {
 
 func (s *service) UpgradeVoting() ([]*types.UpgradeVotes, error) {
 	return s.indexerApi.UpgradeVoting()
+}
+
+func (s *service) ForkChangeLog(version string) ([]string, error) {
+	return s.changeLog.ForkChangeLog(version)
 }

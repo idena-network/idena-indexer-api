@@ -3,6 +3,7 @@ package app
 import (
 	"fmt"
 	"github.com/idena-network/idena-indexer-api/app/api"
+	"github.com/idena-network/idena-indexer-api/app/changelog"
 	"github.com/idena-network/idena-indexer-api/app/db"
 	"github.com/idena-network/idena-indexer-api/app/db/cached"
 	"github.com/idena-network/idena-indexer-api/app/db/postgres"
@@ -56,7 +57,8 @@ func InitializeApp(
 		time.Second*time.Duration(conf.DefaultCacheItemLifeTimeSec),
 		logger.New("component", "cachedDbAccessor"),
 	)
-	service := api.NewService(accessor, memPool, indexerApi)
+	changeLog := changelog.NewChangeLog(conf.ChangeLogUrl, logger.New("component", "changeLog"))
+	service := api.NewService(accessor, memPool, indexerApi, changeLog)
 	contractsService := service2.NewContracts(accessor, contractsMemPool)
 	dynamicConfigHolder := config.NewDynamicConfigHolder(conf.DynamicConfigFile, logger.New("component", "dConfHolder"))
 	app := &app{

@@ -26,6 +26,7 @@ type Config struct {
 	Swagger                     SwaggerConfig
 	Indexer                     IndexerConfig
 	LogFileSize                 int
+	ChangeLogUrl                string
 }
 
 type IndexerConfig struct {

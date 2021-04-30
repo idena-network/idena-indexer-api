@@ -6,6 +6,7 @@ replace github.com/cosmos/iavl => github.com/idena-network/iavl v0.12.3-0.202101
 
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
+	github.com/coreos/go-semver v0.3.0
 	github.com/go-stack/stack v1.8.0
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
