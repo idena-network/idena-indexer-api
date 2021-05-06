@@ -68,13 +68,17 @@ func (a *postgresAccessor) UpgradeVotingHistory(upgrade uint64) ([]*types.Upgrad
 	var res []*types.UpgradeVotingHistoryItem
 	for rows.Next() {
 		item := &types.UpgradeVotingHistoryItem{}
+		var timestamp int64
+		var blockHeight uint64
 		err := rows.Scan(
-			&item.BlockHeight,
+			&blockHeight,
+			&timestamp,
 			&item.Votes,
 		)
 		if err != nil {
 			return nil, err
 		}
+		item.Timestamp = timestampToTimeUTC(timestamp)
 		res = append(res, item)
 	}
 	return res, nil

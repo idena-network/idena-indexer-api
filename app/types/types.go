@@ -574,8 +574,8 @@ type UpgradeVotes struct {
 } // @Name UpgradeVotes
 
 type UpgradeVotingHistoryItem struct {
-	BlockHeight uint64 `json:"blockHeight"`
-	Votes       uint64 `json:"votes"`
+	Timestamp time.Time `json:"timestamp" example:"2020-01-01T00:00:00Z"`
+	Votes     uint64    `json:"votes"`
 } // @Name UpgradeVotingHistoryItem
 
 type Upgrade struct {
