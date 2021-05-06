@@ -3,6 +3,7 @@ package changelog
 import (
 	"fmt"
 	"github.com/coreos/go-semver/semver"
+	"github.com/idena-network/idena-indexer-api/app/service"
 	"github.com/idena-network/idena-indexer-api/log"
 	"github.com/pkg/errors"
 	"io/ioutil"
@@ -12,7 +13,7 @@ import (
 
 type ChangeLog struct {
 	srcUrl              string
-	changeLogsByVersion map[string][]string
+	changeLogsByVersion map[string]*service.ChangeLogData
 	prevLen             int64
 	logger              log.Logger
 }
@@ -20,14 +21,14 @@ type ChangeLog struct {
 func NewChangeLog(srcUrl string, logger log.Logger) *ChangeLog {
 	res := &ChangeLog{
 		srcUrl:              srcUrl,
-		changeLogsByVersion: make(map[string][]string),
+		changeLogsByVersion: make(map[string]*service.ChangeLogData),
 		logger:              logger,
 	}
 	go res.loopRefreshing()
 	return res
 }
 
-func (changeLog *ChangeLog) ForkChangeLog(version string) ([]string, error) {
+func (changeLog *ChangeLog) ForkChangeLog(version string) (*service.ChangeLogData, error) {
 	v, err := semver.NewVersion(version)
 	if err != nil {
 		return nil, errors.New("invalid version")
@@ -44,6 +45,23 @@ func (changeLog *ChangeLog) loopRefreshing() {
 }
 
 func (changeLog *ChangeLog) refresh() {
+	{ // todo
+		changeLogsByVersion := make(map[string]*service.ChangeLogData)
+		changeLogsByVersion["0.26.0"] = &service.ChangeLogData{
+			Upgrade: 5,
+			Changes: []string{
+				"Implement delayed offline penalties",
+				"Add StoreToIpfsTx",
+				"Burn 5/6 of invitee stake in KillInviteeTx",
+				"Encourage early invitations",
+				"Check that blocks without ceremonial txs go in a row",
+				"Fix events for pool rewards in oracle voting",
+			},
+		}
+		changeLog.changeLogsByVersion = changeLogsByVersion
+		return
+	}
+
 	resp, err := http.Get(changeLog.srcUrl)
 	if err != nil {
 		changeLog.logger.Error("Failed to get CHANGELOG file", "err", err)
@@ -62,7 +80,7 @@ func (changeLog *ChangeLog) refresh() {
 
 	// todo
 	_ = string(body)
-	changeLogsByVersion := make(map[string][]string)
+	changeLogsByVersion := make(map[string]*service.ChangeLogData)
 
 	changeLog.changeLogsByVersion = changeLogsByVersion
 }

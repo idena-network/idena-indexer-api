@@ -23,7 +23,7 @@ type Service interface {
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
 
-	ForkChangeLog(version string) ([]string, error)
+	ForkChangeLog(version string) (*service2.ChangeLogData, error)
 }
 
 type MemPool interface {
@@ -169,6 +169,6 @@ func (s *service) UpgradeVoting() ([]*types.UpgradeVotes, error) {
 	return s.indexerApi.UpgradeVoting()
 }
 
-func (s *service) ForkChangeLog(version string) ([]string, error) {
+func (s *service) ForkChangeLog(version string) (*service2.ChangeLogData, error) {
 	return s.changeLog.ForkChangeLog(version)
 }

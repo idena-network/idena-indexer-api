@@ -2641,16 +2641,6 @@ func (s *httpServer) signatureAddress(w http.ResponseWriter, r *http.Request) {
 	WriteResponse(w, resp, err, s.logger)
 }
 
-// @Tags Upgrades
-// @Id UpgradeVotings
-// @Param limit query integer true "items to take"
-// @Param continuationToken query string false "continuation token to get next page items"
-// @Success 200 {object} api.ResponsePage{result=[]types.Upgrade}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /UpgradeVotings [get]
 func (s *httpServer) upgradeVotings(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("upgradeVotings", r.RequestURI)
 	defer s.pm.Complete(id)
@@ -2664,28 +2654,11 @@ func (s *httpServer) upgradeVotings(w http.ResponseWriter, r *http.Request) {
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
-// @Tags Upgrades
-// @Id UpgradeVoting
-// @Success 200 {object} api.Response{result=[]types.UpgradeVotes}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /UpgradeVoting [get]
 func (s *httpServer) upgradeVoting(w http.ResponseWriter, r *http.Request) {
 	resp, err := s.service.UpgradeVoting()
 	WriteResponse(w, resp, err, s.logger)
 }
 
-// @Tags Upgrades
-// @Id UpgradeVotingHistory
-// @Param upgrade path integer true "upgrade number"
-// @Success 200 {object} api.Response{result=[]types.UpgradeVotingHistoryItem}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /Upgrade/{upgrade}/VotingHistory [get]
 func (s *httpServer) upgradeVotingHistory(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("upgrade", r.RequestURI)
 	defer s.pm.Complete(id)
@@ -2699,15 +2672,6 @@ func (s *httpServer) upgradeVotingHistory(w http.ResponseWriter, r *http.Request
 	WriteResponse(w, resp, err, s.logger)
 }
 
-// @Tags Upgrades
-// @Id Upgrade
-// @Param upgrade path integer true "upgrade number"
-// @Success 200 {object} api.Response{result=types.Upgrade}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /Upgrade/{upgrade} [get]
 func (s *httpServer) upgrade(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("upgrade", r.RequestURI)
 	defer s.pm.Complete(id)
