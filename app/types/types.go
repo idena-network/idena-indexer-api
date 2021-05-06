@@ -579,8 +579,9 @@ type UpgradeVotingHistoryItem struct {
 } // @Name UpgradeVotingHistoryItem
 
 type Upgrade struct {
-	StartActivationDate time.Time `json:"startActivationDate" example:"2020-01-01T00:00:00Z"`
-	EndActivationDate   time.Time `json:"endActivationDate" example:"2020-01-01T00:00:00Z"`
+	Upgrade             uint32     `json:"upgrade,omitempty"`
+	StartActivationDate *time.Time `json:"startActivationDate,omitempty" example:"2020-01-01T00:00:00Z"`
+	EndActivationDate   *time.Time `json:"endActivationDate,omitempty" example:"2020-01-01T00:00:00Z"`
 } // @Name Upgrade
 
 type OnlineIdentity struct {

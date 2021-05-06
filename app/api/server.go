@@ -398,6 +398,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		Queries("value", "{value}", "signature", "{signature}").
 		HandlerFunc(s.signatureAddress)
 
+	router.Path(strings.ToLower("/UpgradeVotings")).HandlerFunc(s.upgradeVotings)
 	router.Path(strings.ToLower("/UpgradeVoting")).HandlerFunc(s.upgradeVoting)
 	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}/VotingHistory")).HandlerFunc(s.upgradeVotingHistory)
 	router.Path(strings.ToLower("/Upgrade/{upgrade:[0-9]+}")).HandlerFunc(s.upgrade)
@@ -2638,6 +2639,29 @@ func (s *httpServer) signatureAddress(w http.ResponseWriter, r *http.Request) {
 	signature := mux.Vars(r)["signature"]
 	resp, err := s.service.SignatureAddress(value, signature)
 	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Upgrades
+// @Id UpgradeVotings
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.Upgrade}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /UpgradeVotings [get]
+func (s *httpServer) upgradeVotings(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("upgradeVotings", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.UpgradeVotings(count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 // @Tags Upgrades

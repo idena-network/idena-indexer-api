@@ -10,6 +10,7 @@ const (
 	upgradesQuery             = "upgrades.sql"
 	upgradeVotingHistoryQuery = "upgradeVotingHistory.sql"
 	upgradeQuery              = "upgrade.sql"
+	upgradeVotingsQuery       = "upgradeVotings.sql"
 )
 
 func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error) {
@@ -97,7 +98,34 @@ func (a *postgresAccessor) Upgrade(upgrade uint64) (*types.Upgrade, error) {
 	if err != nil {
 		return nil, err
 	}
-	res.StartActivationDate = timestampToTimeUTC(startActivationDate)
-	res.EndActivationDate = timestampToTimeUTC(endActivationDate)
+	{
+		v := timestampToTimeUTC(startActivationDate)
+		res.StartActivationDate = &v
+	}
+	{
+		v := timestampToTimeUTC(endActivationDate)
+		res.EndActivationDate = &v
+	}
 	return res, nil
+}
+
+func (a *postgresAccessor) UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error) {
+	res, nextContinuationToken, err := a.page(upgradeVotingsQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.Upgrade
+		var upgrade uint64
+		for rows.Next() {
+			item := types.Upgrade{}
+			if err := rows.Scan(&upgrade); err != nil {
+				return nil, 0, err
+			}
+			item.Upgrade = uint32(upgrade)
+			res = append(res, item)
+		}
+		return res, upgrade, nil
+	}, count, continuationToken)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.Upgrade), nextContinuationToken, nil
 }

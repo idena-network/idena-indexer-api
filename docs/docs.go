@@ -5320,6 +5320,64 @@ var doc = `{
                 }
             }
         },
+        "/UpgradeVotings": {
+            "get": {
+                "tags": [
+                    "Upgrades"
+                ],
+                "operationId": "UpgradeVotings",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/Upgrade"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Upgrades": {
             "get": {
                 "tags": [
@@ -7002,6 +7060,9 @@ var doc = `{
                 "startActivationDate": {
                     "type": "string",
                     "example": "2020-01-01T00:00:00Z"
+                },
+                "upgrade": {
+                    "type": "integer"
                 }
             }
         },
@@ -7019,8 +7080,9 @@ var doc = `{
         "UpgradeVotingHistoryItem": {
             "type": "object",
             "properties": {
-                "blockHeight": {
-                    "type": "integer"
+                "timestamp": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
                 },
                 "votes": {
                     "type": "integer"

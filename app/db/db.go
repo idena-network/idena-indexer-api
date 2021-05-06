@@ -15,6 +15,7 @@ type Accessor interface {
 	ActiveAddressesCount(afterTime time.Time) (uint64, error)
 
 	Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error)
+	UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error)
 	UpgradeVotingHistory(upgrade uint64) ([]*types.UpgradeVotingHistoryItem, error)
 	Upgrade(upgrade uint64) (*types.Upgrade, error)
 

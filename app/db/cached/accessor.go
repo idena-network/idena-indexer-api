@@ -1114,6 +1114,13 @@ func (a *cachedAccessor) Upgrades(count uint64, continuationToken *string) ([]ty
 	return res.([]types.BlockSummary), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("UpgradeVotings", func() (interface{}, *string, error) {
+		return a.accessor.UpgradeVotings(count, continuationToken)
+	}, count, continuationToken)
+	return res.([]types.Upgrade), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) UpgradeVotingHistory(upgrade uint64) ([]*types.UpgradeVotingHistoryItem, error) {
 	res, err := a.getOrLoad("UpgradeVotingHistory", func() (interface{}, error) {
 		return a.accessor.UpgradeVotingHistory(upgrade)
