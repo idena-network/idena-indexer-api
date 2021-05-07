@@ -34,14 +34,13 @@ const (
 
 func (a *postgresAccessor) Identity(address string) (types.Identity, error) {
 	identity := types.Identity{}
-	err := a.db.QueryRow(a.getQuery(identityQuery), address).Scan(&identity.State)
+	err := a.db.QueryRow(a.getQuery(identityQuery), address).Scan(&identity.Address, &identity.State)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
 	}
 	if err != nil {
 		return types.Identity{}, err
 	}
-	identity.Address = address
 
 	if identity.TotalShortAnswers, err = a.identityAnswerPoints(address); err != nil {
 		return types.Identity{}, err
