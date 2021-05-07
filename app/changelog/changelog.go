@@ -54,7 +54,7 @@ func (changeLog *ChangeLog) refresh() {
 				"Add StoreToIpfsTx",
 				"Burn 5/6 of invitee stake in KillInviteeTx",
 				"Encourage early invitations",
-				"Check that blocks without ceremonial txs go in a row",
+				"Check that 5 blocks without ceremonial txs go in a row to finish the validation ceremony ",
 				"Fix events for pool rewards in oracle voting",
 			},
 		}

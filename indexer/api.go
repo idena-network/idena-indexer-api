@@ -15,6 +15,10 @@ type Api interface {
 	OnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error)
 	OnlineIdentity(address string) (*types.OnlineIdentity, error)
 	OnlineCount() (uint64, error)
+	ValidatorsCount() (uint64, error)
+	Validators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
+	OnlineValidatorsCount() (uint64, error)
+	OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
 
 	MemPoolTransaction(hash string) (*types.TransactionDetail, error)
 	MemPoolTransactionRaw(hash string) (*hexutil.Bytes, error)
@@ -86,6 +90,50 @@ func (api *apiImpl) OnlineCount() (uint64, error) {
 		return 0, api.handleError(err)
 	}
 	return res, nil
+}
+
+func (api *apiImpl) ValidatorsCount() (uint64, error) {
+	var res uint64
+	_, _, err := api.client.Get("api/Validators/Count", &res)
+	if err != nil {
+		return 0, api.handleError(err)
+	}
+	return res, nil
+}
+
+func (api *apiImpl) Validators(count uint64, continuationToken *string) ([]types.Validator, *string, error) {
+	var optional string
+	if continuationToken != nil {
+		optional = "&continuationToken=" + *continuationToken
+	}
+	var res []types.Validator
+	_, nextContinuationToken, err := api.client.Get("api/Validators?limit="+strconv.Itoa(int(count))+optional, &res)
+	if err != nil {
+		return nil, nil, api.handleError(err)
+	}
+	return res, nextContinuationToken, nil
+}
+
+func (api *apiImpl) OnlineValidatorsCount() (uint64, error) {
+	var res uint64
+	_, _, err := api.client.Get("api/OnlineValidators/Count", &res)
+	if err != nil {
+		return 0, api.handleError(err)
+	}
+	return res, nil
+}
+
+func (api *apiImpl) OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error) {
+	var optional string
+	if continuationToken != nil {
+		optional = "&continuationToken=" + *continuationToken
+	}
+	var res []types.Validator
+	_, nextContinuationToken, err := api.client.Get("api/OnlineValidators?limit="+strconv.Itoa(int(count))+optional, &res)
+	if err != nil {
+		return nil, nil, api.handleError(err)
+	}
+	return res, nextContinuationToken, nil
 }
 
 func (api *apiImpl) MemPoolTransaction(hash string) (*types.TransactionDetail, error) {

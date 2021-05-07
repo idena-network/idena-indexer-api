@@ -20,6 +20,10 @@ type Service interface {
 	GetOnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error)
 	GetOnlineIdentity(address string) (*types.OnlineIdentity, error)
 	GetOnlineCount() (uint64, error)
+	ValidatorsCount() (uint64, error)
+	Validators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
+	OnlineValidatorsCount() (uint64, error)
+	OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
 
@@ -145,6 +149,22 @@ func (s *service) GetOnlineIdentity(address string) (*types.OnlineIdentity, erro
 
 func (s *service) GetOnlineCount() (uint64, error) {
 	return s.indexerApi.OnlineCount()
+}
+
+func (s *service) ValidatorsCount() (uint64, error) {
+	return s.indexerApi.ValidatorsCount()
+}
+
+func (s *service) Validators(count uint64, continuationToken *string) ([]types.Validator, *string, error) {
+	return s.indexerApi.Validators(count, continuationToken)
+}
+
+func (s *service) OnlineValidatorsCount() (uint64, error) {
+	return s.indexerApi.OnlineValidatorsCount()
+}
+
+func (s *service) OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error) {
+	return s.indexerApi.OnlineValidators(count, continuationToken)
 }
 
 func (s *service) SignatureAddress(value, signature string) (string, error) {

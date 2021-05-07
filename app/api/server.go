@@ -394,6 +394,11 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/OnlineMiners/Count")).HandlerFunc(s.onlineCount)
 
+	router.Path(strings.ToLower("/Validators/Count")).HandlerFunc(s.validatorsCount)
+	router.Path(strings.ToLower("/Validators")).HandlerFunc(s.validators)
+	router.Path(strings.ToLower("/OnlineValidators/Count")).HandlerFunc(s.onlineValidatorsCount)
+	router.Path(strings.ToLower("/OnlineValidators")).HandlerFunc(s.onlineValidators)
+
 	router.Path(strings.ToLower("/SignatureAddress")).
 		Queries("value", "{value}", "signature", "{signature}").
 		HandlerFunc(s.signatureAddress)
@@ -2632,6 +2637,36 @@ func (s *httpServer) onlineIdentity(w http.ResponseWriter, r *http.Request) {
 func (s *httpServer) onlineCount(w http.ResponseWriter, r *http.Request) {
 	resp, err := s.service.GetOnlineCount()
 	WriteResponse(w, resp, err, s.logger)
+}
+
+func (s *httpServer) validatorsCount(w http.ResponseWriter, r *http.Request) {
+	resp, err := s.service.ValidatorsCount()
+	WriteResponse(w, resp, err, s.logger)
+}
+
+func (s *httpServer) validators(w http.ResponseWriter, r *http.Request) {
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.Validators(count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+func (s *httpServer) onlineValidatorsCount(w http.ResponseWriter, r *http.Request) {
+	resp, err := s.service.OnlineValidatorsCount()
+	WriteResponse(w, resp, err, s.logger)
+}
+
+func (s *httpServer) onlineValidators(w http.ResponseWriter, r *http.Request) {
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.OnlineValidators(count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 func (s *httpServer) signatureAddress(w http.ResponseWriter, r *http.Request) {
