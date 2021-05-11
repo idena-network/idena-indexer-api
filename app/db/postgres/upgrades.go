@@ -116,10 +116,23 @@ func (a *postgresAccessor) UpgradeVotings(count uint64, continuationToken *strin
 		var upgrade uint64
 		for rows.Next() {
 			item := types.Upgrade{}
-			if err := rows.Scan(&upgrade); err != nil {
+			var startActivationDate, endActivationDate int64
+			if err := rows.Scan(
+				&upgrade,
+				&startActivationDate,
+				&endActivationDate,
+			); err != nil {
 				return nil, 0, err
 			}
 			item.Upgrade = uint32(upgrade)
+			{
+				v := timestampToTimeUTC(startActivationDate)
+				item.StartActivationDate = &v
+			}
+			{
+				v := timestampToTimeUTC(endActivationDate)
+				item.EndActivationDate = &v
+			}
 			res = append(res, item)
 		}
 		return res, upgrade, nil

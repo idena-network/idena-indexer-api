@@ -47,15 +47,18 @@ func (changeLog *ChangeLog) loopRefreshing() {
 func (changeLog *ChangeLog) refresh() {
 	{ // todo
 		changeLogsByVersion := make(map[string]*service.ChangeLogData)
+		changeLogsByVersion["0.25.0"] = &service.ChangeLogData{
+			Upgrade: 4,
+		}
 		changeLogsByVersion["0.26.0"] = &service.ChangeLogData{
 			Upgrade: 5,
 			Changes: []string{
-				"Implement delayed offline penalties",
-				"Add StoreToIpfsTx",
-				"Burn 5/6 of invitee stake in KillInviteeTx",
 				"Encourage early invitations",
-				"Check that 5 blocks without ceremonial txs go in a row to finish the validation ceremony ",
-				"Fix events for pool rewards in oracle voting",
+				"Earning 1/6 of the invitee's stake when terminating invitee account",
+				"Validation ceremony improvement (check sequential 5 blocks to finish validation ceremony)",
+				"Synchronization improvement (delayed offline penalties)",
+				"Introduce StoreToIpfsTx transactions",
+				"Oracle voting bug fix",
 			},
 		}
 		changeLog.changeLogsByVersion = changeLogsByVersion
