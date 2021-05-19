@@ -189,10 +189,10 @@ type balanceUpdateOptionalData struct {
 }
 
 func (a *postgresAccessor) AddressBalanceUpdates(address string, count uint64, continuationToken *string) ([]types.BalanceUpdate, *string, error) {
-	res, nextContinuationToken, err := a.page(addressBalanceUpdatesQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+	res, nextContinuationToken, err := a.page2(addressBalanceUpdatesQuery, func(rows *sql.Rows) (interface{}, int64, error) {
 		defer rows.Close()
 		var res []types.BalanceUpdate
-		var id uint64
+		var id int64
 		for rows.Next() {
 			item := types.BalanceUpdate{}
 			var timestamp int64

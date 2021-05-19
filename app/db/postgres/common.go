@@ -646,3 +646,42 @@ func (a *postgresAccessor) page(
 	resSlice, nextContinuationToken := getResWithContinuationToken(strconv.FormatUint(nextId, 10), count, res)
 	return resSlice, nextContinuationToken, nil
 }
+
+func (a *postgresAccessor) page2(
+	queryName string,
+	readRows func(rows *sql.Rows) (interface{}, int64, error),
+	count uint64,
+	continuationToken *string,
+	args ...interface{},
+) (interface{}, *string, error) {
+	var continuationId *int64
+	var err error
+	if continuationId, err = parseIntContinuationToken(continuationToken); err != nil {
+		return nil, nil, err
+	}
+	rows, err := a.db.Query(a.getQuery(queryName), append(args, count+1, continuationId)...)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	res, nextId, err := readRows(rows)
+	if err != nil {
+		return nil, nil, err
+	}
+	resSlice, nextContinuationToken := getResWithContinuationToken(strconv.FormatInt(nextId, 10), count, res)
+	return resSlice, nextContinuationToken, nil
+}
+
+func parseIntContinuationToken(continuationToken *string) (*int64, error) {
+	if continuationToken == nil {
+		return nil, nil
+	}
+	var result *int64
+	var err error
+	if num, parsingErr := strconv.ParseInt(*continuationToken, 10, 64); parsingErr != nil {
+		err = errors.New("invalid continuation token")
+	} else {
+		result = &num
+	}
+	return result, err
+}
