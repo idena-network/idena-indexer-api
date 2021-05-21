@@ -200,7 +200,7 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 	var gasCost, transfer NullDecimal
 	var success, becomeOnline sql.NullBool
 	var gasUsed sql.NullInt64
-	var method, errorMsg sql.NullString
+	var method, errorMsg, contractAddress sql.NullString
 	err := a.db.QueryRow(a.getQuery(transactionQuery), hash).Scan(
 		&res.Epoch,
 		&res.BlockHeight,
@@ -222,6 +222,7 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 		&gasCost,
 		&method,
 		&errorMsg,
+		&contractAddress,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -236,11 +237,12 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 	res.Data = readTxSpecificData(res.Type, transfer, becomeOnline)
 	if success.Valid {
 		res.TxReceipt = &types.TxReceipt{
-			Success:  success.Bool,
-			GasUsed:  uint64(gasUsed.Int64),
-			GasCost:  gasCost.Decimal,
-			Method:   method.String,
-			ErrorMsg: errorMsg.String,
+			Success:         success.Bool,
+			GasUsed:         uint64(gasUsed.Int64),
+			GasCost:         gasCost.Decimal,
+			Method:          method.String,
+			ErrorMsg:        errorMsg.String,
+			ContractAddress: contractAddress.String,
 		}
 	}
 	return &res, nil

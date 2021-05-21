@@ -6831,6 +6831,9 @@ var doc = `{
         "TxReceipt": {
             "type": "object",
             "properties": {
+                "contractAddress": {
+                    "type": "string"
+                },
                 "errorMsg": {
                     "type": "string"
                 },

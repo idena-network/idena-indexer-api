@@ -1133,6 +1133,8 @@ definitions:
     type: object
   TxReceipt:
     properties:
+      contractAddress:
+        type: string
       errorMsg:
         type: string
       gasCost:

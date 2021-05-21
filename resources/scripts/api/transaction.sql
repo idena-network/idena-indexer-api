@@ -19,7 +19,8 @@ select b.epoch,
        tr.gas_used                                                                                  tx_receipt_gas_used,
        tr.gas_cost                                                                                  tx_receipt_gas_cost,
        tr.method                                                                                    tx_receipt_method,
-       tr.error_msg                                                                                 tx_receipt_error_msg
+       tr.error_msg                                                                                 tx_receipt_error_msg,
+       (case when tr.tx_id is not null then coalesce(adeploy.address, ato.address) end)             tx_receipt_contract_address
 from transactions t
          join blocks b on b.height = t.block_height
          join addresses afrom on afrom.id = t.from
@@ -31,4 +32,6 @@ from transactions t
          left join become_online_txs online on online.tx_id = t.id and t.type = 9
          left join become_offline_txs offline on offline.tx_id = t.id and t.type = 9
          LEFT JOIN tx_receipts tr on t.type in (15, 16, 17) and tr.tx_id = t.id
+         LEFT JOIN contracts c ON t.type = 15 AND c.tx_id = t.id
+         LEFT JOIN addresses adeploy ON adeploy.id = c.contract_address_id
 where lower(t.Hash) = lower($1)

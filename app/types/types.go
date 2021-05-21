@@ -561,11 +561,12 @@ type ContractTxBalanceUpdate struct {
 } // @Name ContractTxBalanceUpdate
 
 type TxReceipt struct {
-	Success  bool            `json:"success"`
-	GasUsed  uint64          `json:"gasUsed"`
-	GasCost  decimal.Decimal `json:"gasCost" swaggertype:"string"`
-	Method   string          `json:"method,omitempty"`
-	ErrorMsg string          `json:"errorMsg,omitempty"`
+	Success         bool            `json:"success"`
+	GasUsed         uint64          `json:"gasUsed"`
+	GasCost         decimal.Decimal `json:"gasCost" swaggertype:"string"`
+	Method          string          `json:"method,omitempty"`
+	ErrorMsg        string          `json:"errorMsg,omitempty"`
+	ContractAddress string          `json:"contractAddress,omitempty"`
 } // @Name TxReceipt
 
 type UpgradeVotes struct {
