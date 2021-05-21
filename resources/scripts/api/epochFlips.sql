@@ -30,6 +30,7 @@ FROM flips f
          LEFT JOIN dic_flip_statuses dfs ON dfs.id = f.status
          LEFT JOIN dic_answers da ON da.id = f.answer
          LEFT JOIN flip_summaries fs ON fs.flip_tx_id = f.tx_id
+         JOIN flip_pics fp ON fp.index = 3 AND fp.fd_flip_tx_id = f.tx_id
 WHERE ($3::bigint IS NULL OR f.tx_id <= $3)
   AND f.delete_tx_id IS NULL
 ORDER BY f.tx_id DESC

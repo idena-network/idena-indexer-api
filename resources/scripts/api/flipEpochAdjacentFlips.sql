@@ -12,11 +12,13 @@ from (select f.cid,
       from flips f
                join transactions t on t.id = f.tx_id
                join blocks b on b.height = t.block_height
+               JOIN flip_pics fp ON fp.index = 3 AND fp.fd_flip_tx_id = f.tx_id
       where f.delete_tx_id is null
         and b.epoch = (select b.epoch
                        from flips f
                                 join transactions t on t.id = f.tx_id
                                 join blocks b on b.height = t.block_height
+                                JOIN flip_pics fp ON fp.index = 3 AND fp.fd_flip_tx_id = f.tx_id
                        where lower(f.cid) = lower($1)
                          and f.delete_tx_id is null)) rel
 where lower(rel.cid) = lower($1)
