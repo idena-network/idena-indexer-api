@@ -1091,6 +1091,13 @@ func (a *cachedAccessor) TimeLockContract(address string) (types.TimeLockContrac
 	return res.(types.TimeLockContract), err
 }
 
+func (a *cachedAccessor) OracleLockContract(address string) (types.OracleLockContract, error) {
+	res, err := a.getOrLoad("OracleLockContract", func() (interface{}, error) {
+		return a.accessor.OracleLockContract(address)
+	}, address)
+	return res.(types.OracleLockContract), err
+}
+
 func (a *cachedAccessor) OracleVotingContracts(authorAddress, oracleAddress string, states []string, all bool, sortBy *string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error) {
 	return a.accessor.OracleVotingContracts(authorAddress, oracleAddress, states, all, sortBy, count, continuationToken)
 }

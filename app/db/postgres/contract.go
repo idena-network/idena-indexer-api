@@ -8,6 +8,7 @@ import (
 const (
 	contractQuery                 = "contract.sql"
 	timeLockContractQuery         = "timeLockContract.sql"
+	oracleLockContractQuery       = "oracleLockContract.sql"
 	oracleVotingContractQuery     = "oracleVotingContract.sql"
 	contractTxBalanceUpdatesQuery = "contractTxBalanceUpdates.sql"
 )
@@ -118,6 +119,23 @@ func (a *postgresAccessor) TimeLockContract(address string) (types.TimeLockContr
 		return types.TimeLockContract{}, err
 	}
 	res.Timestamp = types.JSONTime(timestampToTimeUTC(timestamp))
+	return res, nil
+}
+
+func (a *postgresAccessor) OracleLockContract(address string) (types.OracleLockContract, error) {
+	res := types.OracleLockContract{}
+	err := a.db.QueryRow(a.getQuery(oracleLockContractQuery), address).Scan(
+		&res.OracleVotingAddress,
+		&res.Value,
+		&res.SuccessAddress,
+		&res.FailAddress,
+	)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return types.OracleLockContract{}, err
+	}
 	return res, nil
 }
 

@@ -165,6 +165,7 @@ type Accessor interface {
 	ContractTxBalanceUpdates(contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error)
 
 	TimeLockContract(address string) (types.TimeLockContract, error)
+	OracleLockContract(address string) (types.OracleLockContract, error)
 
 	OracleVotingContracts(authorAddress, oracleAddress string, states []string, all bool, sortBy *string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error)
 	OracleVotingContract(address, oracle string) (types.OracleVotingContract, error)

@@ -4508,6 +4508,55 @@ var doc = `{
                 }
             }
         },
+        "/OracleLockContract/{address}": {
+            "get": {
+                "tags": [
+                    "Contracts"
+                ],
+                "operationId": "OracleLockContract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contract address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/types.OracleLockContract"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/OracleVotingContract/{address}": {
             "get": {
                 "tags": [
@@ -6877,6 +6926,23 @@ var doc = `{
                         "Multisig",
                         "RefundableOracleLock"
                     ]
+                }
+            }
+        },
+        "types.OracleLockContract": {
+            "type": "object",
+            "properties": {
+                "failAddress": {
+                    "type": "string"
+                },
+                "oracleVotingAddress": {
+                    "type": "string"
+                },
+                "successAddress": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
                 }
             }
         },

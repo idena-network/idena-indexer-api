@@ -1167,6 +1167,17 @@ definitions:
         - RefundableOracleLock
         type: string
     type: object
+  types.OracleLockContract:
+    properties:
+      failAddress:
+        type: string
+      oracleVotingAddress:
+        type: string
+      successAddress:
+        type: string
+      value:
+        type: integer
+    type: object
   types.TimeLockContract:
     properties:
       timestamp:
@@ -3875,6 +3886,35 @@ paths:
           description: Service unavailable
       tags:
       - MemPool
+  /OracleLockContract/{address}:
+    get:
+      operationId: OracleLockContract
+      parameters:
+      - description: contract address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/types.OracleLockContract'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Contracts
   /OracleVotingContract/{address}:
     get:
       operationId: OracleVotingContract

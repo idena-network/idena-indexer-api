@@ -496,6 +496,13 @@ type TimeLockContract struct {
 	Timestamp JSONTime `json:"timestamp" swaggertype:"string" example:"2020-01-01T00:00:00Z"`
 } // @TimeLockContract
 
+type OracleLockContract struct {
+	OracleVotingAddress string `json:"oracleVotingAddress"`
+	Value               byte   `json:"value"`
+	SuccessAddress      string `json:"successAddress"`
+	FailAddress         string `json:"failAddress"`
+} // @TimeLockContract
+
 type OracleVotingContract struct {
 	ContractAddress                 string                            `json:"contractAddress"`
 	Author                          string                            `json:"author"`
