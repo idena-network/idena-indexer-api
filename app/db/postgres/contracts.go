@@ -232,6 +232,10 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 				}
 			}
 		}
+		if itemState == oracleVotingStatePending && item.EstimatedTerminationTime == nil {
+			v := item.StartTime.Add(time.Hour * 24 * 30)
+			item.EstimatedTerminationTime = &v
+		}
 		if committeeEpoch.Valid {
 			v := uint64(committeeEpoch.Int64)
 			item.CommitteeEpoch = &v
