@@ -6349,9 +6349,6 @@ var doc = `{
                 "epoch": {
                     "type": "integer"
                 },
-                "paid": {
-                    "type": "string"
-                },
                 "penalty": {
                     "type": "string"
                 },

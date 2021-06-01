@@ -750,8 +750,6 @@ definitions:
         type: integer
       epoch:
         type: integer
-      paid:
-        type: string
       penalty:
         type: string
       timestamp:

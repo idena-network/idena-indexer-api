@@ -61,7 +61,6 @@ func (a *postgresAccessor) AddressPenalties(address string, count uint64, contin
 				&id,
 				&item.Address,
 				&item.Penalty,
-				&item.Paid,
 				&item.BlockHeight,
 				&item.BlockHash,
 				&timestamp,
@@ -92,7 +91,6 @@ func (a *postgresAccessor) AddressPenaltiesOld(address string, startIndex uint64
 		var timestamp int64
 		err = rows.Scan(&item.Address,
 			&item.Penalty,
-			&item.Paid,
 			&item.BlockHeight,
 			&item.BlockHash,
 			&timestamp,

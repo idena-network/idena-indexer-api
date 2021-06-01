@@ -352,7 +352,6 @@ type TotalMiningReward struct {
 type Penalty struct {
 	Address     string          `json:"address"`
 	Penalty     decimal.Decimal `json:"penalty" swaggertype:"string"`
-	Paid        decimal.Decimal `json:"paid" swaggertype:"string"`
 	BlockHeight uint64          `json:"blockHeight"`
 	BlockHash   string          `json:"blockHash"`
 	Timestamp   time.Time       `json:"timestamp" example:"2020-01-01T00:00:00Z"`
