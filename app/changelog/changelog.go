@@ -8,6 +8,8 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -45,26 +47,6 @@ func (changeLog *ChangeLog) loopRefreshing() {
 }
 
 func (changeLog *ChangeLog) refresh() {
-	{ // todo
-		changeLogsByVersion := make(map[string]*service.ChangeLogData)
-		changeLogsByVersion["0.25.0"] = &service.ChangeLogData{
-			Upgrade: 4,
-		}
-		changeLogsByVersion["0.26.0"] = &service.ChangeLogData{
-			Upgrade: 5,
-			Changes: []string{
-				"Encourage early invitations",
-				"Earning 1/6 of the invitee's stake when terminating invitee account",
-				"Validation ceremony improvement (check sequential 5 blocks to finish validation ceremony)",
-				"Synchronization improvement (delayed offline penalties)",
-				"Introduce StoreToIpfsTx transactions",
-				"Oracle voting bug fix",
-			},
-		}
-		changeLog.changeLogsByVersion = changeLogsByVersion
-		return
-	}
-
 	resp, err := http.Get(changeLog.srcUrl)
 	if err != nil {
 		changeLog.logger.Error("Failed to get CHANGELOG file", "err", err)
@@ -81,9 +63,64 @@ func (changeLog *ChangeLog) refresh() {
 	}
 	changeLog.prevLen = resp.ContentLength
 
-	// todo
-	_ = string(body)
-	changeLogsByVersion := make(map[string]*service.ChangeLogData)
+	changeLogsByVersion, err := parseChangeLog(body)
+	if err != nil {
+		changeLog.logger.Error("Unable to parse CHANGELOG file", "err", err)
+		return
+	}
 
 	changeLog.changeLogsByVersion = changeLogsByVersion
+}
+
+func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
+	strData := string(data)
+	lines := strings.Split(strData, "\n")
+	res := make(map[string]*service.ChangeLogData)
+	var i int
+	for i < len(lines) {
+		line := lines[i]
+		i++
+		if !strings.HasPrefix(line, "## ") {
+			continue
+		}
+		s := strings.Split(strings.TrimPrefix(line, "## "), " ")
+		if len(s) == 0 {
+			continue
+		}
+		v, err := semver.NewVersion(s[0])
+		if err != nil || v.Patch != 0 {
+			continue
+		}
+		for i < len(lines) {
+			line = lines[i]
+			i++
+			if !strings.HasPrefix(line, "### Fork (Upgrade ") {
+				continue
+			}
+			upgrade, err := strconv.Atoi(strings.TrimSuffix(strings.TrimPrefix(line, "### Fork (Upgrade "), ")"))
+			if err != nil {
+				continue
+			}
+			res[v.String()] = &service.ChangeLogData{
+				Upgrade: uint32(upgrade),
+			}
+			for i < len(lines) {
+				line = lines[i]
+				i++
+				if strings.HasPrefix(line, "#") {
+					break
+				}
+				if !strings.HasPrefix(line, "- ") {
+					continue
+				}
+				parts := strings.Split(strings.TrimPrefix(line, "- "), " (")
+				if len(parts) == 0 {
+					continue
+				}
+				res[v.String()].Changes = append(res[v.String()].Changes, parts[0])
+			}
+			break
+		}
+	}
+	return res, nil
 }
