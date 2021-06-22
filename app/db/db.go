@@ -177,5 +177,7 @@ type Accessor interface {
 	PoolDelegatorsCount(address string) (uint64, error)
 	PoolDelegators(address string, count uint64, continuationToken *string) ([]*types.Delegator, *string, error)
 
+	MinersHistory() ([]types.MinersHistoryItem, error)
+
 	Destroy()
 }

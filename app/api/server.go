@@ -394,6 +394,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/OnlineIdentity/{address}")).HandlerFunc(s.onlineIdentity)
 
 	router.Path(strings.ToLower("/OnlineMiners/Count")).HandlerFunc(s.onlineCount)
+	router.Path(strings.ToLower("/Miners/History")).HandlerFunc(s.minersHistory)
 
 	router.Path(strings.ToLower("/Validators/Count")).HandlerFunc(s.validatorsCount)
 	router.Path(strings.ToLower("/Validators")).HandlerFunc(s.validators)
@@ -2654,6 +2655,21 @@ func (s *httpServer) onlineIdentity(w http.ResponseWriter, r *http.Request) {
 
 func (s *httpServer) onlineCount(w http.ResponseWriter, r *http.Request) {
 	resp, err := s.service.GetOnlineCount()
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Miners
+// @Id MinersHistory
+// @Success 200 {object} api.ResponsePage{result=[]types.MinersHistoryItem}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Miners/History [get]
+func (s *httpServer) minersHistory(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("minersHistory", r.RequestURI)
+	defer s.pm.Complete(id)
+	resp, err := s.service.MinersHistory()
 	WriteResponse(w, resp, err, s.logger)
 }
 

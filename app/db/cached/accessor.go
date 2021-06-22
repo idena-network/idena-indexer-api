@@ -1177,6 +1177,13 @@ func (a *cachedAccessor) PoolDelegators(address string, count uint64, continuati
 	return res.([]*types.Delegator), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) MinersHistory() ([]types.MinersHistoryItem, error) {
+	res, err := a.getOrLoad("MinersHistory", func() (interface{}, error) {
+		return a.accessor.MinersHistory()
+	})
+	return res.([]types.MinersHistoryItem), err
+}
+
 func (a *cachedAccessor) Destroy() {
 	a.accessor.Destroy()
 }

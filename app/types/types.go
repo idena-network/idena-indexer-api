@@ -618,3 +618,9 @@ type Delegator struct {
 	State   string `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
 	Age     uint16 `json:"age"`
 } // @Name Delegator
+
+type MinersHistoryItem struct {
+	Timestamp        time.Time `json:"timestamp" example:"2020-01-01T00:00:00Z"`
+	OnlineMiners     uint64    `json:"onlineMiners"`
+	OnlineValidators uint64    `json:"onlineValidators"`
+} // @Name MinersHistoryItem

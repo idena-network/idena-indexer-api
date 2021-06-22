@@ -4508,6 +4508,49 @@ var doc = `{
                 }
             }
         },
+        "/Miners/History": {
+            "get": {
+                "tags": [
+                    "Miners"
+                ],
+                "operationId": "MinersHistory",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/MinersHistoryItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/OracleLockContract/{address}": {
             "get": {
                 "tags": [
@@ -6191,6 +6234,21 @@ var doc = `{
                 },
                 "usedCount": {
                     "type": "integer"
+                }
+            }
+        },
+        "MinersHistoryItem": {
+            "type": "object",
+            "properties": {
+                "onlineMiners": {
+                    "type": "integer"
+                },
+                "onlineValidators": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
                 }
             }
         },
