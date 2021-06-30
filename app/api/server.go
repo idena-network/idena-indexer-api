@@ -383,6 +383,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/OracleVotingContracts/EstimatedOracleRewards")).HandlerFunc(s.estimatedOracleRewards)
 
 	router.Path(strings.ToLower("/MemPool/Txs")).HandlerFunc(s.memPoolTxs)
+	router.Path(strings.ToLower("/MemPool/Txs/Count")).HandlerFunc(s.memPoolTxsCount)
 
 	router.Path(strings.ToLower("/OnlineIdentities/Count")).HandlerFunc(s.onlineIdentitiesCount)
 	router.Path(strings.ToLower("/OnlineIdentities")).
@@ -2415,6 +2416,21 @@ func (s *httpServer) memPoolTxs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	resp, err := s.service.MemPoolTxs(count)
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags MemPool
+// @Id MemPoolTxsCount
+// @Success 200 {object} api.Response{result=integer}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /MemPool/Txs/Count [get]
+func (s *httpServer) memPoolTxsCount(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("memPoolTxsCount", r.RequestURI)
+	defer s.pm.Complete(id)
+	resp, err := s.service.MemPoolTxsCount()
 	WriteResponse(w, resp, err, s.logger)
 }
 

@@ -15,6 +15,7 @@ type Service interface {
 	db.Accessor
 
 	MemPoolTxs(count uint64) ([]*types.TransactionSummary, error)
+	MemPoolTxsCount() (int, error)
 	GetOnlineIdentitiesCount() (uint64, error)
 	GetOnlineIdentities(count uint64, continuationToken *string) ([]*types.OnlineIdentity, *string, error)
 	GetOnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error)
@@ -35,6 +36,7 @@ type MemPool interface {
 	GetTransactionRaw(hash string) (*hexutil.Bytes, error)
 	GetAddressTransactions(address string, count int) ([]*types.TransactionSummary, error)
 	GetTransactions(count int) ([]*types.TransactionSummary, error)
+	GetTransactionsCount() (int, error)
 }
 
 func NewService(dbAccessor db.Accessor, memPool MemPool, indexerApi indexer.Api, changeLog service2.ChangeLog) Service {
@@ -128,6 +130,10 @@ func (s *service) IdentityTxs(address string, count uint64, continuationToken *s
 
 func (s *service) MemPoolTxs(count uint64) ([]*types.TransactionSummary, error) {
 	return s.memPool.GetTransactions(int(count))
+}
+
+func (s *service) MemPoolTxsCount() (int, error) {
+	return s.memPool.GetTransactionsCount()
 }
 
 func (s *service) GetOnlineIdentitiesCount() (uint64, error) {

@@ -24,6 +24,7 @@ type Api interface {
 	MemPoolTransactionRaw(hash string) (*hexutil.Bytes, error)
 	MemPoolAddressTransactions(address string, count int) ([]*types.TransactionSummary, error)
 	MemPoolTransactions(count int) ([]*types.TransactionSummary, error)
+	MemPoolTransactionsCount() (int, error)
 
 	MemPoolOracleVotingContractDeploys(author string) ([]service.OracleVotingContract, error)
 	MemPoolAddressContractTxs(address, contractAddress string) ([]service.Transaction, error)
@@ -166,6 +167,15 @@ func (api *apiImpl) MemPoolTransactions(count int) ([]*types.TransactionSummary,
 	_, _, err := api.client.Get("api/MemPool/Transactions?limit="+strconv.Itoa(count), &res)
 	if err != nil {
 		return nil, api.handleError(err)
+	}
+	return res, nil
+}
+
+func (api *apiImpl) MemPoolTransactionsCount() (int, error) {
+	var res int
+	_, _, err := api.client.Get("api/MemPool/Transactions/Count", &res)
+	if err != nil {
+		return 0, api.handleError(err)
 	}
 	return res, nil
 }

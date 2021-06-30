@@ -31,3 +31,7 @@ func (memPool *MemPool) GetAddressTransactions(address string, count int) ([]*ty
 func (memPool *MemPool) GetTransactions(count int) ([]*types.TransactionSummary, error) {
 	return memPool.api.MemPoolTransactions(count)
 }
+
+func (memPool *MemPool) GetTransactionsCount() (int, error) {
+	return memPool.api.MemPoolTransactionsCount()
+}
