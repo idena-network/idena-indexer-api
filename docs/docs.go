@@ -4836,6 +4836,49 @@ var doc = `{
                 }
             }
         },
+        "/Peers/History": {
+            "get": {
+                "tags": [
+                    "Peers"
+                ],
+                "operationId": "PeersHistory",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/PeersHistoryItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Pool/{address}": {
             "get": {
                 "tags": [
@@ -6429,6 +6472,18 @@ var doc = `{
                 },
                 "option": {
                     "type": "integer"
+                }
+            }
+        },
+        "PeersHistoryItem": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
                 }
             }
         },

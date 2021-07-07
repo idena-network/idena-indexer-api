@@ -624,3 +624,8 @@ type MinersHistoryItem struct {
 	OnlineMiners     uint64    `json:"onlineMiners"`
 	OnlineValidators uint64    `json:"onlineValidators"`
 } // @Name MinersHistoryItem
+
+type PeersHistoryItem struct {
+	Timestamp time.Time `json:"timestamp" example:"2020-01-01T00:00:00Z"`
+	Count     uint64    `json:"count"`
+} // @Name PeersHistoryItem

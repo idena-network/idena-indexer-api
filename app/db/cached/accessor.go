@@ -1184,6 +1184,13 @@ func (a *cachedAccessor) MinersHistory() ([]types.MinersHistoryItem, error) {
 	return res.([]types.MinersHistoryItem), err
 }
 
+func (a *cachedAccessor) PeersHistory() ([]types.PeersHistoryItem, error) {
+	res, err := a.getOrLoad("PeersHistory", func() (interface{}, error) {
+		return a.accessor.PeersHistory()
+	})
+	return res.([]types.PeersHistoryItem), err
+}
+
 func (a *cachedAccessor) Destroy() {
 	a.accessor.Destroy()
 }
