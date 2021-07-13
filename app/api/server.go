@@ -174,8 +174,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Txt/CirculatingSupply")).
 		HandlerFunc(s.txtCirculatingSupply)
 
-	router.Path(strings.ToLower("/ActiveAddresses/Count")).
-		HandlerFunc(s.activeAddressesCount)
+	//router.Path(strings.ToLower("/ActiveAddresses/Count")).
+	//	HandlerFunc(s.activeAddressesCount)
 
 	router.Path(strings.ToLower("/Upgrades")).
 		HandlerFunc(s.upgrades)
@@ -190,19 +190,19 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}")).HandlerFunc(s.epoch)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks/Count")).
 		HandlerFunc(s.epochBlocksCount)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochBlocksOld)
+	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks")).
+	//	Queries("skip", "{skip}", "limit", "{limit}").
+	//	HandlerFunc(s.epochBlocksOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks")).
 		HandlerFunc(s.epochBlocks)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips/Count")).
 		HandlerFunc(s.epochFlipsCount)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochFlipsOld)
+	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips")).
+	//	Queries("skip", "{skip}", "limit", "{limit}").
+	//	HandlerFunc(s.epochFlipsOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips")).
 		HandlerFunc(s.epochFlips)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipAnswersSummary")).HandlerFunc(s.epochFlipAnswersSummary)
+	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipAnswersSummary")).HandlerFunc(s.epochFlipAnswersSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipStatesSummary")).HandlerFunc(s.epochFlipStatesSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipWrongWordsSummary")).HandlerFunc(s.epochFlipWrongWordsSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identities/Count")).
@@ -531,14 +531,6 @@ func (s *httpServer) txtCirculatingSupply(w http.ResponseWriter, r *http.Request
 	WriteTextPlainResponse(w, resp, err, s.logger)
 }
 
-// @Tags Coins
-// @Id ActiveAddressesCount
-// @Success 200 {object} api.Response{result=integer}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /ActiveAddresses/Count [get]
 func (s *httpServer) activeAddressesCount(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("activeAddressesCount", r.RequestURI)
 	defer s.pm.Complete(id)
@@ -751,15 +743,6 @@ func (s *httpServer) epochFlips(w http.ResponseWriter, r *http.Request) {
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
-// @Tags Epochs
-// @Id EpochFlipAnswersSummary
-// @Param epoch path integer true "epoch"
-// @Success 200 {object} api.Response{result=[]types.FlipAnswerCount}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /Epoch/{epoch}/FlipAnswersSummary [get]
 func (s *httpServer) epochFlipAnswersSummary(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("epochFlipAnswersSummary", r.RequestURI)
 	defer s.pm.Complete(id)

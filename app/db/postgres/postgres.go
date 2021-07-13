@@ -31,10 +31,10 @@ const (
 	isEpochQuery              = "isEpoch.sql"
 	isFlipQuery               = "isFlip.sql"
 	isTxQuery                 = "isTx.sql"
-	coinsBurntAndMintedQuery  = "coinsBurntAndMinted.sql"
 	coinsTotalQuery           = "coinsTotal.sql"
 	circulatingSupplyQuery    = "circulatingSupply.sql"
 	activeAddressesCountQuery = "activeAddressesCount.sql"
+	coinsQuery                = "coinsQuery.sql"
 )
 
 var NoDataFound = errors.New("no data found")
@@ -138,16 +138,12 @@ func (a *postgresAccessor) Search(value string) ([]types.Entity, error) {
 
 func (a *postgresAccessor) Coins() (types.AllCoins, error) {
 	res := types.AllCoins{}
-	err := a.db.QueryRow(a.getQuery(coinsTotalQuery)).Scan(&res.TotalBalance, &res.TotalStake)
-	if err == sql.ErrNoRows {
-		err = NoDataFound
-	}
-	if err != nil {
-		return types.AllCoins{}, err
-	}
-	err = a.db.QueryRow(a.getQuery(coinsBurntAndMintedQuery)).
-		Scan(&res.Burnt,
-			&res.Minted)
+	err := a.db.QueryRow(a.getQuery(coinsQuery)).Scan(
+		&res.TotalBalance,
+		&res.TotalStake,
+		&res.Burnt,
+		&res.Minted,
+	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
 	}

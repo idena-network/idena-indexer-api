@@ -15,14 +15,12 @@ SELECT b.height,
        c.total_stake,
        (SELECT array_agg("flag") FROM block_flags WHERE block_height = b.height) flags,
        b.upgrade
-FROM (SELECT *
-      FROM blocks
-      WHERE ($3::bigint IS NULL OR height <= $3::bigint)
-        AND epoch = $1
-      ORDER BY height DESC
-      LIMIT $2) b
+FROM blocks b
          LEFT JOIN block_proposers p ON p.block_height = b.height
          LEFT JOIN block_proposer_vrf_scores vs ON vs.block_height = b.height
          LEFT JOIN addresses a ON a.id = p.address_id
-         JOIN coins c ON c.block_height = b.height
+         LEFT JOIN coins c ON c.block_height = b.height
+WHERE ($3::bigint IS NULL OR b.height <= $3::bigint)
+  AND b.epoch = $1
 ORDER BY b.height DESC
+LIMIT $2

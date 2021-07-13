@@ -1,8 +1,4 @@
-select coalesce(dfs.name, '') status, count(*) cnt
-from flips f
-         join transactions t on t.id = f.tx_id
-         join blocks b on b.height = t.block_height and b.epoch = $1
-         left join dic_flip_statuses dfs on dfs.id = f.status
-where f.delete_tx_id is null
-group by dfs.name
-order by dfs.name
+SELECT dfs.name status, efs.count cnt
+FROM epoch_flip_statuses efs
+         JOIN dic_flip_statuses dfs ON dfs.id = efs.flip_status
+WHERE efs.epoch = $1;

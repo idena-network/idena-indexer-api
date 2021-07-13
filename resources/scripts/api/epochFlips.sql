@@ -1,3 +1,4 @@
+WITH epoch_tx_bounds AS (SELECT min_tx_id, max_tx_id FROM epoch_summaries WHERE epoch = $1)
 SELECT f.tx_id,
        f.Cid,
        f.Size,
@@ -20,9 +21,9 @@ SELECT f.tx_id,
        coalesce(fs.encrypted, false)     with_private_part,
        coalesce(f.grade, 0)              grade
 FROM flips f
-         JOIN transactions t ON t.id = f.tx_id
-         JOIN addresses a ON a.id = t.from
-         JOIN blocks b ON b.height = t.block_height AND b.epoch = $1
+         LEFT JOIN transactions t ON t.id = f.tx_id
+         LEFT JOIN addresses a ON a.id = t.from
+         LEFT JOIN blocks b ON b.height = t.block_height
          LEFT JOIN flip_icons fi ON fi.fd_flip_tx_id = f.tx_id
          LEFT JOIN flip_words fw ON fw.flip_tx_id = f.tx_id
          LEFT JOIN words_dictionary wd1 ON wd1.id = fw.word_1
@@ -30,7 +31,8 @@ FROM flips f
          LEFT JOIN dic_flip_statuses dfs ON dfs.id = f.status
          LEFT JOIN dic_answers da ON da.id = f.answer
          LEFT JOIN flip_summaries fs ON fs.flip_tx_id = f.tx_id
-WHERE ($3::bigint IS NULL OR f.tx_id <= $3)
+WHERE (f.tx_id BETWEEN (SELECT min_tx_id FROM epoch_tx_bounds) AND (SELECT max_tx_id FROM epoch_tx_bounds))
+  AND ($3::bigint IS NULL OR f.tx_id <= $3)
   AND f.delete_tx_id IS NULL
 ORDER BY f.tx_id DESC
-LIMIT $2
+LIMIT $2;
