@@ -180,5 +180,8 @@ type Accessor interface {
 	MinersHistory() ([]types.MinersHistoryItem, error)
 	PeersHistory() ([]types.PeersHistoryItem, error)
 
+	DynamicEndpoints() ([]types.DynamicEndpoint, error)
+	DynamicEndpointData(dataSource string, limit *int) ([]map[string]interface{}, error)
+
 	Destroy()
 }

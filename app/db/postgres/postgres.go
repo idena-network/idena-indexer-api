@@ -19,6 +19,7 @@ type postgresAccessor struct {
 	networkSizeLoader           service.NetworkSizeLoader
 	estimatedOracleRewardsCache *estimatedOracleRewardsService
 	queries                     map[string]string
+	dynamicEndpointsTable       string
 	log                         log.Logger
 }
 

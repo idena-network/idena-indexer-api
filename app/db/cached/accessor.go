@@ -1191,6 +1191,17 @@ func (a *cachedAccessor) PeersHistory() ([]types.PeersHistoryItem, error) {
 	return res.([]types.PeersHistoryItem), err
 }
 
+func (a *cachedAccessor) DynamicEndpoints() ([]types.DynamicEndpoint, error) {
+	return a.accessor.DynamicEndpoints()
+}
+
+func (a *cachedAccessor) DynamicEndpointData(name string, limit *int) ([]map[string]interface{}, error) {
+	res, err := a.getOrLoad("DynamicEndpointData", func() (interface{}, error) {
+		return a.accessor.DynamicEndpointData(name, limit)
+	}, name, limit)
+	return res.([]map[string]interface{}), err
+}
+
 func (a *cachedAccessor) Destroy() {
 	a.accessor.Destroy()
 }

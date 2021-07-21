@@ -629,3 +629,9 @@ type PeersHistoryItem struct {
 	Timestamp time.Time `json:"timestamp" example:"2020-01-01T00:00:00Z"`
 	Count     uint64    `json:"count"`
 } // @Name PeersHistoryItem
+
+type DynamicEndpoint struct {
+	Method     string
+	DataSource string
+	Limit      *int
+}

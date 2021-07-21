@@ -50,6 +50,7 @@ func InitializeApp(
 		postgres.NewPostgresAccessor(
 			conf.PostgresConnStr,
 			conf.ScriptsDir,
+			conf.DynamicEndpointsTable,
 			cachedNetworkSizeLoader,
 			logger,
 		),
@@ -61,6 +62,10 @@ func InitializeApp(
 	service := api.NewService(accessor, memPool, indexerApi, changeLog)
 	contractsService := service2.NewContracts(accessor, contractsMemPool)
 	dynamicConfigHolder := config.NewDynamicConfigHolder(conf.DynamicConfigFile, logger.New("component", "dConfHolder"))
+	var dynamicEndpointLoader service2.DynamicEndpointLoader
+	if len(conf.DynamicEndpointsTable) > 0 {
+		dynamicEndpointLoader = service2.NewDynamicEndpointLoader(accessor)
+	}
 	app := &app{
 		server: api.NewServer(
 			conf.Port,
@@ -81,6 +86,7 @@ func InitializeApp(
 			maxReqCount,
 			timeout,
 			reqsPerMinuteLimit,
+			dynamicEndpointLoader,
 		),
 		db:     accessor,
 		logger: logger,

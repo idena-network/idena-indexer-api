@@ -9,6 +9,7 @@ import (
 	"github.com/idena-network/idena-go/crypto"
 	"github.com/idena-network/idena-indexer-api/app/monitoring"
 	service2 "github.com/idena-network/idena-indexer-api/app/service"
+	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/idena-network/idena-indexer-api/config"
 	"github.com/idena-network/idena-indexer-api/docs"
 	"github.com/idena-network/idena-indexer-api/log"
@@ -17,6 +18,7 @@ import (
 	httpSwagger "github.com/swaggo/http-swagger"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -39,6 +41,7 @@ func NewServer(
 	maxReqCount int,
 	timeout time.Duration,
 	reqsPerMinuteLimit int,
+	dynamicEndpointLoader service2.DynamicEndpointLoader,
 ) Server {
 	var lowerFrozenBalanceAddrs []string
 	for _, frozenBalanceAddr := range frozenBalanceAddrs {
@@ -61,6 +64,7 @@ func NewServer(
 			reqCountsByClientId: cache.New(time.Second*30, time.Minute*5),
 			reqLimit:            reqsPerMinuteLimit / 2,
 		},
+		dynamicEndpointLoader: dynamicEndpointLoader,
 	}
 }
 
@@ -77,6 +81,10 @@ type httpServer struct {
 	counter            int
 	mutex              sync.Mutex
 	getDumpLink        func() string
+
+	dynamicEndpointLoader    service2.DynamicEndpointLoader
+	dynamicEndpointsHash     string
+	dynamicEndpointsByMethod map[string]types.DynamicEndpoint
 }
 
 func (s *httpServer) generateReqId() int {
@@ -109,6 +117,34 @@ func (s *httpServer) Start(swaggerConfig config.SwaggerConfig) {
 	if err != nil {
 		panic(err)
 	}
+}
+
+func (s *httpServer) refreshDynamicEndpoints() {
+	dynamicEndpoints, err := s.dynamicEndpointLoader.Load()
+	if err != nil {
+		s.logger.Error(fmt.Sprintf("Unable to load dynamic endpoints: %v", err.Error()))
+		return
+	}
+	dynamicEndpointsHashArr := make([]string, 0, len(dynamicEndpoints)*3)
+	for _, dynamicEndpoint := range dynamicEndpoints {
+		var limit int
+		if dynamicEndpoint.Limit != nil {
+			limit = *dynamicEndpoint.Limit
+		}
+		dynamicEndpointsHashArr = append(dynamicEndpointsHashArr, dynamicEndpoint.DataSource, dynamicEndpoint.Method, strconv.Itoa(limit))
+	}
+	dynamicEndpointsHash := strings.Join(dynamicEndpointsHashArr, "")
+	if s.dynamicEndpointsHash == dynamicEndpointsHash {
+		return
+	}
+	dynamicEndpointsByMethod := make(map[string]types.DynamicEndpoint, len(dynamicEndpoints))
+	for _, dynamicEndpoint := range dynamicEndpoints {
+		dynamicEndpointsByMethod[strings.ToLower(dynamicEndpoint.Method)] = dynamicEndpoint
+	}
+	s.dynamicEndpointsHash = dynamicEndpointsHash
+	s.dynamicEndpointsByMethod = dynamicEndpointsByMethod
+	s.logger.Info("Dynamic endpoints updated")
+	return
 }
 
 func (s *httpServer) requestFilter(next http.Handler) http.Handler {
@@ -420,6 +456,37 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Pool/{address}")).HandlerFunc(s.pool)
 	router.Path(strings.ToLower("/Pool/{address}/Delegators/Count")).HandlerFunc(s.poolDelegatorsCount)
 	router.Path(strings.ToLower("/Pool/{address}/Delegators")).HandlerFunc(s.poolDelegators)
+
+	if s.dynamicEndpointLoader != nil {
+		router.PathPrefix(strings.ToLower("/Data/")).HandlerFunc(s.data)
+		s.refreshDynamicEndpoints()
+		go s.loopDynamicEndpointsRefreshing()
+	}
+}
+
+func (s *httpServer) loopDynamicEndpointsRefreshing() {
+	for {
+		time.Sleep(time.Minute)
+		s.refreshDynamicEndpoints()
+	}
+}
+
+func (s *httpServer) data(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("data", r.RequestURI)
+	defer s.pm.Complete(id)
+	arr := strings.Split(strings.ToLower(r.RequestURI), "/api/data/")
+	var method string
+	if len(arr) > 1 {
+		method = arr[1]
+	}
+	dynamicEndpoint, ok := s.dynamicEndpointsByMethod[method]
+	if !ok {
+		w.WriteHeader(http.StatusNotFound)
+		WriteErrorResponse(w, errors.New("unknown method"), s.logger)
+		return
+	}
+	res, err := s.service.DynamicEndpointData(dynamicEndpoint.DataSource, dynamicEndpoint.Limit)
+	WriteResponse(w, res, err, s.logger)
 }
 
 func (s *httpServer) dumpLink(w http.ResponseWriter, r *http.Request) {

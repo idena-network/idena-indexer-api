@@ -27,6 +27,7 @@ type Config struct {
 	Indexer                     IndexerConfig
 	LogFileSize                 int
 	ChangeLogUrl                string
+	DynamicEndpointsTable       string
 }
 
 type IndexerConfig struct {
