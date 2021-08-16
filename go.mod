@@ -1,6 +1,6 @@
 module github.com/idena-network/idena-indexer-api
 
-go 1.13
+go 1.16
 
 replace github.com/cosmos/iavl => github.com/idena-network/iavl v0.12.3-0.20210112075003-70ccb13c86c9
 
@@ -13,6 +13,7 @@ require (
 	github.com/idena-network/idena-go v0.25.2
 	github.com/klauspost/compress v1.11.13 // indirect
 	github.com/lib/pq v1.10.0
+	github.com/lucas-clemente/quic-go v0.19.3 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.2.0

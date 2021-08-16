@@ -76,6 +76,55 @@ var doc = `{
                 }
             }
         },
+        "/Address/{address}/Balance/Changes/Summary": {
+            "get": {
+                "tags": [
+                    "Address"
+                ],
+                "operationId": "Address",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/BalanceUpdatesSummary"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Address/{address}/Contract/{contractAddress}/BalanceUpdates": {
             "get": {
                 "tags": [
@@ -1307,58 +1356,6 @@ var doc = `{
                                     "properties": {
                                         "result": {
                                             "$ref": "#/definitions/Coins"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "429": {
-                        "description": "Request number limit exceeded"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    },
-                    "503": {
-                        "description": "Service unavailable"
-                    }
-                }
-            }
-        },
-        "/Epoch/{epoch}/FlipAnswersSummary": {
-            "get": {
-                "tags": [
-                    "Epochs"
-                ],
-                "operationId": "EpochFlipAnswersSummary",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "epoch",
-                        "name": "epoch",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "result": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/FlipAnswerCount"
-                                            }
                                         }
                                     }
                                 }
@@ -5508,6 +5505,29 @@ var doc = `{
                 },
                 "stake": {
                     "type": "string"
+                }
+            }
+        },
+        "BalanceUpdatesSummary": {
+            "type": "object",
+            "properties": {
+                "balanceIn": {
+                    "type": "number"
+                },
+                "balanceOut": {
+                    "type": "number"
+                },
+                "penaltyIn": {
+                    "type": "number"
+                },
+                "penaltyOut": {
+                    "type": "number"
+                },
+                "stakeIn": {
+                    "type": "number"
+                },
+                "stakeOut": {
+                    "type": "number"
                 }
             }
         },

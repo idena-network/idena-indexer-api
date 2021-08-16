@@ -146,6 +146,7 @@ type Accessor interface {
 	AddressBadAuthors(address string, count uint64, continuationToken *string) ([]types.BadAuthor, *string, error)
 	AddressBalanceUpdatesCount(address string) (uint64, error)
 	AddressBalanceUpdates(address string, count uint64, continuationToken *string) ([]types.BalanceUpdate, *string, error)
+	AddressBalanceUpdatesSummary(address string) (*types.BalanceUpdatesSummary, error)
 	AddressContractTxBalanceUpdates(address string, contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error)
 
 	Transaction(hash string) (*types.TransactionDetail, error)

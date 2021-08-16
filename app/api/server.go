@@ -400,6 +400,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.addressTotalLatestBurntCoins)
 
 	router.Path(strings.ToLower("/Address/{address}/Balance/Changes")).HandlerFunc(s.addressBalanceUpdates)
+	router.Path(strings.ToLower("/Address/{address}/Balance/Changes/Summary")).HandlerFunc(s.addressBalanceUpdatesSummary)
 
 	router.Path(strings.ToLower("/Balances")).
 		Queries("skip", "{skip}", "limit", "{limit}").
@@ -2340,6 +2341,23 @@ func (s *httpServer) addressBalanceUpdates(w http.ResponseWriter, r *http.Reques
 	vars := mux.Vars(r)
 	resp, nextContinuationToken, err := s.service.AddressBalanceUpdates(vars["address"], count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+// @Tags Address
+// @Id Address
+// @Param address path string true "address"
+// @Success 200 {object} api.Response{result=types.BalanceUpdatesSummary}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Address/{address}/Balance/Changes/Summary [get]
+func (s *httpServer) addressBalanceUpdatesSummary(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("addressBalanceUpdatesSummary", r.RequestURI)
+	defer s.pm.Complete(id)
+	vars := mux.Vars(r)
+	resp, err := s.service.AddressBalanceUpdatesSummary(vars["address"])
+	WriteResponse(w, resp, err, s.logger)
 }
 
 // @Tags Transaction

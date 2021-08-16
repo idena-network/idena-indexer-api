@@ -1005,6 +1005,13 @@ func (a *cachedAccessor) AddressBalanceUpdates(address string, count uint64, con
 	return res.([]types.BalanceUpdate), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) AddressBalanceUpdatesSummary(address string) (*types.BalanceUpdatesSummary, error) {
+	res, err := a.getOrLoad("AddressBalanceUpdatesSummary", func() (interface{}, error) {
+		return a.accessor.AddressBalanceUpdatesSummary(address)
+	}, address)
+	return res.(*types.BalanceUpdatesSummary), err
+}
+
 func (a *cachedAccessor) Transaction(hash string) (*types.TransactionDetail, error) {
 	res, err := a.getOrLoad("Transaction", func() (interface{}, error) {
 		return a.accessor.Transaction(hash)

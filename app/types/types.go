@@ -478,6 +478,15 @@ type CommitteeRewardBalanceUpdate struct {
 	BlocksCount        uint32          `json:"blocksCount"`
 }
 
+type BalanceUpdatesSummary struct {
+	BalanceIn  decimal.Decimal `json:"balanceIn"`
+	BalanceOut decimal.Decimal `json:"balanceOut"`
+	StakeIn    decimal.Decimal `json:"stakeIn"`
+	StakeOut   decimal.Decimal `json:"stakeOut"`
+	PenaltyIn  decimal.Decimal `json:"penaltyIn"`
+	PenaltyOut decimal.Decimal `json:"penaltyOut"`
+} // @Name BalanceUpdatesSummary
+
 type StrValueCount struct {
 	Value string `json:"value"`
 	Count uint32 `json:"count"`

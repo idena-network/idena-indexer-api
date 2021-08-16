@@ -20,6 +20,7 @@ const (
 	addressBadAuthorsQuery               = "addressBadAuthors.sql"
 	addressBalanceUpdatesCountQuery      = "addressBalanceUpdatesCount.sql"
 	addressBalanceUpdatesQuery           = "addressBalanceUpdates.sql"
+	addressBalanceUpdatesSummaryQuery    = "addressBalanceUpdatesSummary.sql"
 	addressContractTxBalanceUpdatesQuery = "addressContractTxBalanceUpdates.sql"
 
 	txBalanceUpdateReason              = "Tx"
@@ -310,4 +311,23 @@ func (a *postgresAccessor) AddressContractTxBalanceUpdates(address string, contr
 		return nil, nil, err
 	}
 	return res.([]types.ContractTxBalanceUpdate), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) AddressBalanceUpdatesSummary(address string) (*types.BalanceUpdatesSummary, error) {
+	res := &types.BalanceUpdatesSummary{}
+	err := a.db.QueryRow(a.getQuery(addressBalanceUpdatesSummaryQuery), address).Scan(
+		&res.BalanceIn,
+		&res.BalanceOut,
+		&res.StakeIn,
+		&res.StakeOut,
+		&res.PenaltyIn,
+		&res.PenaltyOut,
+	)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }

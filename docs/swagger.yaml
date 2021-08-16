@@ -100,6 +100,21 @@ definitions:
       stake:
         type: string
     type: object
+  BalanceUpdatesSummary:
+    properties:
+      balanceIn:
+        type: number
+      balanceOut:
+        type: number
+      penaltyIn:
+        type: number
+      penaltyOut:
+        type: number
+      stakeIn:
+        type: number
+      stakeOut:
+        type: number
+    type: object
   Block:
     properties:
       bodySize:
@@ -1234,6 +1249,35 @@ paths:
           description: Service unavailable
       tags:
       - Address
+  /Address/{address}/Balance/Changes/Summary:
+    get:
+      operationId: Address
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/BalanceUpdatesSummary'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Address
   /Address/{address}/Contract/{contractAddress}/BalanceUpdates:
     get:
       operationId: AddressContractTxBalanceUpdates
@@ -1955,37 +1999,6 @@ paths:
             - properties:
                 result:
                   $ref: '#/definitions/Coins'
-              type: object
-        "400":
-          description: Bad request
-        "429":
-          description: Request number limit exceeded
-        "500":
-          description: Internal server error
-        "503":
-          description: Service unavailable
-      tags:
-      - Epochs
-  /Epoch/{epoch}/FlipAnswersSummary:
-    get:
-      operationId: EpochFlipAnswersSummary
-      parameters:
-      - description: epoch
-        in: path
-        name: epoch
-        required: true
-        type: integer
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                result:
-                  items:
-                    $ref: '#/definitions/FlipAnswerCount'
-                  type: array
               type: object
         "400":
           description: Bad request
