@@ -81,7 +81,7 @@ var doc = `{
                 "tags": [
                     "Address"
                 ],
-                "operationId": "Address",
+                "operationId": "AddressBalanceUpdatesSummary",
                 "parameters": [
                     {
                         "type": "string",
@@ -6393,6 +6393,9 @@ var doc = `{
                     "example": "2020-01-01T00:00:00Z"
                 },
                 "quorum": {
+                    "type": "integer"
+                },
+                "secretVotesCount": {
                     "type": "integer"
                 },
                 "stake": {

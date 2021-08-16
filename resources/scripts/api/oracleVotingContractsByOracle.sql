@@ -4,6 +4,7 @@ SELECT sovcc.sort_key,
        coalesce(b.balance, 0)                                     balance,
        ovc.fact,
        ovcs.vote_proofs,
+       ovcs.secret_votes_count,
        ovcs.votes,
        (case
             when sovcc.state = 1 then 'Open'
@@ -39,7 +40,7 @@ FROM (SELECT *
       WHERE address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))
         AND ($1::text is null OR author_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1)))
         AND (
-              $3::boolean AND state = 0 -- pending
+                  $3::boolean AND state = 0 -- pending
               OR $4::boolean AND state = 1 -- open
               OR $5::boolean AND state = 5 -- voted
               OR $6::boolean AND state = 3 -- counting

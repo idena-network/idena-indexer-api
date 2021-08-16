@@ -723,6 +723,8 @@ definitions:
         type: string
       quorum:
         type: integer
+      secretVotesCount:
+        type: integer
       stake:
         type: string
       startTime:
@@ -1251,7 +1253,7 @@ paths:
       - Address
   /Address/{address}/Balance/Changes/Summary:
     get:
-      operationId: Address
+      operationId: AddressBalanceUpdatesSummary
       parameters:
       - description: address
         in: path

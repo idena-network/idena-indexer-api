@@ -159,6 +159,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 			&item.Balance,
 			&item.Fact,
 			&item.VoteProofsCount,
+			&item.SecretVotesCount,
 			&item.VotesCount,
 			&item.State,
 			&option,

@@ -518,6 +518,7 @@ type OracleVotingContract struct {
 	Stake                           decimal.Decimal                   `json:"stake" swaggertype:"string"`
 	Fact                            hexutil.Bytes                     `json:"fact"`
 	VoteProofsCount                 uint64                            `json:"voteProofsCount"`
+	SecretVotesCount                uint64                            `json:"secretVotesCount"`
 	VotesCount                      uint64                            `json:"votesCount"`
 	Votes                           []OracleVotingContractOptionVotes `json:"votes,omitempty"`
 	State                           string                            `json:"state" enums:"Pending,Open,Voted,Counting,Archive,Terminated"`

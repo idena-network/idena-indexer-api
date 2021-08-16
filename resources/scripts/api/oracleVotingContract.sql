@@ -4,6 +4,7 @@ SELECT sovc.state_tx_id,
        coalesce(b.balance, 0)                                     balance,
        ovc.fact,
        ovcs.vote_proofs,
+       ovcs.secret_votes_count,
        ovcs.votes,
        (case
             when sovc.state = 1 and not coalesce(sovcc.voted, false) then 'Open'

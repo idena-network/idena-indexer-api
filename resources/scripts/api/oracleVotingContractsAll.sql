@@ -4,6 +4,7 @@ SELECT sovc.sort_key,
        coalesce(b.balance, 0)                                     balance,
        ovc.fact,
        ovcs.vote_proofs,
+       ovcs.secret_votes_count,
        ovcs.votes,
        (case
             when sovc.state = 1 then 'Open'

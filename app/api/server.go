@@ -2344,7 +2344,7 @@ func (s *httpServer) addressBalanceUpdates(w http.ResponseWriter, r *http.Reques
 }
 
 // @Tags Address
-// @Id Address
+// @Id AddressBalanceUpdatesSummary
 // @Param address path string true "address"
 // @Success 200 {object} api.Response{result=types.BalanceUpdatesSummary}
 // @Failure 400 "Bad request"
