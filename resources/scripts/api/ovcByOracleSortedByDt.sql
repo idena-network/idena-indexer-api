@@ -4,7 +4,7 @@ SELECT sovcc.state_tx_id,
        coalesce(b.balance, 0)                                     balance,
        ovc.fact,
        ovcs.vote_proofs,
-       ovcs.secret_votes_count,
+       coalesce(ovcs.secret_votes_count, 0)                       secret_votes_count,
        ovcs.votes,
        (case
             when sovcc.state = 1 then 'Open'
@@ -34,7 +34,8 @@ SELECT sovcc.state_tx_id,
        ovcs.finish_timestamp,
        ovcs.termination_timestamp,
        ovcs.total_reward,
-       ovcs.stake
+       ovcs.stake,
+       coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth
 FROM (SELECT *
       FROM sorted_oracle_voting_contract_committees
       WHERE address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))

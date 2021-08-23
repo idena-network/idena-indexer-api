@@ -184,6 +184,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 			&terminationTime,
 			&totalReward,
 			&item.Stake,
+			&item.EpochWithoutGrowth,
 		); err != nil {
 			return nil, nil, err
 		}

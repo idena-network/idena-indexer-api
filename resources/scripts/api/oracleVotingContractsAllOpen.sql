@@ -4,7 +4,7 @@ SELECT sovc.sort_key,
        coalesce(b.balance, 0)                                     balance,
        ovc.fact,
        ovcs.vote_proofs,
-       ovcs.secret_votes_count,
+       coalesce(ovcs.secret_votes_count, 0)                       secret_votes_count,
        ovcs.votes,
        (case
             when sovc.state = 1 and not sovc.voted then 'Open'
@@ -34,7 +34,8 @@ SELECT sovc.sort_key,
        ovcs.finish_timestamp,
        ovcs.termination_timestamp,
        ovcs.total_reward,
-       ovcs.stake
+       ovcs.stake,
+       coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth
 FROM (SELECT sovc.*, coalesce(sovcc.voted, false) voted, sovcc.address_id oracle_address_id
       FROM sorted_oracle_voting_contracts sovc
                LEFT JOIN sorted_oracle_voting_contract_committees sovcc
@@ -42,7 +43,7 @@ FROM (SELECT sovc.*, coalesce(sovcc.voted, false) voted, sovcc.address_id oracle
                             sovcc.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))
       WHERE ($1::text is null OR sovc.author_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1)))
         AND (
-              $3::boolean AND sovc.state = 0 -- pending
+                  $3::boolean AND sovc.state = 0 -- pending
               OR $4::boolean AND sovc.state = 1 AND NOT coalesce(sovcc.voted, false) -- open
               OR $5::boolean AND sovc.state = 1 AND coalesce(sovcc.voted, false) -- voted
               OR $6::boolean AND sovc.state = 3 -- counting

@@ -4,7 +4,7 @@ SELECT sovc.state_tx_id,
        coalesce(b.balance, 0)                                     balance,
        ovc.fact,
        ovcs.vote_proofs,
-       ovcs.secret_votes_count,
+       coalesce(ovcs.secret_votes_count, 0)                       secret_votes_count,
        ovcs.votes,
        (case
             when sovc.state = 1 and not coalesce(sovcc.voted, false) then 'Open'
@@ -34,7 +34,8 @@ SELECT sovc.state_tx_id,
        ovcs.finish_timestamp,
        ovcs.termination_timestamp,
        ovcs.total_reward,
-       ovcs.stake
+       ovcs.stake,
+       coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth
 FROM contracts c
          JOIN oracle_voting_contracts ovc ON ovc.contract_tx_id = c.tx_id
          LEFT JOIN balances b on b.address_id = c.contract_address_id

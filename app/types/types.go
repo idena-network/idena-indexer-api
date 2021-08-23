@@ -544,6 +544,7 @@ type OracleVotingContract struct {
 	IsOracle                        bool                              `json:"isOracle"`
 	CommitteeEpoch                  *uint64                           `json:"committeeEpoch,omitempty"`
 	TotalReward                     *decimal.Decimal                  `json:"totalReward,omitempty" swaggertype:"string"`
+	EpochWithoutGrowth              byte                              `json:"epochWithoutGrowth"`
 } // @Name OracleVotingContract
 
 type OracleVotingContractOptionVotes struct {
