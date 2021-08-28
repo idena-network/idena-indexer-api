@@ -646,3 +646,8 @@ type DynamicEndpoint struct {
 	DataSource string
 	Limit      *int
 }
+
+type DynamicEndpointResult struct {
+	Data []map[string]interface{} `json:"data"`
+	Date *time.Time               `json:"date,omitempty"`
+}

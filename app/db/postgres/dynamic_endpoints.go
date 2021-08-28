@@ -36,25 +36,35 @@ func (a *postgresAccessor) DynamicEndpoints() ([]types.DynamicEndpoint, error) {
 	return res, nil
 }
 
-func (a *postgresAccessor) DynamicEndpointData(name string, limit *int) ([]map[string]interface{}, error) {
+func (a *postgresAccessor) DynamicEndpointData(name string, limit *int) (*types.DynamicEndpointResult, error) {
 	var rows *sql.Rows
 	var err error
 	if limit != nil {
-		rows, err = a.db.Query(fmt.Sprintf("SELECT * FROM %v LIMIT %d", name, *limit))
+		rows, err = a.db.Query(fmt.Sprintf("SELECT t.*, t2.last_refresh_time FROM %v AS t LEFT JOIN (SELECT last_refresh_time FROM %v WHERE name = '%v') t2 ON true LIMIT %d", name, a.dynamicEndpointStatesTable, name, *limit))
 	} else {
-		rows, err = a.db.Query(fmt.Sprintf("SELECT * FROM %v", name))
+		rows, err = a.db.Query(fmt.Sprintf("SELECT t.*, t2.last_refresh_time FROM %v AS t LEFT JOIN (SELECT last_refresh_time FROM %v WHERE name = '%v') t2 ON true", name, a.dynamicEndpointStatesTable, name))
 	}
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var res []map[string]interface{}
+	res := &types.DynamicEndpointResult{}
+	isFirst := true
 	for rows.Next() {
 		item := make(map[string]interface{})
 		if err := scanMap(rows, item); err != nil {
 			return nil, err
 		}
-		res = append(res, item)
+		if isFirst {
+			if refreshTime, ok := item["last_refresh_time"].(int64); ok {
+				v := timestampToTimeUTC(refreshTime)
+				res.Date = &v
+
+			}
+			isFirst = false
+		}
+		delete(item, "last_refresh_time")
+		res.Data = append(res.Data, item)
 	}
 	return res, nil
 }

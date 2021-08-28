@@ -51,6 +51,7 @@ func InitializeApp(
 			conf.PostgresConnStr,
 			conf.ScriptsDir,
 			conf.DynamicEndpointsTable,
+			conf.DynamicEndpointStatesTable,
 			cachedNetworkSizeLoader,
 			logger,
 		),

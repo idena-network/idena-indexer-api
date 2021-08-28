@@ -182,7 +182,7 @@ type Accessor interface {
 	PeersHistory() ([]types.PeersHistoryItem, error)
 
 	DynamicEndpoints() ([]types.DynamicEndpoint, error)
-	DynamicEndpointData(dataSource string, limit *int) ([]map[string]interface{}, error)
+	DynamicEndpointData(dataSource string, limit *int) (*types.DynamicEndpointResult, error)
 
 	Destroy()
 }

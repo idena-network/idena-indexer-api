@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func NewPostgresAccessor(connStr string, scriptsDirPath string, dynamicEndpointsTable string, networkSizeLoader service.NetworkSizeLoader, logger log.Logger) db.Accessor {
+func NewPostgresAccessor(connStr, scriptsDirPath, dynamicEndpointsTable, dynamicEndpointStatesTable string, networkSizeLoader service.NetworkSizeLoader, logger log.Logger) db.Accessor {
 	dbAccessor, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
@@ -23,11 +23,12 @@ func NewPostgresAccessor(connStr string, scriptsDirPath string, dynamicEndpoints
 	dbAccessor.SetConnMaxLifetime(5 * time.Minute)
 
 	res := &postgresAccessor{
-		db:                    dbAccessor,
-		queries:               readQueries(scriptsDirPath, logger),
-		networkSizeLoader:     networkSizeLoader,
-		dynamicEndpointsTable: dynamicEndpointsTable,
-		log:                   logger,
+		db:                         dbAccessor,
+		queries:                    readQueries(scriptsDirPath, logger),
+		networkSizeLoader:          networkSizeLoader,
+		dynamicEndpointsTable:      dynamicEndpointsTable,
+		dynamicEndpointStatesTable: dynamicEndpointStatesTable,
+		log:                        logger,
 	}
 	res.estimatedOracleRewardsCache = newEstimatedOracleRewardsCache(networkSizeLoader.Load)
 	return res

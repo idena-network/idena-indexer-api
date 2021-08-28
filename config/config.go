@@ -28,6 +28,7 @@ type Config struct {
 	LogFileSize                 int
 	ChangeLogUrl                string
 	DynamicEndpointsTable       string
+	DynamicEndpointStatesTable  string
 }
 
 type IndexerConfig struct {

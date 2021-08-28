@@ -1202,11 +1202,11 @@ func (a *cachedAccessor) DynamicEndpoints() ([]types.DynamicEndpoint, error) {
 	return a.accessor.DynamicEndpoints()
 }
 
-func (a *cachedAccessor) DynamicEndpointData(name string, limit *int) ([]map[string]interface{}, error) {
+func (a *cachedAccessor) DynamicEndpointData(name string, limit *int) (*types.DynamicEndpointResult, error) {
 	res, err := a.getOrLoad("DynamicEndpointData", func() (interface{}, error) {
 		return a.accessor.DynamicEndpointData(name, limit)
 	}, name, limit)
-	return res.([]map[string]interface{}), err
+	return res.(*types.DynamicEndpointResult), err
 }
 
 func (a *cachedAccessor) Destroy() {

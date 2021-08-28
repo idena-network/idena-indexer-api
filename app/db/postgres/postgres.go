@@ -20,6 +20,7 @@ type postgresAccessor struct {
 	estimatedOracleRewardsCache *estimatedOracleRewardsService
 	queries                     map[string]string
 	dynamicEndpointsTable       string
+	dynamicEndpointStatesTable  string
 	log                         log.Logger
 }
 
