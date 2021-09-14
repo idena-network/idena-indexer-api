@@ -566,6 +566,13 @@ func (a *cachedAccessor) EpochRewardBounds(epoch uint64) ([]types.RewardBounds, 
 	return res.([]types.RewardBounds), err
 }
 
+func (a *cachedAccessor) EpochDelegateeTotalRewards(epoch uint64, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("EpochDelegateeTotalRewards", func() (interface{}, *string, error) {
+		return a.accessor.EpochDelegateeTotalRewards(epoch, count, continuationToken)
+	}, epoch, count, continuationToken)
+	return res.([]types.DelegateeTotalRewards), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) EpochIdentity(epoch uint64, address string) (types.EpochIdentity, error) {
 	res, err := a.getOrLoad(epochIdentityMethod, func() (interface{}, error) {
 		return a.accessor.EpochIdentity(epoch, address)
@@ -662,6 +669,13 @@ func (a *cachedAccessor) EpochIdentityAvailableInvites(epoch uint64, address str
 		return a.accessor.EpochIdentityAvailableInvites(epoch, address)
 	}, epoch, address)
 	return res.([]types.EpochInvites), err
+}
+
+func (a *cachedAccessor) EpochDelegateeRewards(epoch uint64, address string, count uint64, continuationToken *string) ([]types.DelegateeReward, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("EpochDelegateeRewards", func() (interface{}, *string, error) {
+		return a.accessor.EpochDelegateeRewards(epoch, address, count, continuationToken)
+	}, epoch, address, count, continuationToken)
+	return res.([]types.DelegateeReward), nextContinuationToken, err
 }
 
 func (a *cachedAccessor) BlockByHeight(height uint64) (types.BlockDetail, error) {

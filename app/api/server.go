@@ -288,6 +288,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.epochIdentitiesRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FundPayments")).HandlerFunc(s.epochFundPayments)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/RewardBounds")).HandlerFunc(s.epochRewardBounds)
+	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/DelegateeTotalRewards")).HandlerFunc(s.epochDelegateeTotalRewards)
 
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}")).HandlerFunc(s.epochIdentity)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/FlipsToSolve/Short")).
@@ -315,6 +316,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.epochIdentitySavedInviteRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/AvailableInvites")).
 		HandlerFunc(s.epochIdentityAvailableInvites)
+
+	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeRewards")).HandlerFunc(s.epochDelegateeRewards)
 
 	router.Path(strings.ToLower("/Block/{id}")).HandlerFunc(s.block)
 	router.Path(strings.ToLower("/Block/{id}/Txs/Count")).HandlerFunc(s.blockTxsCount)
@@ -1360,6 +1363,36 @@ func (s *httpServer) epochRewardBounds(w http.ResponseWriter, r *http.Request) {
 	WriteResponse(w, resp, err, s.logger)
 }
 
+// @Tags Epochs
+// @Id EpochDelegateeTotalRewards
+// @Param epoch path integer true "epoch"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.DelegateeTotalRewards}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Epoch/{epoch}/DelegateeTotalRewards [get]
+func (s *httpServer) epochDelegateeTotalRewards(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("epochDelegateeTotalRewards", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	vars := mux.Vars(r)
+	epoch, err := ReadUint(vars, "epoch")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.EpochDelegateeTotalRewards(epoch, count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
 // @Tags Identity
 // @Id EpochIdentity
 // @Param epoch path integer true "epoch"
@@ -1694,6 +1727,37 @@ func (s *httpServer) epochIdentityAvailableInvites(w http.ResponseWriter, r *htt
 	}
 	resp, err := s.service.EpochIdentityAvailableInvites(epoch, vars["address"])
 	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Identity
+// @Id EpochAddressDelegateeRewards
+// @Param epoch path integer true "epoch"
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.Response{result=[]types.DelegateeReward}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Epoch/{epoch}/Address/{address}/DelegateeRewards [get]
+func (s *httpServer) epochDelegateeRewards(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("epochDelegateeRewards", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	vars := mux.Vars(r)
+	epoch, err := ReadUint(vars, "epoch")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.EpochDelegateeRewards(epoch, vars["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 // @Tags Block

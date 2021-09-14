@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -692,4 +693,83 @@ func parseIntContinuationToken(continuationToken *string) (*int64, error) {
 		result = &num
 	}
 	return result, err
+}
+
+func parseUintAndAmountToken(continuationToken *string) (id *uint64, amount *decimal.Decimal, err error) {
+	if continuationToken == nil {
+		return
+	}
+	strs := strings.Split(*continuationToken, "-")
+	if len(strs) != 2 {
+		err = errors.New("invalid continuation token")
+		return
+	}
+	sId := strs[0]
+	if id, err = parseUintContinuationToken(&sId); err != nil {
+		return
+	}
+	var d decimal.Decimal
+	d, err = decimal.NewFromString(strs[1])
+	if err != nil {
+		return
+	}
+	amount = &d
+	return
+}
+
+type validationRewards struct {
+	validation, flips, inv, inv2, inv3, savedInv, savedInvWin, reports decimal.Decimal
+}
+
+func toDelegationReward(vr validationRewards) []types.DelegationReward {
+	var res []types.DelegationReward
+	if !vr.validation.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.validation,
+			Type:    "Validation",
+		})
+	}
+	if !vr.flips.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.flips,
+			Type:    "Flips",
+		})
+	}
+	if !vr.inv.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.inv,
+			Type:    "Invitations",
+		})
+	}
+	if !vr.inv2.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.inv2,
+			Type:    "Invitations2",
+		})
+	}
+	if !vr.inv3.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.inv3,
+			Type:    "Invitations3",
+		})
+	}
+	if !vr.savedInv.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.savedInv,
+			Type:    "SavedInvite",
+		})
+	}
+	if !vr.savedInvWin.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.savedInvWin,
+			Type:    "SavedInviteWin",
+		})
+	}
+	if !vr.reports.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.reports,
+			Type:    "Reports",
+		})
+	}
+	return res
 }

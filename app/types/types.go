@@ -651,3 +651,19 @@ type DynamicEndpointResult struct {
 	Data []map[string]interface{} `json:"data"`
 	Date *time.Time               `json:"date,omitempty"`
 }
+
+type DelegateeTotalRewards struct {
+	Address    string             `json:"address"`
+	Rewards    []DelegationReward `json:"rewards"`
+	Delegators uint32             `json:"delegators"`
+} // @Name DelegateeTotalRewards
+
+type DelegateeReward struct {
+	DelegatorAddress string             `json:"delegatorAddress"`
+	Rewards          []DelegationReward `json:"rewards"`
+} // @Name DelegateeReward
+
+type DelegationReward struct {
+	Balance decimal.Decimal `json:"balance" swaggertype:"string"`
+	Type    string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Reports"`
+} // @Name DelegationReward

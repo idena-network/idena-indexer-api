@@ -45,6 +45,7 @@ const (
 	epochIdentitiesRewardsOldQuery         = "epochIdentitiesRewardsOld.sql"
 	epochFundPaymentsQuery                 = "epochFundPayments.sql"
 	epochRewardBoundsQuery                 = "epochRewardBounds.sql"
+	epochDelegateeTotalRewardsQuery        = "epochDelegateeTotalRewards.sql"
 )
 
 var identityStatesByName = map[string]uint8{
@@ -538,4 +539,47 @@ func (a *postgresAccessor) EpochRewardBounds(epoch uint64) ([]types.RewardBounds
 		res = append(res, item)
 	}
 	return res, nil
+}
+
+func (a *postgresAccessor) EpochDelegateeTotalRewards(epoch uint64, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error) {
+	addressId, reward, err := parseUintAndAmountToken(continuationToken)
+	if err != nil {
+		return nil, nil, err
+	}
+	rows, err := a.db.Query(a.getQuery(epochDelegateeTotalRewardsQuery), epoch, count+1, reward, addressId)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	var res []types.DelegateeTotalRewards
+	for rows.Next() {
+		item := types.DelegateeTotalRewards{}
+		var rewards validationRewards
+		err = rows.Scan(
+			&addressId,
+			&item.Address,
+			&reward,
+			&rewards.validation,
+			&rewards.flips,
+			&rewards.inv,
+			&rewards.inv2,
+			&rewards.inv3,
+			&rewards.savedInv,
+			&rewards.savedInvWin,
+			&rewards.reports,
+			&item.Delegators,
+		)
+		item.Rewards = toDelegationReward(rewards)
+		if err != nil {
+			return nil, nil, err
+		}
+		res = append(res, item)
+	}
+	var nextContinuationToken *string
+	if len(res) > 0 && len(res) == int(count)+1 {
+		t := strconv.FormatUint(*addressId, 10) + "-" + reward.String()
+		nextContinuationToken = &t
+		res = res[:len(res)-1]
+	}
+	return res, nextContinuationToken, nil
 }

@@ -69,6 +69,7 @@ type Accessor interface {
 	EpochIdentitiesRewardsOld(epoch uint64, startIndex uint64, count uint64) ([]types.Rewards, error)
 	EpochFundPayments(epoch uint64) ([]types.FundPayment, error)
 	EpochRewardBounds(epoch uint64) ([]types.RewardBounds, error)
+	EpochDelegateeTotalRewards(epoch uint64, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error)
 
 	EpochIdentity(epoch uint64, address string) (types.EpochIdentity, error)
 	EpochIdentityShortFlipsToSolve(epoch uint64, address string) ([]string, error)
@@ -84,6 +85,7 @@ type Accessor interface {
 	EpochIdentityInvitesWithRewardFlag(epoch uint64, address string) ([]types.InviteWithRewardFlag, error)
 	EpochIdentitySavedInviteRewards(epoch uint64, address string) ([]types.StrValueCount, error)
 	EpochIdentityAvailableInvites(epoch uint64, address string) ([]types.EpochInvites, error)
+	EpochDelegateeRewards(epoch uint64, address string, count uint64, continuationToken *string) ([]types.DelegateeReward, *string, error)
 
 	BlockByHeight(height uint64) (types.BlockDetail, error)
 	BlockTxsCountByHeight(height uint64) (uint64, error)
