@@ -33,11 +33,11 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 		return types.Contract{}, err
 	}
 	res.Address = address
-	res.DeployTx.Timestamp = timestampToTimeUTC(deployTxTimestamp)
+	res.DeployTx.Timestamp = timestampToTimeUTCp(deployTxTimestamp)
 	if terminationTxHash.Valid {
 		res.TerminationTx = &types.TransactionSummary{
 			Hash:      terminationTxHash.String,
-			Timestamp: timestampToTimeUTC(terminationTxTime.Int64),
+			Timestamp: timestampToTimeUTCp(terminationTxTime.Int64),
 		}
 	}
 	return res, nil

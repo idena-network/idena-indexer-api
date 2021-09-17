@@ -23,6 +23,14 @@ func timestampToTimeUTC(timestamp int64) time.Time {
 	return common.TimestampToTime(big.NewInt(timestamp)).UTC()
 }
 
+func timestampToTimeUTCp(timestamp int64) *time.Time {
+	if timestamp == 0 {
+		return nil
+	}
+	res := common.TimestampToTime(big.NewInt(timestamp)).UTC()
+	return &res
+}
+
 type NullDecimal struct {
 	Decimal decimal.Decimal
 	Valid   bool
@@ -151,7 +159,7 @@ func readTxs(rows *sql.Rows) ([]types.TransactionSummary, uint64, error) {
 		); err != nil {
 			return nil, 0, err
 		}
-		item.Timestamp = timestampToTimeUTC(timestamp)
+		item.Timestamp = timestampToTimeUTCp(timestamp)
 		if transfer.Valid {
 			item.Transfer = &transfer.Decimal
 		}
@@ -201,7 +209,7 @@ func readTxsOld(rows *sql.Rows) ([]types.TransactionSummary, error) {
 		); err != nil {
 			return nil, err
 		}
-		item.Timestamp = timestampToTimeUTC(timestamp)
+		item.Timestamp = timestampToTimeUTCp(timestamp)
 		if transfer.Valid {
 			item.Transfer = &transfer.Decimal
 		}

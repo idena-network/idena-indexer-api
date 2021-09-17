@@ -228,7 +228,7 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 	if err != nil {
 		return nil, err
 	}
-	res.Timestamp = timestampToTimeUTC(timestamp)
+	res.Timestamp = timestampToTimeUTCp(timestamp)
 	if transfer.Valid {
 		res.Transfer = &transfer.Decimal
 	}
