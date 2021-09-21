@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"github.com/idena-network/idena-indexer-api/app/types"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -18,6 +19,7 @@ const (
 	epochIdentityRewardedInvitesQuery     = "epochIdentityRewardedInvites.sql"
 	epochIdentitySavedInviteRewardsQuery  = "epochIdentitySavedInviteRewards.sql"
 	epochIdentityAvailableInvitesQuery    = "epochIdentityAvailableInvites.sql"
+	epochIdentityValidationSummaryQuery   = "epochIdentityValidationSummary.sql"
 )
 
 func (a *postgresAccessor) EpochIdentity(epoch uint64, address string) (types.EpochIdentity, error) {
@@ -231,6 +233,7 @@ func (a *postgresAccessor) EpochIdentityInvitesWithRewardFlag(epoch uint64, addr
 			&killInviteeTimestamp,
 			&item.KillInviteeEpoch,
 			&item.RewardType,
+			&item.EpochHeight,
 		); err != nil {
 			return nil, err
 		}
@@ -267,4 +270,81 @@ func (a *postgresAccessor) EpochIdentityAvailableInvites(epoch uint64, address s
 		res = append(res, item)
 	}
 	return res, nil
+}
+
+func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address string) (types.ValidationSummary, error) {
+	res := types.ValidationSummary{}
+	var validationReason, flipsReason, reportsReason, invitationsReason byte
+	var delegateeAddress string
+	var delegateeReward decimal.Decimal
+	err := a.db.QueryRow(a.getQuery(epochIdentityValidationSummaryQuery), epoch, address).Scan(
+		&res.ShortAnswers.Point,
+		&res.ShortAnswers.FlipsCount,
+		&res.TotalShortAnswers.Point,
+		&res.TotalShortAnswers.FlipsCount,
+		&res.LongAnswers.Point,
+		&res.LongAnswers.FlipsCount,
+		&res.ShortAnswersCount,
+		&res.LongAnswersCount,
+		&res.PrevState,
+		&res.State,
+		&res.Penalized,
+		&res.PenaltyReason,
+		&res.Approved,
+		&res.Missed,
+		&res.MadeFlips,
+		&res.AvailableFlips,
+		&res.Rewards.Validation.Earned,
+		&res.Rewards.Validation.Missed,
+		&validationReason,
+		&res.Rewards.Flips.Earned,
+		&res.Rewards.Flips.Missed,
+		&flipsReason,
+		&res.Rewards.Invitations.Earned,
+		&res.Rewards.Invitations.Missed,
+		&invitationsReason,
+		&res.Rewards.Reports.Earned,
+		&res.Rewards.Reports.Missed,
+		&reportsReason,
+		&delegateeAddress,
+		&delegateeReward,
+	)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return types.ValidationSummary{}, err
+	}
+	res.Rewards.Validation.MissedReason = convertMissedRewardReason(validationReason)
+	res.Rewards.Flips.MissedReason = convertMissedRewardReason(flipsReason)
+	res.Rewards.Invitations.MissedReason = convertMissedRewardReason(invitationsReason)
+	res.Rewards.Reports.MissedReason = convertMissedRewardReason(reportsReason)
+	if len(delegateeAddress) > 0 {
+		res.DelegateeReward = &types.ValidationDelegateeReward{
+			Address: delegateeAddress,
+			Amount:  delegateeReward,
+		}
+	}
+	return res, nil
+}
+
+func convertMissedRewardReason(code byte) string {
+	switch code {
+	case 0:
+		return ""
+	case 1:
+		return "penalty"
+	case 2:
+		return "not_validated"
+	case 3:
+		return "missed"
+	case 4:
+		return "not_all_flips"
+	case 5:
+		return "not_all_reports"
+	case 6:
+		return "not_all_invites"
+	default:
+		return "unknown_reason"
+	}
 }

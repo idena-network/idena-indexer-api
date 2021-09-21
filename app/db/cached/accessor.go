@@ -671,6 +671,13 @@ func (a *cachedAccessor) EpochIdentityAvailableInvites(epoch uint64, address str
 	return res.([]types.EpochInvites), err
 }
 
+func (a *cachedAccessor) EpochIdentityValidationSummary(epoch uint64, address string) (types.ValidationSummary, error) {
+	res, err := a.getOrLoad("EpochIdentityValidationSummary", func() (interface{}, error) {
+		return a.accessor.EpochIdentityValidationSummary(epoch, address)
+	}, epoch, address)
+	return res.(types.ValidationSummary), err
+}
+
 func (a *cachedAccessor) EpochDelegateeRewards(epoch uint64, address string, count uint64, continuationToken *string) ([]types.DelegateeReward, *string, error) {
 	res, nextContinuationToken, err := a.getOrLoadWithConToken("EpochDelegateeRewards", func() (interface{}, *string, error) {
 		return a.accessor.EpochDelegateeRewards(epoch, address, count, continuationToken)

@@ -316,6 +316,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.epochIdentitySavedInviteRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/AvailableInvites")).
 		HandlerFunc(s.epochIdentityAvailableInvites)
+	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/ValidationSummary")).
+		HandlerFunc(s.epochIdentityValidationSummary)
 
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeRewards")).HandlerFunc(s.epochDelegateeRewards)
 
@@ -1726,6 +1728,30 @@ func (s *httpServer) epochIdentityAvailableInvites(w http.ResponseWriter, r *htt
 		return
 	}
 	resp, err := s.service.EpochIdentityAvailableInvites(epoch, vars["address"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Identity
+// @Id EpochIdentityValidationSummary
+// @Param epoch path integer true "epoch"
+// @Param address path string true "address"
+// @Success 200 {object} api.Response{result=types.ValidationSummary}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Epoch/{epoch}/Identity/{address}/ValidationSummary [get]
+func (s *httpServer) epochIdentityValidationSummary(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("epochIdentityValidationSummary", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	vars := mux.Vars(r)
+	epoch, err := ReadUint(vars, "epoch")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, err := s.service.EpochIdentityValidationSummary(epoch, vars["address"])
 	WriteResponse(w, resp, err, s.logger)
 }
 

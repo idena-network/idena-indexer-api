@@ -982,6 +982,8 @@ definitions:
         type: string
       epoch:
         type: integer
+      epochHeight:
+        type: integer
       hash:
         type: string
       killInviteeEpoch:
@@ -1054,6 +1056,8 @@ definitions:
   RewardsSummary:
     properties:
       epoch:
+        type: integer
+      epochDuration:
         type: integer
       flips:
         type: string
@@ -1216,6 +1220,99 @@ definitions:
         type: string
       success:
         type: boolean
+    type: object
+  ValidationDelegateeReward:
+    properties:
+      address:
+        type: string
+      amount:
+        type: string
+    type: object
+  ValidationRewardSummaries:
+    properties:
+      flips:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
+      invitations:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
+      reports:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
+      validation:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
+    type: object
+  ValidationRewardSummary:
+    properties:
+      earned:
+        type: string
+      missed:
+        type: string
+      reason:
+        type: string
+    type: object
+  ValidationSummary:
+    properties:
+      approved:
+        type: boolean
+      availableFlips:
+        type: integer
+      delegateeReward:
+        $ref: '#/definitions/ValidationDelegateeReward'
+        type: object
+      longAnswers:
+        $ref: '#/definitions/IdentityAnswersSummary'
+        type: object
+      longAnswersCount:
+        type: integer
+      madeFlips:
+        type: integer
+      missed:
+        type: boolean
+      penalized:
+        type: boolean
+      penaltyReason:
+        enum:
+        - NoQualifiedFlips
+        - QualifiedByNone
+        - WrongWords
+        type: string
+      prevState:
+        enum:
+        - Undefined
+        - Invite
+        - Candidate
+        - Verified
+        - Suspended
+        - Killed
+        - Zombie
+        - Newbie
+        - Human
+        type: string
+      rewards:
+        $ref: '#/definitions/ValidationRewardSummaries'
+        type: object
+      shortAnswers:
+        $ref: '#/definitions/IdentityAnswersSummary'
+        type: object
+      shortAnswersCount:
+        type: integer
+      state:
+        enum:
+        - Undefined
+        - Invite
+        - Candidate
+        - Verified
+        - Suspended
+        - Killed
+        - Zombie
+        - Newbie
+        - Human
+        type: string
+      totalShortAnswers:
+        $ref: '#/definitions/IdentityAnswersSummary'
+        type: object
     type: object
   types.Contract:
     properties:
@@ -2843,6 +2940,40 @@ paths:
                   items:
                     $ref: '#/definitions/SavedInviteRewardCount'
                   type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Identity
+  /Epoch/{epoch}/Identity/{address}/ValidationSummary:
+    get:
+      operationId: EpochIdentityValidationSummary
+      parameters:
+      - description: epoch
+        in: path
+        name: epoch
+        required: true
+        type: integer
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/ValidationSummary'
               type: object
         "400":
           description: Bad request

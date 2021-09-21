@@ -1,15 +1,16 @@
-select t.Hash                      invite_hash,
-       a.address                   invite_author,
-       b.timestamp                 invite_timestamp,
-       b.epoch                     invite_epoch,
-       coalesce(at.Hash, '')       activation_hash,
-       coalesce(aa.address, '')    activation_author,
-       coalesce(ab.timestamp, 0)   activation_timestamp,
-       coalesce(dis.name, '')      state,
-       coalesce(kitt.Hash, '')     kill_invitee_hash,
-       coalesce(kitb.timestamp, 0) kill_invitee_timestamp,
-       coalesce(kitb.epoch, 0)     kill_invitee_epoch,
-       coalesce(dicrt.name, '')    reward_type
+select t.Hash                       invite_hash,
+       a.address                    invite_author,
+       b.timestamp                  invite_timestamp,
+       b.epoch                      invite_epoch,
+       coalesce(at.Hash, '')        activation_hash,
+       coalesce(aa.address, '')     activation_author,
+       coalesce(ab.timestamp, 0)    activation_timestamp,
+       coalesce(dis.name, '')       state,
+       coalesce(kitt.Hash, '')      kill_invitee_hash,
+       coalesce(kitb.timestamp, 0)  kill_invitee_timestamp,
+       coalesce(kitb.epoch, 0)      kill_invitee_epoch,
+       coalesce(dicrt.name, '')     reward_type,
+       coalesce(ri.epoch_height, 0) epoch_height
 from transactions t
          join addresses a on a.id = t.from and lower(a.address) = lower($2)
          join blocks b on b.height = t.block_height and b.epoch >= ($1 - 2) and b.epoch <= $1
@@ -25,7 +26,7 @@ from transactions t
          left join kill_invitee_txs kit on kit.invite_tx_id = t.id
          left join transactions kitt on kitt.id = kit.tx_id
          left join blocks kitb on kitb.height = kitt.block_height
-         left join (select ri.reward_type, ri.invite_tx_id, b.epoch
+         left join (select ri.reward_type, ri.invite_tx_id, b.epoch, ri.epoch_height
                     from rewarded_invitations ri
                              join blocks b on b.height = ri.block_height) ri on ri.invite_tx_id = t.id and ri.epoch = $1
          left join dic_epoch_reward_types dicrt on dicrt.id = ri.reward_type

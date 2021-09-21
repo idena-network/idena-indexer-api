@@ -2695,6 +2695,62 @@ var doc = `{
                 }
             }
         },
+        "/Epoch/{epoch}/Identity/{address}/ValidationSummary": {
+            "get": {
+                "tags": [
+                    "Identity"
+                ],
+                "operationId": "EpochIdentityValidationSummary",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "epoch",
+                        "name": "epoch",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/ValidationSummary"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Epoch/{epoch}/Identity/{address}/ValidationTxs": {
             "get": {
                 "tags": [
@@ -6906,6 +6962,9 @@ var doc = `{
                 "epoch": {
                     "type": "integer"
                 },
+                "epochHeight": {
+                    "type": "integer"
+                },
                 "hash": {
                     "type": "string"
                 },
@@ -7000,6 +7059,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "epoch": {
+                    "type": "integer"
+                },
+                "epochDuration": {
                     "type": "integer"
                 },
                 "flips": {
@@ -7222,6 +7284,134 @@ var doc = `{
                 },
                 "success": {
                     "type": "boolean"
+                }
+            }
+        },
+        "ValidationDelegateeReward": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "string"
+                }
+            }
+        },
+        "ValidationRewardSummaries": {
+            "type": "object",
+            "properties": {
+                "flips": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummary"
+                },
+                "invitations": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummary"
+                },
+                "reports": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummary"
+                },
+                "validation": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummary"
+                }
+            }
+        },
+        "ValidationRewardSummary": {
+            "type": "object",
+            "properties": {
+                "earned": {
+                    "type": "string"
+                },
+                "missed": {
+                    "type": "string"
+                },
+                "reason": {
+                    "type": "string"
+                }
+            }
+        },
+        "ValidationSummary": {
+            "type": "object",
+            "properties": {
+                "approved": {
+                    "type": "boolean"
+                },
+                "availableFlips": {
+                    "type": "integer"
+                },
+                "delegateeReward": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationDelegateeReward"
+                },
+                "longAnswers": {
+                    "type": "object",
+                    "$ref": "#/definitions/IdentityAnswersSummary"
+                },
+                "longAnswersCount": {
+                    "type": "integer"
+                },
+                "madeFlips": {
+                    "type": "integer"
+                },
+                "missed": {
+                    "type": "boolean"
+                },
+                "penalized": {
+                    "type": "boolean"
+                },
+                "penaltyReason": {
+                    "type": "string",
+                    "enum": [
+                        "NoQualifiedFlips",
+                        "QualifiedByNone",
+                        "WrongWords"
+                    ]
+                },
+                "prevState": {
+                    "type": "string",
+                    "enum": [
+                        "Undefined",
+                        "Invite",
+                        "Candidate",
+                        "Verified",
+                        "Suspended",
+                        "Killed",
+                        "Zombie",
+                        "Newbie",
+                        "Human"
+                    ]
+                },
+                "rewards": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummaries"
+                },
+                "shortAnswers": {
+                    "type": "object",
+                    "$ref": "#/definitions/IdentityAnswersSummary"
+                },
+                "shortAnswersCount": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "Undefined",
+                        "Invite",
+                        "Candidate",
+                        "Verified",
+                        "Suspended",
+                        "Killed",
+                        "Zombie",
+                        "Newbie",
+                        "Human"
+                    ]
+                },
+                "totalShortAnswers": {
+                    "type": "object",
+                    "$ref": "#/definitions/IdentityAnswersSummary"
                 }
             }
         },

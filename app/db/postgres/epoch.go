@@ -379,6 +379,7 @@ func (a *postgresAccessor) EpochRewardsSummary(epoch uint64) (types.RewardsSumma
 			&res.ValidationShare,
 			&res.FlipsShare,
 			&res.InvitationsShare,
+			&res.EpochDuration,
 		)
 	if err == sql.ErrNoRows {
 		err = NoDataFound

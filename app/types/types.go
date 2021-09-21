@@ -57,6 +57,7 @@ type RewardsSummary struct {
 	ValidationShare   decimal.Decimal `json:"validationShare" swaggertype:"string"`
 	FlipsShare        decimal.Decimal `json:"flipsShare" swaggertype:"string"`
 	InvitationsShare  decimal.Decimal `json:"invitationsShare" swaggertype:"string"`
+	EpochDuration     uint32          `json:"epochDuration"`
 } // @Name RewardsSummary
 
 type EpochDetail struct {
@@ -444,7 +445,8 @@ type ReportedFlipReward struct {
 
 type InviteWithRewardFlag struct {
 	Invite
-	RewardType string `json:"rewardType,omitempty" enums:",Invitations,Invitations2,Invitations3"`
+	RewardType  string `json:"rewardType,omitempty" enums:",Invitations,Invitations2,Invitations3"`
+	EpochHeight uint32 `json:"epochHeight,omitempty"`
 } // @Name RewardedInvite
 
 type EpochInvites struct {
@@ -667,3 +669,39 @@ type DelegationReward struct {
 	Balance decimal.Decimal `json:"balance" swaggertype:"string"`
 	Type    string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Reports"`
 } // @Name DelegationReward
+
+type ValidationSummary struct {
+	MadeFlips         uint8                      `json:"madeFlips"`
+	AvailableFlips    uint8                      `json:"availableFlips"`
+	ShortAnswers      IdentityAnswersSummary     `json:"shortAnswers"`
+	TotalShortAnswers IdentityAnswersSummary     `json:"totalShortAnswers"`
+	LongAnswers       IdentityAnswersSummary     `json:"longAnswers"`
+	ShortAnswersCount uint32                     `json:"shortAnswersCount"`
+	LongAnswersCount  uint32                     `json:"longAnswersCount"`
+	PrevState         string                     `json:"prevState" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+	State             string                     `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+	Penalized         bool                       `json:"penalized"`
+	PenaltyReason     string                     `json:"penaltyReason,omitempty" enums:"NoQualifiedFlips,QualifiedByNone,WrongWords"`
+	Approved          bool                       `json:"approved"`
+	Missed            bool                       `json:"missed"`
+	Rewards           ValidationRewardSummaries  `json:"rewards"`
+	DelegateeReward   *ValidationDelegateeReward `json:"delegateeReward,omitempty"`
+} // @Name ValidationSummary
+
+type ValidationRewardSummaries struct {
+	Validation  ValidationRewardSummary `json:"validation"`
+	Flips       ValidationRewardSummary `json:"flips"`
+	Invitations ValidationRewardSummary `json:"invitations"`
+	Reports     ValidationRewardSummary `json:"reports"`
+} // @Name ValidationRewardSummaries
+
+type ValidationRewardSummary struct {
+	Earned       decimal.Decimal `json:"earned" swaggertype:"string"`
+	Missed       decimal.Decimal `json:"missed" swaggertype:"string"`
+	MissedReason string          `json:"reason,omitempty"`
+} // @Name ValidationRewardSummary
+
+type ValidationDelegateeReward struct {
+	Address string          `json:"address"`
+	Amount  decimal.Decimal `json:"amount" swaggertype:"string"`
+} // @Name ValidationDelegateeReward
