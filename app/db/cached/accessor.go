@@ -40,6 +40,7 @@ const (
 	flipAddressAdjacentFlipsMethod          = "FlipAddressAdjacentFlips"
 	flipEpochIdentityAdjacentFlipsMethod    = "FlipEpochIdentityAdjacentFlips"
 	upgradeMethod                           = "Upgrade"
+	epochIdentityMethod                     = "EpochIdentity"
 )
 
 type cachedAccessor struct {
@@ -108,6 +109,7 @@ func createMaxItemLifeTimesByMethod() map[string]time.Duration {
 		epochFundPaymentsMethod:                 permanentDataLifeTime,
 		epochRewardBoundsMethod:                 permanentDataLifeTime,
 		upgradeMethod:                           permanentDataLifeTime,
+		epochIdentityMethod:                     permanentDataLifeTime,
 	}
 }
 
@@ -565,7 +567,7 @@ func (a *cachedAccessor) EpochRewardBounds(epoch uint64) ([]types.RewardBounds, 
 }
 
 func (a *cachedAccessor) EpochIdentity(epoch uint64, address string) (types.EpochIdentity, error) {
-	res, err := a.getOrLoad("EpochIdentity", func() (interface{}, error) {
+	res, err := a.getOrLoad(epochIdentityMethod, func() (interface{}, error) {
 		return a.accessor.EpochIdentity(epoch, address)
 	}, epoch, address)
 	return res.(types.EpochIdentity), err
