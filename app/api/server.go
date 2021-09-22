@@ -42,6 +42,7 @@ func NewServer(
 	timeout time.Duration,
 	reqsPerMinuteLimit int,
 	dynamicEndpointLoader service2.DynamicEndpointLoader,
+	cors bool,
 ) Server {
 	var lowerFrozenBalanceAddrs []string
 	for _, frozenBalanceAddr := range frozenBalanceAddrs {
@@ -57,6 +58,7 @@ func NewServer(
 		frozenBalanceAddrs: lowerFrozenBalanceAddrs,
 		getDumpLink:        getDumpLink,
 		pm:                 pm,
+		cors:               cors,
 		limiter: &reqLimiter{
 			queue:               make(chan struct{}, maxReqCount),
 			adjacentDataQueue:   make(chan struct{}, 1),
@@ -81,6 +83,7 @@ type httpServer struct {
 	counter            int
 	mutex              sync.Mutex
 	getDumpLink        func() string
+	cors               bool
 
 	dynamicEndpointLoader    service2.DynamicEndpointLoader
 	dynamicEndpointsHash     string
@@ -108,12 +111,14 @@ func (s *httpServer) Start(swaggerConfig config.SwaggerConfig) {
 			httpSwagger.URL("/api/swagger/doc.json"),
 		))
 	}
-
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
-	err := http.ListenAndServe(fmt.Sprintf(":%d", s.port),
-		handlers.CORS(originsOk, headersOk, methodsOk)(s.requestFilter(apiRouter)))
+	handler := s.requestFilter(apiRouter)
+	if s.cors {
+		headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type"})
+		originsOk := handlers.AllowedOrigins([]string{"*"})
+		methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+		handler = handlers.CORS(originsOk, headersOk, methodsOk)(handler)
+	}
+	err := http.ListenAndServe(fmt.Sprintf(":%d", s.port), handler)
 	if err != nil {
 		panic(err)
 	}

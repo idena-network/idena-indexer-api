@@ -29,6 +29,7 @@ type Config struct {
 	ChangeLogUrl                string
 	DynamicEndpointsTable       string
 	DynamicEndpointStatesTable  string
+	Cors                        bool
 }
 
 type IndexerConfig struct {
@@ -81,5 +82,6 @@ func newDefaultConfig() *Config {
 			Enabled: false,
 		},
 		LogFileSize: 1024 * 100,
+		Cors:        true,
 	}
 }

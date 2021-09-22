@@ -88,6 +88,7 @@ func InitializeApp(
 			timeout,
 			reqsPerMinuteLimit,
 			dynamicEndpointLoader,
+			conf.Cors,
 		),
 		db:     accessor,
 		logger: logger,
