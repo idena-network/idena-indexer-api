@@ -198,6 +198,72 @@ var doc = `{
                 }
             }
         },
+        "/Address/{address}/DelegateeTotalRewards": {
+            "get": {
+                "tags": [
+                    "Address",
+                    "Pool"
+                ],
+                "operationId": "AddressDelegateeTotalRewards",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/DelegateeTotalRewards"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Address/{address}/OracleVotingContracts": {
             "get": {
                 "tags": [
@@ -1151,6 +1217,62 @@ var doc = `{
                                             "items": {
                                                 "$ref": "#/definitions/DelegateeReward"
                                             }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
+        "/Epoch/{epoch}/Address/{address}/DelegateeTotalRewards": {
+            "get": {
+                "tags": [
+                    "Identity"
+                ],
+                "operationId": "EpochAddressDelegateeTotalRewards",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "epoch",
+                        "name": "epoch",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/DelegateeTotalRewards"
                                         }
                                     }
                                 }
@@ -5935,11 +6057,39 @@ var doc = `{
                 "delegatorAddress": {
                     "type": "string"
                 },
+                "prevState": {
+                    "type": "string",
+                    "enum": [
+                        "Undefined",
+                        "Invite",
+                        "Candidate",
+                        "Verified",
+                        "Suspended",
+                        "Killed",
+                        "Zombie",
+                        "Newbie",
+                        "Human"
+                    ]
+                },
                 "rewards": {
                     "type": "array",
                     "items": {
                         "$ref": "#/definitions/DelegationReward"
                     }
+                },
+                "state": {
+                    "type": "string",
+                    "enum": [
+                        "Undefined",
+                        "Invite",
+                        "Candidate",
+                        "Verified",
+                        "Suspended",
+                        "Killed",
+                        "Zombie",
+                        "Newbie",
+                        "Human"
+                    ]
                 }
             }
         },
@@ -5950,6 +6100,9 @@ var doc = `{
                     "type": "string"
                 },
                 "delegators": {
+                    "type": "integer"
+                },
+                "epoch": {
                     "type": "integer"
                 },
                 "rewards": {

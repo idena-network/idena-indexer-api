@@ -87,6 +87,7 @@ type Accessor interface {
 	EpochIdentityAvailableInvites(epoch uint64, address string) ([]types.EpochInvites, error)
 	EpochDelegateeRewards(epoch uint64, address string, count uint64, continuationToken *string) ([]types.DelegateeReward, *string, error)
 	EpochIdentityValidationSummary(epoch uint64, address string) (types.ValidationSummary, error)
+	EpochAddressDelegateeTotalRewards(epoch uint64, address string) (types.DelegateeTotalRewards, error)
 
 	BlockByHeight(height uint64) (types.BlockDetail, error)
 	BlockTxsCountByHeight(height uint64) (uint64, error)
@@ -151,6 +152,7 @@ type Accessor interface {
 	AddressBalanceUpdates(address string, count uint64, continuationToken *string) ([]types.BalanceUpdate, *string, error)
 	AddressBalanceUpdatesSummary(address string) (*types.BalanceUpdatesSummary, error)
 	AddressContractTxBalanceUpdates(address string, contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error)
+	AddressDelegateeTotalRewards(address string, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error)
 
 	Transaction(hash string) (*types.TransactionDetail, error)
 	TransactionRaw(hash string) (*hexutil.Bytes, error)

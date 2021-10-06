@@ -320,6 +320,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.epochIdentityValidationSummary)
 
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeRewards")).HandlerFunc(s.epochDelegateeRewards)
+	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.epochAddressDelegateeTotalRewards)
 
 	router.Path(strings.ToLower("/Block/{id}")).HandlerFunc(s.block)
 	router.Path(strings.ToLower("/Block/{id}/Txs/Count")).HandlerFunc(s.blockTxsCount)
@@ -411,6 +412,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/Address/{address}/Balance/Changes")).HandlerFunc(s.addressBalanceUpdates)
 	router.Path(strings.ToLower("/Address/{address}/Balance/Changes/Summary")).HandlerFunc(s.addressBalanceUpdatesSummary)
+
+	router.Path(strings.ToLower("/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.addressDelegateeTotalRewards)
 
 	router.Path(strings.ToLower("/Balances")).
 		Queries("skip", "{skip}", "limit", "{limit}").
@@ -1786,6 +1789,30 @@ func (s *httpServer) epochDelegateeRewards(w http.ResponseWriter, r *http.Reques
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
+// @Tags Identity
+// @Id EpochAddressDelegateeTotalRewards
+// @Param epoch path integer true "epoch"
+// @Param address path string true "address"
+// @Success 200 {object} api.Response{result=types.DelegateeTotalRewards}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Epoch/{epoch}/Address/{address}/DelegateeTotalRewards [get]
+func (s *httpServer) epochAddressDelegateeTotalRewards(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("epochAddressDelegateeTotalRewards", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	vars := mux.Vars(r)
+	epoch, err := ReadUint(vars, "epoch")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, err := s.service.EpochAddressDelegateeTotalRewards(epoch, vars["address"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
 // @Tags Block
 // @Id Block
 // @Param id path string true "block hash or height"
@@ -2453,6 +2480,31 @@ func (s *httpServer) addressBalanceUpdatesSummary(w http.ResponseWriter, r *http
 	vars := mux.Vars(r)
 	resp, err := s.service.AddressBalanceUpdatesSummary(vars["address"])
 	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Address
+// @Tags Pool
+// @Id AddressDelegateeTotalRewards
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.DelegateeTotalRewards}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Address/{address}/DelegateeTotalRewards [get]
+func (s *httpServer) addressDelegateeTotalRewards(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("addressDelegateeTotalRewards", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	vars := mux.Vars(r)
+	resp, nextContinuationToken, err := s.service.AddressDelegateeTotalRewards(vars["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 // @Tags Transaction

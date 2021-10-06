@@ -22,6 +22,7 @@ const (
 	addressBalanceUpdatesQuery           = "addressBalanceUpdates.sql"
 	addressBalanceUpdatesSummaryQuery    = "addressBalanceUpdatesSummary.sql"
 	addressContractTxBalanceUpdatesQuery = "addressContractTxBalanceUpdates.sql"
+	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
 
 	txBalanceUpdateReason              = "Tx"
 	committeeRewardBalanceUpdateReason = "CommitteeReward"
@@ -330,4 +331,39 @@ func (a *postgresAccessor) AddressBalanceUpdatesSummary(address string) (*types.
 		return nil, err
 	}
 	return res, nil
+}
+
+func (a *postgresAccessor) AddressDelegateeTotalRewards(address string, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error) {
+	res, nextContinuationToken, err := a.page(addressDelegateeTotalRewardsQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.DelegateeTotalRewards
+		var epoch uint64
+		for rows.Next() {
+			item := types.DelegateeTotalRewards{}
+			var rewards validationRewards
+			err := rows.Scan(
+				&epoch,
+				&rewards.validation,
+				&rewards.flips,
+				&rewards.inv,
+				&rewards.inv2,
+				&rewards.inv3,
+				&rewards.savedInv,
+				&rewards.savedInvWin,
+				&rewards.reports,
+				&item.Delegators,
+			)
+			if err != nil {
+				return nil, 0, err
+			}
+			item.Rewards = toDelegationReward(rewards)
+			item.Epoch = epoch
+			res = append(res, item)
+		}
+		return res, epoch, nil
+	}, count, continuationToken, address)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.DelegateeTotalRewards), nextContinuationToken, nil
 }

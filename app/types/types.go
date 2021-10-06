@@ -655,13 +655,16 @@ type DynamicEndpointResult struct {
 }
 
 type DelegateeTotalRewards struct {
-	Address    string             `json:"address"`
+	Address    string             `json:"address,omitempty"`
+	Epoch      uint64             `json:"epoch,omitempty"`
 	Rewards    []DelegationReward `json:"rewards"`
 	Delegators uint32             `json:"delegators"`
 } // @Name DelegateeTotalRewards
 
 type DelegateeReward struct {
 	DelegatorAddress string             `json:"delegatorAddress"`
+	PrevState        string             `json:"prevState" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+	State            string             `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
 	Rewards          []DelegationReward `json:"rewards"`
 } // @Name DelegateeReward
 

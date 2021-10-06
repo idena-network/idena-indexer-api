@@ -678,6 +678,13 @@ func (a *cachedAccessor) EpochIdentityValidationSummary(epoch uint64, address st
 	return res.(types.ValidationSummary), err
 }
 
+func (a *cachedAccessor) EpochAddressDelegateeTotalRewards(epoch uint64, address string) (types.DelegateeTotalRewards, error) {
+	res, err := a.getOrLoad("EpochAddressDelegateeTotalRewards", func() (interface{}, error) {
+		return a.accessor.EpochAddressDelegateeTotalRewards(epoch, address)
+	}, epoch, address)
+	return res.(types.DelegateeTotalRewards), err
+}
+
 func (a *cachedAccessor) EpochDelegateeRewards(epoch uint64, address string, count uint64, continuationToken *string) ([]types.DelegateeReward, *string, error) {
 	res, nextContinuationToken, err := a.getOrLoadWithConToken("EpochDelegateeRewards", func() (interface{}, *string, error) {
 		return a.accessor.EpochDelegateeRewards(epoch, address, count, continuationToken)
@@ -1033,6 +1040,13 @@ func (a *cachedAccessor) AddressBalanceUpdatesSummary(address string) (*types.Ba
 		return a.accessor.AddressBalanceUpdatesSummary(address)
 	}, address)
 	return res.(*types.BalanceUpdatesSummary), err
+}
+
+func (a *cachedAccessor) AddressDelegateeTotalRewards(address string, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("AddressDelegateeTotalRewards", func() (interface{}, *string, error) {
+		return a.accessor.AddressDelegateeTotalRewards(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.DelegateeTotalRewards), nextContinuationToken, err
 }
 
 func (a *cachedAccessor) Transaction(hash string) (*types.TransactionDetail, error) {

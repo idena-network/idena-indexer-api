@@ -5,7 +5,10 @@ import (
 	"strconv"
 )
 
-const epochDelegateeRewardsQuery = "epochDelegateeRewards.sql"
+const (
+	epochDelegateeRewardsQuery             = "epochDelegateeRewards.sql"
+	epochAddressDelegateeTotalRewardsQuery = "epochAddressDelegateeTotalRewards.sql"
+)
 
 func (a *postgresAccessor) EpochDelegateeRewards(epoch uint64, address string, count uint64, continuationToken *string) ([]types.DelegateeReward, *string, error) {
 	addressId, reward, err := parseUintAndAmountToken(continuationToken)
@@ -24,6 +27,8 @@ func (a *postgresAccessor) EpochDelegateeRewards(epoch uint64, address string, c
 		err = rows.Scan(
 			&addressId,
 			&item.DelegatorAddress,
+			&item.PrevState,
+			&item.State,
 			&reward,
 			&rewards.validation,
 			&rewards.flips,
@@ -47,4 +52,33 @@ func (a *postgresAccessor) EpochDelegateeRewards(epoch uint64, address string, c
 		res = res[:len(res)-1]
 	}
 	return res, nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) EpochAddressDelegateeTotalRewards(epoch uint64, address string) (types.DelegateeTotalRewards, error) {
+	rows, err := a.db.Query(a.getQuery(epochAddressDelegateeTotalRewardsQuery), epoch, address)
+	if err != nil {
+		return types.DelegateeTotalRewards{}, err
+	}
+	defer rows.Close()
+	var res types.DelegateeTotalRewards
+	if rows.Next() {
+		var rewards validationRewards
+		err = rows.Scan(
+			&res.Epoch,
+			&rewards.validation,
+			&rewards.flips,
+			&rewards.inv,
+			&rewards.inv2,
+			&rewards.inv3,
+			&rewards.savedInv,
+			&rewards.savedInvWin,
+			&rewards.reports,
+			&res.Delegators,
+		)
+		res.Rewards = toDelegationReward(rewards)
+		if err != nil {
+			return types.DelegateeTotalRewards{}, err
+		}
+	}
+	return res, nil
 }

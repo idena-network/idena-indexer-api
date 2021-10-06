@@ -263,16 +263,42 @@ definitions:
     properties:
       delegatorAddress:
         type: string
+      prevState:
+        enum:
+        - Undefined
+        - Invite
+        - Candidate
+        - Verified
+        - Suspended
+        - Killed
+        - Zombie
+        - Newbie
+        - Human
+        type: string
       rewards:
         items:
           $ref: '#/definitions/DelegationReward'
         type: array
+      state:
+        enum:
+        - Undefined
+        - Invite
+        - Candidate
+        - Verified
+        - Suspended
+        - Killed
+        - Zombie
+        - Newbie
+        - Human
+        type: string
     type: object
   DelegateeTotalRewards:
     properties:
       address:
         type: string
       delegators:
+        type: integer
+      epoch:
         type: integer
       rewards:
         items:
@@ -1461,6 +1487,47 @@ paths:
       tags:
       - Address
       - Contracts
+  /Address/{address}/DelegateeTotalRewards:
+    get:
+      operationId: AddressDelegateeTotalRewards
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: items to take
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: continuation token to get next page items
+        in: query
+        name: continuationToken
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ResponsePage'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/DelegateeTotalRewards'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Address
+      - Pool
   /Address/{address}/OracleVotingContracts:
     get:
       operationId: AddressOracleVotingContracts
@@ -2014,6 +2081,40 @@ paths:
                   items:
                     $ref: '#/definitions/DelegateeReward'
                   type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Identity
+  /Epoch/{epoch}/Address/{address}/DelegateeTotalRewards:
+    get:
+      operationId: EpochAddressDelegateeTotalRewards
+      parameters:
+      - description: epoch
+        in: path
+        name: epoch
+        required: true
+        type: integer
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/DelegateeTotalRewards'
               type: object
         "400":
           description: Bad request
