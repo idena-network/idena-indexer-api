@@ -2907,6 +2907,7 @@ func (s *httpServer) minersHistory(w http.ResponseWriter, r *http.Request) {
 
 // @Tags Peers
 // @Id PeersHistory
+// @Param limit query integer false "items to take"
 // @Success 200 {object} api.ResponsePage{result=[]types.PeersHistoryItem}
 // @Failure 400 "Bad request"
 // @Failure 429 "Request number limit exceeded"
@@ -2916,8 +2917,28 @@ func (s *httpServer) minersHistory(w http.ResponseWriter, r *http.Request) {
 func (s *httpServer) peersHistory(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("peersHistory", r.RequestURI)
 	defer s.pm.Complete(id)
-	resp, err := s.service.PeersHistory()
+	count, err := readPeersHistoryCount(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, err := s.service.PeersHistory(count)
 	WriteResponse(w, resp, err, s.logger)
+}
+
+func readPeersHistoryCount(params url.Values) (uint64, error) {
+	const defaultValue = uint64(500)
+	if len(params.Get("limit")) == 0 {
+		return defaultValue, nil
+	}
+	count, err := ReadUintUrlValue(params, "limit")
+	if err != nil {
+		return 0, err
+	}
+	if count > defaultValue {
+		count = defaultValue
+	}
+	return count, nil
 }
 
 func (s *httpServer) validatorsCount(w http.ResponseWriter, r *http.Request) {

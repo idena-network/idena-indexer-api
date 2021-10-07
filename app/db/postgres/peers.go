@@ -4,8 +4,8 @@ import "github.com/idena-network/idena-indexer-api/app/types"
 
 const peersHistoryQuery = "peersHistory.sql"
 
-func (a *postgresAccessor) PeersHistory() ([]types.PeersHistoryItem, error) {
-	rows, err := a.db.Query(a.getQuery(peersHistoryQuery))
+func (a *postgresAccessor) PeersHistory(count uint64) ([]types.PeersHistoryItem, error) {
+	rows, err := a.db.Query(a.getQuery(peersHistoryQuery), count)
 	if err != nil {
 		return nil, err
 	}

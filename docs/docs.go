@@ -5114,6 +5114,14 @@ var doc = `{
                     "Peers"
                 ],
                 "operationId": "PeersHistory",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",

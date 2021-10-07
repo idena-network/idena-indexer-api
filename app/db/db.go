@@ -184,7 +184,7 @@ type Accessor interface {
 	PoolDelegators(address string, count uint64, continuationToken *string) ([]*types.Delegator, *string, error)
 
 	MinersHistory() ([]types.MinersHistoryItem, error)
-	PeersHistory() ([]types.PeersHistoryItem, error)
+	PeersHistory(count uint64) ([]types.PeersHistoryItem, error)
 
 	DynamicEndpoints() ([]types.DynamicEndpoint, error)
 	DynamicEndpointData(dataSource string, limit *int) (*types.DynamicEndpointResult, error)

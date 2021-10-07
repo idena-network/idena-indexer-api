@@ -4449,6 +4449,11 @@ paths:
   /Peers/History:
     get:
       operationId: PeersHistory
+      parameters:
+      - description: items to take
+        in: query
+        name: limit
+        type: integer
       responses:
         "200":
           description: OK

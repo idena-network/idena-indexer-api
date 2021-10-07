@@ -1228,10 +1228,10 @@ func (a *cachedAccessor) MinersHistory() ([]types.MinersHistoryItem, error) {
 	return res.([]types.MinersHistoryItem), err
 }
 
-func (a *cachedAccessor) PeersHistory() ([]types.PeersHistoryItem, error) {
+func (a *cachedAccessor) PeersHistory(count uint64) ([]types.PeersHistoryItem, error) {
 	res, err := a.getOrLoad("PeersHistory", func() (interface{}, error) {
-		return a.accessor.PeersHistory()
-	})
+		return a.accessor.PeersHistory(count)
+	}, count)
 	return res.([]types.PeersHistoryItem), err
 }
 
