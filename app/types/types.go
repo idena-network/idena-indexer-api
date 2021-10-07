@@ -52,11 +52,13 @@ type RewardsSummary struct {
 	Validation        decimal.Decimal `json:"validation" swaggertype:"string"`
 	Flips             decimal.Decimal `json:"flips" swaggertype:"string"`
 	Invitations       decimal.Decimal `json:"invitations" swaggertype:"string"`
+	Reports           decimal.Decimal `json:"reports" swaggertype:"string"`
 	FoundationPayouts decimal.Decimal `json:"foundationPayouts" swaggertype:"string"`
 	ZeroWalletFund    decimal.Decimal `json:"zeroWalletFund" swaggertype:"string"`
 	ValidationShare   decimal.Decimal `json:"validationShare" swaggertype:"string"`
 	FlipsShare        decimal.Decimal `json:"flipsShare" swaggertype:"string"`
 	InvitationsShare  decimal.Decimal `json:"invitationsShare" swaggertype:"string"`
+	ReportsShare      decimal.Decimal `json:"reportsShare" swaggertype:"string"`
 	EpochDuration     uint32          `json:"epochDuration"`
 } // @Name RewardsSummary
 

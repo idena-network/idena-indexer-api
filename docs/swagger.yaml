@@ -1095,6 +1095,10 @@ definitions:
         type: string
       invitationsShare:
         type: string
+      reports:
+        type: string
+      reportsShare:
+        type: string
       total:
         type: string
       validation:

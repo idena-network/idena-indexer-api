@@ -14,6 +14,7 @@ SELECT e.epoch,
        coalesce(trew.validation, 0)             validation_reward,
        coalesce(trew.flips, 0)                  flips_reward,
        coalesce(trew.invitations, 0)            invitations_reward,
+       coalesce(trew.reports, 0)                reports_reward,
        coalesce(trew.foundation, 0)             foundation_payout,
        coalesce(trew.zero_wallet, 0)            zero_wallet_payout,
        coalesce(preves.min_score_for_invite, 0) min_score_for_invite

@@ -374,11 +374,13 @@ func (a *postgresAccessor) EpochRewardsSummary(epoch uint64) (types.RewardsSumma
 			&res.Validation,
 			&res.Flips,
 			&res.Invitations,
+			&res.Reports,
 			&res.FoundationPayouts,
 			&res.ZeroWalletFund,
 			&res.ValidationShare,
 			&res.FlipsShare,
 			&res.InvitationsShare,
+			&res.ReportsShare,
 			&res.EpochDuration,
 		)
 	if err == sql.ErrNoRows {

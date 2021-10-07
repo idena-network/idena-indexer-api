@@ -7240,6 +7240,12 @@ var doc = `{
                 "invitationsShare": {
                     "type": "string"
                 },
+                "reports": {
+                    "type": "string"
+                },
+                "reportsShare": {
+                    "type": "string"
+                },
                 "total": {
                     "type": "string"
                 },

@@ -43,6 +43,7 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 				&item.Rewards.Validation,
 				&item.Rewards.Flips,
 				&item.Rewards.Invitations,
+				&item.Rewards.Reports,
 				&item.Rewards.FoundationPayouts,
 				&item.Rewards.ZeroWalletFund,
 				&item.MinScoreForInvite,
