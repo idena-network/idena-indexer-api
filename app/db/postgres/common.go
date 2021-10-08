@@ -503,6 +503,8 @@ func readAnswers(rows *sql.Rows) ([]types.Answer, error) {
 			&item.Point,
 			&item.RespGrade,
 			&item.FlipGrade,
+			&item.Index,
+			&item.Considered,
 		)
 		if err != nil {
 			return nil, err

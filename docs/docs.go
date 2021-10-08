@@ -5723,6 +5723,9 @@ var doc = `{
                 "cid": {
                     "type": "string"
                 },
+                "considered": {
+                    "type": "boolean"
+                },
                 "flipAnswer": {
                     "type": "string",
                     "enum": [
@@ -5746,6 +5749,9 @@ var doc = `{
                 "flipWrongWords": {
                     "description": "Deprecated",
                     "type": "boolean"
+                },
+                "index": {
+                    "type": "integer"
                 },
                 "point": {
                     "type": "number"

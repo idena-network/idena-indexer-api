@@ -306,6 +306,8 @@ type Answer struct {
 	Point          float32 `json:"point"`
 	RespGrade      byte    `json:"respGrade"`
 	FlipGrade      byte    `json:"flipGrade"`
+	Index          byte    `json:"index"`
+	Considered     bool    `json:"considered"`
 } // @Name Answer
 
 type Identity struct {

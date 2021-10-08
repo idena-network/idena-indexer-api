@@ -5703,6 +5703,9 @@
                 "cid": {
                     "type": "string"
                 },
+                "considered": {
+                    "type": "boolean"
+                },
                 "flipAnswer": {
                     "type": "string",
                     "enum": [
@@ -5726,6 +5729,9 @@
                 "flipWrongWords": {
                     "description": "Deprecated",
                     "type": "boolean"
+                },
+                "index": {
+                    "type": "integer"
                 },
                 "point": {
                     "type": "number"

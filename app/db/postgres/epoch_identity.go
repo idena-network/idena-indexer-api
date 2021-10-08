@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/shopspring/decimal"
+	"sort"
 )
 
 const (
@@ -91,7 +92,18 @@ func (a *postgresAccessor) epochIdentityAnswers(epoch uint64, address string, is
 	if err != nil {
 		return nil, err
 	}
-	return readAnswers(rows)
+	res, err := readAnswers(rows)
+	if err != nil {
+		return nil, err
+	}
+	sort.Slice(res, func(i, j int) bool {
+		return res[i].Index < res[j].Index
+	})
+
+	for isShort && len(res) > 0 && !res[len(res)-1].Considered && res[len(res)-1].RespAnswer == "None" {
+		res = res[:len(res)-1]
+	}
+	return res, nil
 }
 
 func (a *postgresAccessor) EpochIdentityFlips(epoch uint64, address string) ([]types.FlipSummary, error) {

@@ -20,6 +20,8 @@ definitions:
         type: string
       cid:
         type: string
+      considered:
+        type: boolean
       flipAnswer:
         enum:
         - None
@@ -38,6 +40,8 @@ definitions:
       flipWrongWords:
         description: Deprecated
         type: boolean
+      index:
+        type: integer
       point:
         type: number
       respAnswer:
