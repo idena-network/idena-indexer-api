@@ -17,6 +17,7 @@ const (
 	blockTxsByHashOldQuery     = "blockTxsByHashOld.sql"
 	blockCoinsByHeightQuery    = "blockCoinsByHeight.sql"
 	blockCoinsByHashQuery      = "blockCoinsByHash.sql"
+	lastBlockQuery             = "lastBlock.sql"
 )
 
 func (a *postgresAccessor) BlockByHeight(height uint64) (types.BlockDetail, error) {
@@ -27,11 +28,15 @@ func (a *postgresAccessor) BlockByHash(hash string) (types.BlockDetail, error) {
 	return a.block(blockQueryByHash, hash)
 }
 
-func (a *postgresAccessor) block(query string, id interface{}) (types.BlockDetail, error) {
+func (a *postgresAccessor) LastBlock() (types.BlockDetail, error) {
+	return a.block(lastBlockQuery)
+}
+
+func (a *postgresAccessor) block(query string, args ...interface{}) (types.BlockDetail, error) {
 	res := types.BlockDetail{}
 	var timestamp int64
 	var upgrade sql.NullInt64
-	err := a.db.QueryRow(a.getQuery(query), id).Scan(
+	err := a.db.QueryRow(a.getQuery(query), args...).Scan(
 		&res.Epoch,
 		&res.Height,
 		&res.Hash,

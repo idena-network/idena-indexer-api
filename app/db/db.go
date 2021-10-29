@@ -101,6 +101,7 @@ type Accessor interface {
 	BlockTxsByHashOld(hash string, startIndex uint64, count uint64) ([]types.TransactionSummary, error)
 	BlockCoinsByHeight(height uint64) (types.AllCoins, error)
 	BlockCoinsByHash(hash string) (types.AllCoins, error)
+	LastBlock() (types.BlockDetail, error)
 
 	Flip(hash string) (types.Flip, error)
 	FlipContent(hash string) (types.FlipContent, error)

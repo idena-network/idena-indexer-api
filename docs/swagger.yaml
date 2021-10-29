@@ -1903,6 +1903,29 @@ paths:
           description: Service unavailable
       tags:
       - Block
+  /Block/Last:
+    get:
+      operationId: LastBlock
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/Block'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Block
   /CirculatingSupply:
     get:
       operationId: CirculatingSupply

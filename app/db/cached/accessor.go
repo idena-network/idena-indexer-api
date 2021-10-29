@@ -41,6 +41,7 @@ const (
 	flipEpochIdentityAdjacentFlipsMethod    = "FlipEpochIdentityAdjacentFlips"
 	upgradeMethod                           = "Upgrade"
 	epochIdentityMethod                     = "EpochIdentity"
+	lastBlock                               = "LastBlock"
 )
 
 type cachedAccessor struct {
@@ -86,6 +87,7 @@ func createMaxItemCountsByMethod() map[string]int {
 
 func createMaxItemLifeTimesByMethod() map[string]time.Duration {
 	return map[string]time.Duration{
+		lastBlock:                               time.Second * 20,
 		activeAddressesCountMethod:              time.Minute * 5,
 		epochIdentityStatesInterimSummaryMethod: time.Minute * 5,
 		epochInvitesSummaryMethod:               time.Minute * 3,
@@ -760,6 +762,13 @@ func (a *cachedAccessor) BlockCoinsByHash(hash string) (types.AllCoins, error) {
 		return a.accessor.BlockCoinsByHash(hash)
 	}, hash)
 	return res.(types.AllCoins), err
+}
+
+func (a *cachedAccessor) LastBlock() (types.BlockDetail, error) {
+	res, err := a.getOrLoad(lastBlock, func() (interface{}, error) {
+		return a.accessor.LastBlock()
+	})
+	return res.(types.BlockDetail), err
 }
 
 func (a *cachedAccessor) Flip(hash string) (types.Flip, error) {

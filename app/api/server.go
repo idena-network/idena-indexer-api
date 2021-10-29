@@ -322,6 +322,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeRewards")).HandlerFunc(s.epochDelegateeRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.epochAddressDelegateeTotalRewards)
 
+	router.Path(strings.ToLower("/Block/Last")).HandlerFunc(s.lastBlock)
 	router.Path(strings.ToLower("/Block/{id}")).HandlerFunc(s.block)
 	router.Path(strings.ToLower("/Block/{id}/Txs/Count")).HandlerFunc(s.blockTxsCount)
 	router.Path(strings.ToLower("/Block/{id}/Txs")).
@@ -1914,6 +1915,22 @@ func (s *httpServer) blockCoins(w http.ResponseWriter, r *http.Request) {
 	} else {
 		resp, err = s.service.BlockCoinsByHeight(height)
 	}
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Block
+// @Id LastBlock
+// @Success 200 {object} api.Response{result=types.BlockDetail}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Block/Last [get]
+func (s *httpServer) lastBlock(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("lastBlock", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	resp, err := s.service.LastBlock()
 	WriteResponse(w, resp, err, s.logger)
 }
 
