@@ -36,6 +36,7 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 	res := types.BlockDetail{}
 	var timestamp int64
 	var upgrade sql.NullInt64
+	var offlineAddress sql.NullString
 	err := a.db.QueryRow(a.getQuery(query), args...).Scan(
 		&res.Epoch,
 		&res.Height,
@@ -52,6 +53,7 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 		&res.FeeRate,
 		pq.Array(&res.Flags),
 		&upgrade,
+		&offlineAddress,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -63,6 +65,9 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 	if upgrade.Valid {
 		v := uint32(upgrade.Int64)
 		res.Upgrade = &v
+	}
+	if offlineAddress.Valid {
+		res.OfflineAddress = &offlineAddress.String
 	}
 	return res, nil
 }

@@ -24,6 +24,7 @@ func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]
 			}
 			var timestamp int64
 			var upgrade sql.NullInt64
+			var offlineAddress sql.NullString
 			if err := rows.Scan(&height,
 				&block.Hash,
 				&timestamp,
@@ -41,6 +42,7 @@ func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]
 				&block.Coins.TotalStake,
 				pq.Array(&block.Flags),
 				&upgrade,
+				&offlineAddress,
 			); err != nil {
 				return nil, 0, err
 			}
@@ -49,6 +51,9 @@ func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]
 			if upgrade.Valid {
 				v := uint32(upgrade.Int64)
 				block.Upgrade = &v
+			}
+			if offlineAddress.Valid {
+				block.OfflineAddress = &offlineAddress.String
 			}
 			res = append(res, block)
 		}

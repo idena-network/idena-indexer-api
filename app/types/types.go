@@ -84,6 +84,7 @@ type BlockSummary struct {
 	FeeRate              decimal.Decimal `json:"feeRate" swaggertype:"string"`
 	Flags                []string        `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
 	Upgrade              *uint32         `json:"upgrade,omitempty"`
+	OfflineAddress       *string         `json:"offlineAddress,omitempty"`
 } // @Name BlockSummary
 
 type BlockDetail struct {
@@ -102,6 +103,7 @@ type BlockDetail struct {
 	FeeRate              decimal.Decimal `json:"feeRate" swaggertype:"string"`
 	Flags                []string        `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
 	Upgrade              *uint32         `json:"upgrade,omitempty"`
+	OfflineAddress       *string         `json:"offlineAddress,omitempty"`
 } // @Name Block
 
 type FlipSummary struct {

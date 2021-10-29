@@ -12,9 +12,11 @@ select b.epoch,
        b.vrf_proposer_threshold,
        b.fee_rate,
        (select array_agg("flag") from block_flags where block_height = b.height) flags,
-       b.upgrade
+       b.upgrade,
+       offline_a.address                                                         offline_address
 from blocks b
          left join block_proposers p on p.block_height = b.height
          left join block_proposer_vrf_scores vs on vs.block_height = b.height
          left join addresses pa on pa.id = p.address_id
+         LEFT JOIN addresses offline_a ON b.offline_address_id IS NOT NULL AND offline_a.id = b.offline_address_id
 where lower(b.hash) = lower($1)

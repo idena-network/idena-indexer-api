@@ -5942,6 +5942,10 @@ var doc = `{
                 "isEmpty": {
                     "type": "boolean"
                 },
+                "offlineAddress": {
+                    "description": "todo swag init",
+                    "type": "string"
+                },
                 "proposer": {
                     "type": "string"
                 },
@@ -6008,6 +6012,9 @@ var doc = `{
                 },
                 "isEmpty": {
                     "type": "boolean"
+                },
+                "offlineAddress": {
+                    "type": "string"
                 },
                 "proposer": {
                     "type": "string"

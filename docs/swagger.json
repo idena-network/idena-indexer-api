@@ -5922,6 +5922,10 @@
                 "isEmpty": {
                     "type": "boolean"
                 },
+                "offlineAddress": {
+                    "description": "todo swag init",
+                    "type": "string"
+                },
                 "proposer": {
                     "type": "string"
                 },
@@ -5988,6 +5992,9 @@
                 },
                 "isEmpty": {
                     "type": "boolean"
+                },
+                "offlineAddress": {
+                    "type": "string"
                 },
                 "proposer": {
                     "type": "string"

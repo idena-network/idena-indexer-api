@@ -117,6 +117,7 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 			}
 			var timestamp int64
 			var upgrade sql.NullInt64
+			var offlineAddress sql.NullString
 			if err := rows.Scan(&height,
 				&block.Hash,
 				&timestamp,
@@ -134,6 +135,7 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 				&block.Coins.TotalStake,
 				pq.Array(&block.Flags),
 				&upgrade,
+				&offlineAddress,
 			); err != nil {
 				return nil, 0, err
 			}
@@ -142,6 +144,9 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 			if upgrade.Valid {
 				v := uint32(upgrade.Int64)
 				block.Upgrade = &v
+			}
+			if offlineAddress.Valid {
+				block.OfflineAddress = &offlineAddress.String
 			}
 			res = append(res, block)
 		}
@@ -166,6 +171,7 @@ func (a *postgresAccessor) EpochBlocksOld(epoch uint64, startIndex uint64, count
 		}
 		var timestamp int64
 		var upgrade sql.NullInt64
+		var offlineAddress sql.NullString
 		err = rows.Scan(&block.Height,
 			&block.Hash,
 			&timestamp,
@@ -183,6 +189,7 @@ func (a *postgresAccessor) EpochBlocksOld(epoch uint64, startIndex uint64, count
 			&block.Coins.TotalStake,
 			pq.Array(&block.Flags),
 			&upgrade,
+			&offlineAddress,
 		)
 		if err != nil {
 			return nil, err
@@ -191,6 +198,9 @@ func (a *postgresAccessor) EpochBlocksOld(epoch uint64, startIndex uint64, count
 		if upgrade.Valid {
 			v := uint32(upgrade.Int64)
 			block.Upgrade = &v
+		}
+		if offlineAddress.Valid {
+			block.OfflineAddress = &offlineAddress.String
 		}
 		blocks = append(blocks, block)
 	}

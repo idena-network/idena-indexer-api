@@ -14,12 +14,14 @@ SELECT b.height,
        c.total_balance,
        c.total_stake,
        (SELECT array_agg("flag") FROM block_flags WHERE block_height = b.height) flags,
-       b.upgrade
+       b.upgrade,
+       offline_a.address offline_address
 FROM blocks b
          LEFT JOIN block_proposers p ON p.block_height = b.height
          LEFT JOIN block_proposer_vrf_scores vs ON vs.block_height = b.height
          LEFT JOIN addresses a ON a.id = p.address_id
-         JOIN coins c ON c.block_height = b.height
+         LEFT JOIN coins c ON c.block_height = b.height
+         LEFT JOIN addresses offline_a ON b.offline_address_id IS NOT NULL AND offline_a.id = b.offline_address_id
 WHERE coalesce(upgrade, 0) > 0
   AND ($2::bigint IS NULL OR height <= $2::bigint)
 ORDER BY b.height DESC

@@ -14,7 +14,8 @@ select b.height,
        c.total_balance,
        c.total_stake,
        (SELECT array_agg("flag") FROM block_flags WHERE block_height = b.height) flags,
-       b.upgrade
+       b.upgrade,
+       offline_a.address                                                         offline_address
 from (select *
       from blocks
       where epoch = $1
@@ -23,5 +24,6 @@ from (select *
          left join block_proposers p on p.block_height = b.height
          left join block_proposer_vrf_scores vs on vs.block_height = b.height
          left join addresses a on a.id = p.address_id
-         join coins c on c.block_height = b.height
+         left join coins c on c.block_height = b.height
+         LEFT JOIN addresses offline_a ON b.offline_address_id IS NOT NULL AND offline_a.id = b.offline_address_id
 order by b.height desc
