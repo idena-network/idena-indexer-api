@@ -5943,7 +5943,6 @@ var doc = `{
                     "type": "boolean"
                 },
                 "offlineAddress": {
-                    "description": "todo swag init",
                     "type": "string"
                 },
                 "proposer": {
@@ -7358,6 +7357,9 @@ var doc = `{
                 "maxFee": {
                     "type": "string"
                 },
+                "nonce": {
+                    "type": "integer"
+                },
                 "size": {
                     "type": "integer"
                 },
@@ -7438,6 +7440,9 @@ var doc = `{
                 },
                 "maxFee": {
                     "type": "string"
+                },
+                "nonce": {
+                    "type": "integer"
                 },
                 "size": {
                     "type": "integer"

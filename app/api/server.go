@@ -300,8 +300,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/Answers/Long")).
 		HandlerFunc(s.epochIdentityLongAnswers)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/Flips")).HandlerFunc(s.epochIdentityFlips)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/ValidationTxs")).
-		HandlerFunc(s.epochIdentityValidationTxs)
+	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/ValidationTxs")).
+	//	HandlerFunc(s.epochIdentityValidationTxs)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/Rewards")).
 		HandlerFunc(s.epochIdentityRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/RewardedFlips")).

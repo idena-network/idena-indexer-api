@@ -203,6 +203,7 @@ type TransactionSummary struct {
 	MaxFee    *decimal.Decimal `json:"maxFee,omitempty" swaggertype:"string"`
 	Fee       *decimal.Decimal `json:"fee,omitempty" swaggertype:"string"`
 	Size      uint32           `json:"size,omitempty"`
+	Nonce     uint32           `json:"nonce,omitempty"`
 	// Deprecated
 	Transfer *decimal.Decimal `json:"transfer,omitempty" swaggerignore:"true"`
 	Data     interface{}      `json:"data,omitempty"`
@@ -230,6 +231,7 @@ type TransactionDetail struct {
 	MaxFee      decimal.Decimal `json:"maxFee" swaggertype:"string"`
 	Fee         decimal.Decimal `json:"fee" swaggertype:"string"`
 	Size        uint32          `json:"size"`
+	Nonce       uint32          `json:"nonce,omitempty"`
 	// Deprecated
 	Transfer *decimal.Decimal `json:"transfer,omitempty" swaggertype:"string"`
 	Data     interface{}      `json:"data,omitempty"`

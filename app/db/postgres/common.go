@@ -150,6 +150,7 @@ func readTxs(rows *sql.Rows) ([]types.TransactionSummary, uint64, error) {
 			&item.MaxFee,
 			&item.Fee,
 			&item.Size,
+			&item.Nonce,
 			&transfer,
 			&becomeOnline,
 			&success,

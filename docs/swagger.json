@@ -5923,7 +5923,6 @@
                     "type": "boolean"
                 },
                 "offlineAddress": {
-                    "description": "todo swag init",
                     "type": "string"
                 },
                 "proposer": {
@@ -7338,6 +7337,9 @@
                 "maxFee": {
                     "type": "string"
                 },
+                "nonce": {
+                    "type": "integer"
+                },
                 "size": {
                     "type": "integer"
                 },
@@ -7418,6 +7420,9 @@
                 },
                 "maxFee": {
                     "type": "string"
+                },
+                "nonce": {
+                    "type": "integer"
                 },
                 "size": {
                     "type": "integer"

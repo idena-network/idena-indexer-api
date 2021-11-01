@@ -213,6 +213,7 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 		&res.MaxFee,
 		&res.Fee,
 		&res.Size,
+		&res.Nonce,
 		&transfer,
 		&becomeOnline,
 		&success,

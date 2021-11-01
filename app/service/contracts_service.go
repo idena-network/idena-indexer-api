@@ -48,6 +48,7 @@ type Transaction struct {
 	Fee     decimal.Decimal
 	Payload []byte
 	Size    int
+	Nonce   uint32 // todo write
 	Raw     string
 }
 
