@@ -2913,65 +2913,6 @@ var doc = `{
                 }
             }
         },
-        "/Epoch/{epoch}/Identity/{address}/ValidationTxs": {
-            "get": {
-                "tags": [
-                    "Identity"
-                ],
-                "operationId": "EpochIdentityValidationTxs",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "epoch",
-                        "name": "epoch",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "address",
-                        "name": "address",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "allOf": [
-                                {
-                                    "$ref": "#/definitions/Response"
-                                },
-                                {
-                                    "type": "object",
-                                    "properties": {
-                                        "result": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/definitions/TransactionSummary"
-                                            }
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    },
-                    "400": {
-                        "description": "Bad request"
-                    },
-                    "429": {
-                        "description": "Request number limit exceeded"
-                    },
-                    "500": {
-                        "description": "Internal server error"
-                    },
-                    "503": {
-                        "description": "Service unavailable"
-                    }
-                }
-            }
-        },
         "/Epoch/{epoch}/IdentityRewards": {
             "get": {
                 "tags": [

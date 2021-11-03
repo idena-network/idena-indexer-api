@@ -11,7 +11,7 @@ import (
 	"strings"
 )
 
-// mock  type for swagger
+// Response mock  type for swagger
 type Response struct {
 	Result interface{} `json:"result,omitempty"`
 	Error  *RespError  `json:"error,omitempty"`
@@ -72,22 +72,6 @@ func ReadUint(vars map[string]string, name string) (uint64, error) {
 		return 0, errors.New(fmt.Sprintf("wrong value %s=%v", name, vars[name]))
 	}
 	return value, nil
-}
-
-// Deprecated
-func ReadOldPaginatorParams(vars map[string]string) (uint64, uint64, error) {
-	startIndex, err := ReadUint(vars, "skip")
-	if err != nil {
-		return 0, 0, err
-	}
-	count, err := ReadUint(vars, "limit")
-	if err != nil {
-		return 0, 0, err
-	}
-	if count > 100 {
-		return 0, 0, errors.Errorf("too big value limit=%d", count)
-	}
-	return startIndex, count, nil
 }
 
 func ReadPaginatorParams(params url.Values) (uint64, *string, error) {

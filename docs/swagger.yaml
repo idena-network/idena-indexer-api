@@ -3125,42 +3125,6 @@ paths:
           description: Service unavailable
       tags:
       - Identity
-  /Epoch/{epoch}/Identity/{address}/ValidationTxs:
-    get:
-      operationId: EpochIdentityValidationTxs
-      parameters:
-      - description: epoch
-        in: path
-        name: epoch
-        required: true
-        type: integer
-      - description: address
-        in: path
-        name: address
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                result:
-                  items:
-                    $ref: '#/definitions/TransactionSummary'
-                  type: array
-              type: object
-        "400":
-          description: Bad request
-        "429":
-          description: Request number limit exceeded
-        "500":
-          description: Internal server error
-        "503":
-          description: Service unavailable
-      tags:
-      - Identity
   /Epoch/{epoch}/IdentityRewards:
     get:
       operationId: EpochIdentitiesRewards

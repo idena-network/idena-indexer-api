@@ -215,42 +215,26 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Txt/CirculatingSupply")).
 		HandlerFunc(s.txtCirculatingSupply)
 
-	//router.Path(strings.ToLower("/ActiveAddresses/Count")).
-	//	HandlerFunc(s.activeAddressesCount)
-
 	router.Path(strings.ToLower("/Upgrades")).
 		HandlerFunc(s.upgrades)
 
 	router.Path(strings.ToLower("/Epochs/Count")).HandlerFunc(s.epochsCount)
-	router.Path(strings.ToLower("/Epochs")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochsOld)
 	router.Path(strings.ToLower("/Epochs")).HandlerFunc(s.epochs)
 
 	router.Path(strings.ToLower("/Epoch/Last")).HandlerFunc(s.lastEpoch)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}")).HandlerFunc(s.epoch)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks/Count")).
 		HandlerFunc(s.epochBlocksCount)
-	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks")).
-	//	Queries("skip", "{skip}", "limit", "{limit}").
-	//	HandlerFunc(s.epochBlocksOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Blocks")).
 		HandlerFunc(s.epochBlocks)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips/Count")).
 		HandlerFunc(s.epochFlipsCount)
-	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips")).
-	//	Queries("skip", "{skip}", "limit", "{limit}").
-	//	HandlerFunc(s.epochFlipsOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Flips")).
 		HandlerFunc(s.epochFlips)
-	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipAnswersSummary")).HandlerFunc(s.epochFlipAnswersSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipStatesSummary")).HandlerFunc(s.epochFlipStatesSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FlipWrongWordsSummary")).HandlerFunc(s.epochFlipWrongWordsSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identities/Count")).
 		HandlerFunc(s.epochIdentitiesCount)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identities")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochIdentitiesOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identities")).
 		HandlerFunc(s.epochIdentities)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/IdentityStatesSummary")).HandlerFunc(s.epochIdentityStatesSummary)
@@ -260,15 +244,9 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Invites/Count")).
 		HandlerFunc(s.epochInvitesCount)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Invites")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochInvitesOld)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Invites")).
 		HandlerFunc(s.epochInvites)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Txs/Count")).
 		HandlerFunc(s.epochTxsCount)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Txs")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochTxsOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Txs")).
 		HandlerFunc(s.epochTxs)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Coins")).
@@ -276,14 +254,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/RewardsSummary")).HandlerFunc(s.epochRewardsSummary)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Authors/Bad/Count")).HandlerFunc(s.epochBadAuthorsCount)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Authors/Bad")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochBadAuthorsOld)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Authors/Bad")).
 		HandlerFunc(s.epochBadAuthors)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/IdentityRewards/Count")).HandlerFunc(s.epochIdentitiesRewardsCount)
-	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/IdentityRewards")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.epochIdentitiesRewardsOld)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/IdentityRewards")).
 		HandlerFunc(s.epochIdentitiesRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/FundPayments")).HandlerFunc(s.epochFundPayments)
@@ -300,8 +272,6 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/Answers/Long")).
 		HandlerFunc(s.epochIdentityLongAnswers)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/Flips")).HandlerFunc(s.epochIdentityFlips)
-	//router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/ValidationTxs")).
-	//	HandlerFunc(s.epochIdentityValidationTxs)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/Rewards")).
 		HandlerFunc(s.epochIdentityRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/RewardedFlips")).
@@ -325,46 +295,26 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Block/Last")).HandlerFunc(s.lastBlock)
 	router.Path(strings.ToLower("/Block/{id}")).HandlerFunc(s.block)
 	router.Path(strings.ToLower("/Block/{id}/Txs/Count")).HandlerFunc(s.blockTxsCount)
-	router.Path(strings.ToLower("/Block/{id}/Txs")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.blockTxsOld)
-	router.Path(strings.ToLower("/Block/{id}/Txs")).
-		HandlerFunc(s.blockTxs)
-	router.Path(strings.ToLower("/Block/{id}/Coins")).
-		HandlerFunc(s.blockCoins)
+	router.Path(strings.ToLower("/Block/{id}/Txs")).HandlerFunc(s.blockTxs)
+	router.Path(strings.ToLower("/Block/{id}/Coins")).HandlerFunc(s.blockCoins)
 
 	router.Path(strings.ToLower("/Identity/{address}")).HandlerFunc(s.identity)
 	router.Path(strings.ToLower("/Identity/{address}/Age")).HandlerFunc(s.identityAge)
 	router.Path(strings.ToLower("/Identity/{address}/CurrentFlipCids")).HandlerFunc(s.identityCurrentFlipCids)
 	router.Path(strings.ToLower("/Identity/{address}/Epochs/Count")).HandlerFunc(s.identityEpochsCount)
 	router.Path(strings.ToLower("/Identity/{address}/Epochs")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityEpochsOld)
-	router.Path(strings.ToLower("/Identity/{address}/Epochs")).
 		HandlerFunc(s.identityEpochs)
 	router.Path(strings.ToLower("/Identity/{address}/Flips/Count")).HandlerFunc(s.identityFlipsCount)
-	router.Path(strings.ToLower("/Identity/{address}/Flips")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityFlipsOld)
 	router.Path(strings.ToLower("/Identity/{address}/Flips")).HandlerFunc(s.identityFlips)
 	router.Path(strings.ToLower("/Identity/{address}/FlipStates")).HandlerFunc(s.identityFlipStates)
 	router.Path(strings.ToLower("/Identity/{address}/FlipQualifiedAnswers")).HandlerFunc(s.identityFlipRightAnswers)
 	router.Path(strings.ToLower("/Identity/{address}/Invites/Count")).HandlerFunc(s.identityInvitesCount)
 	router.Path(strings.ToLower("/Identity/{address}/Invites")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityInvitesOld)
-	router.Path(strings.ToLower("/Identity/{address}/Invites")).
 		HandlerFunc(s.identityInvites)
 	router.Path(strings.ToLower("/Identity/{address}/Rewards/Count")).HandlerFunc(s.identityRewardsCount)
 	router.Path(strings.ToLower("/Identity/{address}/Rewards")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityRewardsOld)
-	router.Path(strings.ToLower("/Identity/{address}/Rewards")).
 		HandlerFunc(s.identityRewards)
 	router.Path(strings.ToLower("/Identity/{address}/EpochRewards/Count")).HandlerFunc(s.identityEpochRewardsCount)
-	router.Path(strings.ToLower("/Identity/{address}/EpochRewards")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityEpochRewardsOld)
 	router.Path(strings.ToLower("/Identity/{address}/EpochRewards")).
 		HandlerFunc(s.identityEpochRewards)
 	router.Path(strings.ToLower("/Identity/{address}/Authors/Bad/Count")).HandlerFunc(s.addressBadAuthorsCount)
@@ -384,23 +334,13 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Address/{address}")).HandlerFunc(s.address)
 	router.Path(strings.ToLower("/Address/{address}/Txs/Count")).HandlerFunc(s.identityTxsCount)
 	router.Path(strings.ToLower("/Address/{address}/Txs")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityTxsOld)
-	router.Path(strings.ToLower("/Address/{address}/Txs")).
 		HandlerFunc(s.identityTxs)
 	router.Path(strings.ToLower("/Address/{address}/Penalties/Count")).HandlerFunc(s.addressPenaltiesCount)
-	router.Path(strings.ToLower("/Address/{address}/Penalties")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.addressPenaltiesOld)
 	router.Path(strings.ToLower("/Address/{address}/Penalties")).
 		HandlerFunc(s.addressPenalties)
 
 	// Deprecated path
 	router.Path(strings.ToLower("/Address/{address}/Flips/Count")).HandlerFunc(s.identityFlipsCount)
-	// Deprecated path
-	router.Path(strings.ToLower("/Address/{address}/Flips")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.identityFlipsOld)
 	// Deprecated path
 	router.Path(strings.ToLower("/Address/{address}/Flips")).HandlerFunc(s.identityFlips)
 
@@ -416,9 +356,6 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.addressDelegateeTotalRewards)
 
-	router.Path(strings.ToLower("/Balances")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.balancesOld)
 	router.Path(strings.ToLower("/Balances")).HandlerFunc(s.balances)
 
 	router.Path(strings.ToLower("/Contract/{address}")).HandlerFunc(s.contract)
@@ -437,9 +374,6 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/MemPool/Txs/Count")).HandlerFunc(s.memPoolTxsCount)
 
 	router.Path(strings.ToLower("/OnlineIdentities/Count")).HandlerFunc(s.onlineIdentitiesCount)
-	router.Path(strings.ToLower("/OnlineIdentities")).
-		Queries("skip", "{skip}", "limit", "{limit}").
-		HandlerFunc(s.onlineIdentitiesOld)
 	router.Path(strings.ToLower("/OnlineIdentities")).
 		HandlerFunc(s.onlineIdentities)
 
@@ -611,14 +545,6 @@ func (s *httpServer) txtCirculatingSupply(w http.ResponseWriter, r *http.Request
 		resp = amount.String()
 	}
 	WriteTextPlainResponse(w, resp, err, s.logger)
-}
-
-func (s *httpServer) activeAddressesCount(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("activeAddressesCount", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	resp, err := s.service.ActiveAddressesCount(getOffsetUTC(s.activeAddrHours))
-	WriteResponse(w, resp, err, s.logger)
 }
 
 // @Tags Upgrades
@@ -823,20 +749,6 @@ func (s *httpServer) epochFlips(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, nextContinuationToken, err := s.service.EpochFlips(epoch, count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
-}
-
-func (s *httpServer) epochFlipAnswersSummary(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("epochFlipAnswersSummary", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	vars := mux.Vars(r)
-	epoch, err := ReadUint(vars, "epoch")
-	if err != nil {
-		WriteErrorResponse(w, err, s.logger)
-		return
-	}
-	resp, err := s.service.EpochFlipAnswersSummary(epoch)
-	WriteResponse(w, resp, err, s.logger)
 }
 
 // @Tags Epochs
@@ -1612,30 +1524,6 @@ func (s *httpServer) epochIdentityBadAuthor(w http.ResponseWriter, r *http.Reque
 		return
 	}
 	resp, err := s.service.EpochIdentityBadAuthor(epoch, vars["address"])
-	WriteResponse(w, resp, err, s.logger)
-}
-
-// @Tags Identity
-// @Id EpochIdentityValidationTxs
-// @Param epoch path integer true "epoch"
-// @Param address path string true "address"
-// @Success 200 {object} api.Response{result=[]types.TransactionSummary}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /Epoch/{epoch}/Identity/{address}/ValidationTxs [get]
-func (s *httpServer) epochIdentityValidationTxs(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("epochIdentityValidationTxs", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	vars := mux.Vars(r)
-	epoch, err := ReadUint(vars, "epoch")
-	if err != nil {
-		WriteErrorResponse(w, err, s.logger)
-		return
-	}
-	resp, err := s.service.EpochIdentityValidationTxs(epoch, vars["address"])
 	WriteResponse(w, resp, err, s.logger)
 }
 
@@ -2586,48 +2474,6 @@ func (s *httpServer) balances(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, nextContinuationToken, err := s.service.Balances(count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
-}
-
-func (s *httpServer) totalLatestMiningRewardsCount(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("totalLatestMiningRewardsCount", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	resp, err := s.service.TotalLatestMiningRewardsCount(s.getOffsetUTC())
-	WriteResponse(w, resp, err, s.logger)
-}
-
-func (s *httpServer) totalLatestMiningRewards(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("totalLatestMiningRewards", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	startIndex, count, err := ReadOldPaginatorParams(mux.Vars(r))
-	if err != nil {
-		WriteErrorResponse(w, err, s.logger)
-		return
-	}
-	resp, err := s.service.TotalLatestMiningRewards(s.getOffsetUTC(), startIndex, count)
-	WriteResponse(w, resp, err, s.logger)
-}
-
-func (s *httpServer) totalLatestBurntCoinsCount(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("totalLatestBurntCoinsCount", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	resp, err := s.service.TotalLatestBurntCoinsCount(s.getOffsetUTC())
-	WriteResponse(w, resp, err, s.logger)
-}
-
-func (s *httpServer) totalLatestBurntCoins(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("totalLatestBurntCoins", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	startIndex, count, err := ReadOldPaginatorParams(mux.Vars(r))
-	if err != nil {
-		WriteErrorResponse(w, err, s.logger)
-		return
-	}
-	resp, err := s.service.TotalLatestBurntCoins(s.getOffsetUTC(), startIndex, count)
-	WriteResponse(w, resp, err, s.logger)
 }
 
 // @Tags MemPool
