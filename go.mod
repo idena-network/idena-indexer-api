@@ -7,13 +7,11 @@ replace github.com/cosmos/iavl => github.com/idena-network/iavl v0.12.3-0.202101
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/coreos/go-semver v0.3.0
-	github.com/go-stack/stack v1.8.0
+	github.com/go-stack/stack v1.8.1
 	github.com/gorilla/handlers v1.5.1
 	github.com/gorilla/mux v1.8.0
-	github.com/idena-network/idena-go v0.25.2
-	github.com/klauspost/compress v1.11.13 // indirect
+	github.com/idena-network/idena-go v0.27.4
 	github.com/lib/pq v1.10.0
-	github.com/lucas-clemente/quic-go v0.19.3 // indirect
 	github.com/patrickmn/go-cache v2.1.0+incompatible
 	github.com/pkg/errors v0.9.1
 	github.com/shopspring/decimal v1.2.0
