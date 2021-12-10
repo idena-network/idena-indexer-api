@@ -2640,7 +2640,6 @@ func (s *httpServer) oracleVotingContract(w http.ResponseWriter, r *http.Request
 
 // @Tags Contracts
 // @Id EstimatedOracleRewards
-// @Param committeeSize query string true "committee size"
 // @Success 200 {object} api.Response{result=[]types.EstimatedOracleReward}
 // @Failure 400 "Bad request"
 // @Failure 429 "Request number limit exceeded"
@@ -2650,14 +2649,7 @@ func (s *httpServer) oracleVotingContract(w http.ResponseWriter, r *http.Request
 func (s *httpServer) estimatedOracleRewards(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("estimatedOracleRewards", r.RequestURI)
 	defer s.pm.Complete(id)
-
-	committeeSize, err := ReadUintUrlValue(r.Form, "committeesize")
-	if err != nil {
-		WriteErrorResponse(w, err, s.logger)
-		return
-	}
-
-	resp, err := s.service.EstimatedOracleRewards(committeeSize)
+	resp, err := s.service.EstimatedOracleRewards()
 	WriteResponse(w, resp, err, s.logger)
 }
 

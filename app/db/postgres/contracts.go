@@ -341,8 +341,8 @@ func calculateEstimatedTotalReward(balance decimal.Decimal, votingMinPaymentP *d
 	return &totalReward
 }
 
-func (a *postgresAccessor) EstimatedOracleRewards(committeeSize uint64) ([]types.EstimatedOracleReward, error) {
-	return a.estimatedOracleRewardsCache.get(committeeSize)
+func (a *postgresAccessor) EstimatedOracleRewards() ([]types.EstimatedOracleReward, error) {
+	return a.estimatedOracleRewardsCache.get()
 }
 
 func (a *postgresAccessor) lastBlockFeeRate() (decimal.Decimal, error) {

@@ -3,7 +3,6 @@ package postgres
 import (
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/shopspring/decimal"
-	"math"
 	"sync"
 	"time"
 )
@@ -33,7 +32,7 @@ func newEstimatedOracleRewardsCache(
 	return res
 }
 
-func (c *estimatedOracleRewardsService) get(committeeSize uint64) ([]types.EstimatedOracleReward, error) {
+func (c *estimatedOracleRewardsService) get() ([]types.EstimatedOracleReward, error) {
 	data := c.cache
 	if data == nil {
 		c.mutex.Lock()
@@ -48,7 +47,7 @@ func (c *estimatedOracleRewardsService) get(committeeSize uint64) ([]types.Estim
 		}
 		c.mutex.Unlock()
 	}
-	return createEstimatedOracleRewardsService(committeeSize, data.networkSize), nil
+	return createEstimatedOracleRewardsService(data.networkSize), nil
 }
 
 func (c *estimatedOracleRewardsService) loadData() (*estimatedOracleRewardsServiceCache, error) {
@@ -61,11 +60,11 @@ func (c *estimatedOracleRewardsService) loadData() (*estimatedOracleRewardsServi
 	}, nil
 }
 
-func createEstimatedOracleRewardsService(committeeSize, networkSize uint64) []types.EstimatedOracleReward {
+func createEstimatedOracleRewardsService(networkSize uint64) []types.EstimatedOracleReward {
 	if networkSize == 0 {
 		networkSize = 1
 	}
-	minOracleReward := decimal.NewFromFloat(math.Pow(math.Log10(float64(networkSize)), math.Log10(100.0*float64(committeeSize)/float64(networkSize))/2))
+	minOracleReward := decimal.NewFromFloat(5000).Div(decimal.NewFromFloat(float64(networkSize)))
 	return []types.EstimatedOracleReward{
 		{
 			Amount: minOracleReward,

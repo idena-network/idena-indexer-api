@@ -176,7 +176,7 @@ type Accessor interface {
 
 	OracleVotingContracts(authorAddress, oracleAddress string, states []string, all bool, sortBy *string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error)
 	OracleVotingContract(address, oracle string) (types.OracleVotingContract, error)
-	EstimatedOracleRewards(committeeSize uint64) ([]types.EstimatedOracleReward, error)
+	EstimatedOracleRewards() ([]types.EstimatedOracleReward, error)
 
 	PoolsCount() (uint64, error)
 	Pools(count uint64, continuationToken *string) ([]*types.Pool, *string, error)

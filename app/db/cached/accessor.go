@@ -1159,8 +1159,8 @@ func (a *cachedAccessor) OracleVotingContract(address, oracle string) (types.Ora
 	return a.accessor.OracleVotingContract(address, oracle)
 }
 
-func (a *cachedAccessor) EstimatedOracleRewards(networkSize uint64) ([]types.EstimatedOracleReward, error) {
-	return a.accessor.EstimatedOracleRewards(networkSize)
+func (a *cachedAccessor) EstimatedOracleRewards() ([]types.EstimatedOracleReward, error) {
+	return a.accessor.EstimatedOracleRewards()
 }
 
 func (a *cachedAccessor) AddressContractTxBalanceUpdates(address, contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error) {

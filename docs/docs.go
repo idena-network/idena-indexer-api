@@ -5043,15 +5043,6 @@ var doc = `{
                     "Contracts"
                 ],
                 "operationId": "EstimatedOracleRewards",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "committee size",
-                        "name": "committeeSize",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "OK",

@@ -4421,12 +4421,6 @@ paths:
   /OracleVotingContracts/EstimatedOracleRewards:
     get:
       operationId: EstimatedOracleRewards
-      parameters:
-      - description: committee size
-        in: query
-        name: committeeSize
-        required: true
-        type: string
       responses:
         "200":
           description: OK
