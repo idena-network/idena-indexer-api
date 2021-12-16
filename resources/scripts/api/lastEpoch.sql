@@ -1,5 +1,6 @@
 select e.epoch,
        e.validation_time,
+       coalesce(e.root, '')                      state_root,
        coalesce(es.flip_lottery_block_height, 0) flip_lottery_block_height,
        coalesce(preves.min_score_for_invite, 0)  min_score_for_invite
 from epochs e

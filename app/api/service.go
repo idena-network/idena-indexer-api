@@ -28,6 +28,8 @@ type Service interface {
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
 
+	IdentityWithProof(address string, height uint64) (*hexutil.Bytes, error)
+
 	ForkChangeLog(version string) (*service2.ChangeLogData, error)
 }
 
@@ -197,4 +199,8 @@ func (s *service) UpgradeVoting() ([]*types.UpgradeVotes, error) {
 
 func (s *service) ForkChangeLog(version string) (*service2.ChangeLogData, error) {
 	return s.changeLog.ForkChangeLog(version)
+}
+
+func (s *service) IdentityWithProof(address string, epoch uint64) (*hexutil.Bytes, error) {
+	return s.indexerApi.IdentityWithProof(epoch, address)
 }

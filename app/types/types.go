@@ -65,6 +65,7 @@ type RewardsSummary struct {
 type EpochDetail struct {
 	Epoch                      uint64    `json:"epoch"`
 	ValidationTime             time.Time `json:"validationTime" example:"2020-01-01T00:00:00Z"`
+	StateRoot                  *string   `json:"stateRoot,omitempty"`
 	ValidationFirstBlockHeight uint64    `json:"validationFirstBlockHeight"`
 	MinScoreForInvite          float32   `json:"minScoreForInvite"`
 } // @Name Epoch

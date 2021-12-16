@@ -288,6 +288,8 @@ func (s *httpServer) initRouter(router *mux.Router) {
 		HandlerFunc(s.epochIdentityAvailableInvites)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/ValidationSummary")).
 		HandlerFunc(s.epochIdentityValidationSummary)
+	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Identity/{address}/DataWithProof")).
+		HandlerFunc(s.epochIdentityDataWithProof)
 
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeRewards")).HandlerFunc(s.epochDelegateeRewards)
 	router.Path(strings.ToLower("/Epoch/{epoch:[0-9]+}/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.epochAddressDelegateeTotalRewards)
@@ -336,8 +338,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Address/{address}/Txs")).
 		HandlerFunc(s.identityTxs)
 	router.Path(strings.ToLower("/Address/{address}/Penalties/Count")).HandlerFunc(s.addressPenaltiesCount)
-	router.Path(strings.ToLower("/Address/{address}/Penalties")).
-		HandlerFunc(s.addressPenalties)
+	router.Path(strings.ToLower("/Address/{address}/Penalties")).HandlerFunc(s.addressPenalties)
 
 	// Deprecated path
 	router.Path(strings.ToLower("/Address/{address}/Flips/Count")).HandlerFunc(s.identityFlipsCount)
@@ -1644,6 +1645,29 @@ func (s *httpServer) epochIdentityValidationSummary(w http.ResponseWriter, r *ht
 		return
 	}
 	resp, err := s.service.EpochIdentityValidationSummary(epoch, vars["address"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Identity
+// @Id EpochIdentityDataWithProof
+// @Param epoch path integer true "epoch"
+// @Param address path string true "address"
+// @Success 200 {object} api.Response{result=string}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Epoch/{epoch}/Identity/{address}/DataWithProof [get]
+func (s *httpServer) epochIdentityDataWithProof(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("epochIdentityDataWithProof", r.RequestURI)
+	defer s.pm.Complete(id)
+	vars := mux.Vars(r)
+	epoch, err := ReadUint(vars, "epoch")
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, err := s.service.IdentityWithProof(vars["address"], epoch)
 	WriteResponse(w, resp, err, s.logger)
 }
 

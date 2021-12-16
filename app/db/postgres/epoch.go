@@ -89,6 +89,7 @@ func (a *postgresAccessor) epoch(queryName string, args ...interface{}) (types.E
 	err := a.db.QueryRow(a.getQuery(queryName), args...).Scan(
 		&res.Epoch,
 		&validationTime,
+		&res.StateRoot,
 		&res.ValidationFirstBlockHeight,
 		&res.MinScoreForInvite,
 	)

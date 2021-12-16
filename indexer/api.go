@@ -30,6 +30,8 @@ type Api interface {
 	MemPoolAddressContractTxs(address, contractAddress string) ([]service.Transaction, error)
 
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
+
+	IdentityWithProof(epoch uint64, address string) (*hexutil.Bytes, error)
 }
 
 func NewApi(client Client, logger log.Logger) Api {
@@ -203,6 +205,17 @@ func (api *apiImpl) UpgradeVoting() (res []*types.UpgradeVotes, err error) {
 		return nil, api.handleError(err)
 	}
 	return res, nil
+}
+
+func (api *apiImpl) IdentityWithProof(epoch uint64, address string) (*hexutil.Bytes, error) {
+	var res hexutil.Bytes
+	if _, _, err := api.client.Get("api/Address/"+address+"/IdentityWithProof?epoch="+strconv.FormatUint(epoch, 10), &res); err != nil {
+		return nil, api.handleError(err)
+	}
+	if len(res) == 0 {
+		return nil, nil
+	}
+	return &res, nil
 }
 
 var indexerError = errors.New("unable to load indexer data")
