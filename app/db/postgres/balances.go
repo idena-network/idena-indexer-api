@@ -12,7 +12,6 @@ import (
 const (
 	balancesCountQuery                 = "balancesCount.sql"
 	balancesQuery                      = "balances.sql"
-	balancesOldQuery                   = "balancesOld.sql"
 	totalLatestMiningRewardsCountQuery = "totalLatestMiningRewardsCount.sql"
 	totalLatestMiningRewardsQuery      = "totalLatestMiningRewards.sql"
 	totalLatestBurntCoinsCountQuery    = "totalLatestBurntCoinsCount.sql"
@@ -75,26 +74,6 @@ func (a *postgresAccessor) Balances(count uint64, continuationToken *string) ([]
 		res = res[:len(res)-1]
 	}
 	return res, nextContinuationToken, nil
-}
-
-func (a *postgresAccessor) BalancesOld(startIndex uint64, count uint64) ([]types.Balance, error) {
-	rows, err := a.db.Query(a.getQuery(balancesOldQuery), startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var res []types.Balance
-	for rows.Next() {
-		item := types.Balance{}
-		err = rows.Scan(&item.Address,
-			&item.Balance,
-			&item.Stake)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, item)
-	}
-	return res, nil
 }
 
 func (a *postgresAccessor) TotalLatestMiningRewardsCount(afterTime time.Time) (uint64, error) {

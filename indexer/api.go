@@ -12,7 +12,6 @@ import (
 type Api interface {
 	OnlineIdentitiesCount() (uint64, error)
 	OnlineIdentities(count uint64, continuationToken *string) ([]*types.OnlineIdentity, *string, error)
-	OnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error)
 	OnlineIdentity(address string) (*types.OnlineIdentity, error)
 	OnlineCount() (uint64, error)
 	ValidatorsCount() (uint64, error)
@@ -67,15 +66,6 @@ func (api *apiImpl) OnlineIdentities(count uint64, continuationToken *string) ([
 		return nil, nil, api.handleError(err)
 	}
 	return res, nextContinuationToken, nil
-}
-
-func (api *apiImpl) OnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error) {
-	var res []*types.OnlineIdentity
-	_, _, err := api.client.Get("api/OnlineIdentities?limit="+strconv.Itoa(int(count))+"&skip="+strconv.Itoa(int(startIndex)), &res)
-	if err != nil {
-		return nil, api.handleError(err)
-	}
-	return res, nil
 }
 
 func (api *apiImpl) OnlineIdentity(address string) (*types.OnlineIdentity, error) {

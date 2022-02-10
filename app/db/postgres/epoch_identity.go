@@ -14,7 +14,6 @@ const (
 	epochIdentityFlipsQuery               = "epochIdentityFlips.sql"
 	epochIdentityRewardedFlipsQuery       = "epochIdentityRewardedFlips.sql"
 	epochIdentityReportedFlipRewardsQuery = "epochIdentityReportedFlipRewards.sql"
-	epochIdentityValidationTxsQuery       = "epochIdentityValidationTxs.sql"
 	epochIdentityRewardsQuery             = "epochIdentityRewards.sql"
 	epochIdentityBadAuthorQuery           = "epochIdentityBadAuthor.sql"
 	epochIdentityRewardedInvitesQuery     = "epochIdentityRewardedInvites.sql"
@@ -107,7 +106,7 @@ func (a *postgresAccessor) epochIdentityAnswers(epoch uint64, address string, is
 }
 
 func (a *postgresAccessor) EpochIdentityFlips(epoch uint64, address string) ([]types.FlipSummary, error) {
-	return a.flipsOld(epochIdentityFlipsQuery, epoch, address)
+	return a.flipsWithoutPaging(epochIdentityFlipsQuery, epoch, address)
 }
 
 func (a *postgresAccessor) EpochIdentityFlipsWithRewardFlag(epoch uint64, address string) ([]types.FlipWithRewardFlag, error) {
@@ -191,16 +190,8 @@ func (a *postgresAccessor) EpochIdentityReportedFlipRewards(epoch uint64, addres
 	return res, nil
 }
 
-func (a *postgresAccessor) EpochIdentityValidationTxs(epoch uint64, address string) ([]types.TransactionSummary, error) {
-	rows, err := a.db.Query(a.getQuery(epochIdentityValidationTxsQuery), epoch, address)
-	if err != nil {
-		return nil, err
-	}
-	return readTxsOld(rows)
-}
-
 func (a *postgresAccessor) EpochIdentityRewards(epoch uint64, address string) ([]types.Reward, error) {
-	return a.rewardsOld(epochIdentityRewardsQuery, epoch, address)
+	return a.rewards(epochIdentityRewardsQuery, epoch, address)
 }
 
 func (a *postgresAccessor) EpochIdentityBadAuthor(epoch uint64, address string) (*types.BadAuthor, error) {

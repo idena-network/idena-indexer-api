@@ -1171,19 +1171,6 @@ func (s *httpServer) epochBadAuthors(w http.ResponseWriter, r *http.Request) {
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
-func (s *httpServer) epochRewardsCount(w http.ResponseWriter, r *http.Request) {
-	id := s.pm.Start("epochRewardsCount", r.RequestURI)
-	defer s.pm.Complete(id)
-
-	epoch, err := ReadUint(mux.Vars(r), "epoch")
-	if err != nil {
-		WriteErrorResponse(w, err, s.logger)
-		return
-	}
-	resp, err := s.service.EpochRewardsCount(epoch)
-	WriteResponse(w, resp, err, s.logger)
-}
-
 // @Tags Epochs
 // @Id EpochIdentitiesRewardsCount
 // @Param epoch path integer true "epoch"

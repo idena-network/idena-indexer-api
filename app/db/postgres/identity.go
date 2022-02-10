@@ -12,24 +12,18 @@ const (
 	identityCurrentFlipsQuery      = "identityCurrentFlips.sql"
 	identityEpochsCountQuery       = "identityEpochsCount.sql"
 	identityEpochsQuery            = "identityEpochs.sql"
-	identityEpochsOldQuery         = "identityEpochsOld.sql"
 	identityFlipStatesQuery        = "identityFlipStates.sql"
 	identityFlipRightAnswersQuery  = "identityFlipRightAnswers.sql"
 	identityInvitesCountQuery      = "identityInvitesCount.sql"
 	identityInvitesQuery           = "identityInvites.sql"
-	identityInvitesOldQuery        = "identityInvitesOld.sql"
 	identityTxsCountQuery          = "identityTxsCount.sql"
 	identityTxsQuery               = "identityTxs.sql"
-	identityTxsOldQuery            = "identityTxsOld.sql"
 	identityRewardsCountQuery      = "identityRewardsCount.sql"
 	identityRewardsQuery           = "identityRewards.sql"
-	identityRewardsOldQuery        = "identityRewardsOld.sql"
 	identityEpochRewardsCountQuery = "identityEpochRewardsCount.sql"
 	identityEpochRewardsQuery      = "identityEpochRewards.sql"
-	identityEpochRewardsOldQuery   = "identityEpochRewardsOld.sql"
 	identityFlipsCountQuery        = "identityFlipsCount.sql"
 	identityFlipsQuery             = "identityFlips.sql"
-	identityFlipsOldQuery          = "identityFlipsOld.sql"
 )
 
 func (a *postgresAccessor) Identity(address string) (types.Identity, error) {
@@ -106,14 +100,6 @@ func (a *postgresAccessor) IdentityEpochs(address string, count uint64, continua
 	return res.([]types.EpochIdentity), nextContinuationToken, nil
 }
 
-func (a *postgresAccessor) IdentityEpochsOld(address string, startIndex uint64, count uint64) ([]types.EpochIdentity, error) {
-	rows, err := a.db.Query(a.getQuery(identityEpochsOldQuery), address, startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	return readEpochIdentitiesOld(rows)
-}
-
 func (a *postgresAccessor) IdentityFlipStates(address string) ([]types.StrValueCount, error) {
 	rows, err := a.db.Query(a.getQuery(identityFlipStatesQuery), address)
 	if err != nil {
@@ -144,14 +130,6 @@ func (a *postgresAccessor) IdentityInvites(address string, count uint64, continu
 	return res.([]types.Invite), nextContinuationToken, nil
 }
 
-func (a *postgresAccessor) IdentityInvitesOld(address string, startIndex uint64, count uint64) ([]types.Invite, error) {
-	rows, err := a.db.Query(a.getQuery(identityInvitesOldQuery), address, startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	return readInvitesOld(rows)
-}
-
 func (a *postgresAccessor) IdentityTxsCount(address string) (uint64, error) {
 	return a.count(identityTxsCountQuery, address)
 }
@@ -164,14 +142,6 @@ func (a *postgresAccessor) IdentityTxs(address string, count uint64, continuatio
 		return nil, nil, err
 	}
 	return res.([]types.TransactionSummary), nextContinuationToken, nil
-}
-
-func (a *postgresAccessor) IdentityTxsOld(address string, startIndex uint64, count uint64) ([]types.TransactionSummary, error) {
-	rows, err := a.db.Query(a.getQuery(identityTxsOldQuery), address, startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	return readTxsOld(rows)
 }
 
 func (a *postgresAccessor) IdentityRewardsCount(address string) (uint64, error) {
@@ -200,10 +170,6 @@ func (a *postgresAccessor) IdentityRewards(address string, count uint64, continu
 		return nil, nil, err
 	}
 	return res.([]types.Reward), nextContinuationToken, nil
-}
-
-func (a *postgresAccessor) IdentityRewardsOld(address string, startIndex uint64, count uint64) ([]types.Reward, error) {
-	return a.rewardsOld(identityRewardsOldQuery, address, startIndex, count)
 }
 
 func (a *postgresAccessor) IdentityEpochRewardsCount(address string) (uint64, error) {
@@ -248,49 +214,10 @@ func (a *postgresAccessor) IdentityEpochRewards(address string, count uint64, co
 	return res.([]types.Rewards), nextContinuationToken, nil
 }
 
-func (a *postgresAccessor) IdentityEpochRewardsOld(address string, startIndex uint64, count uint64) ([]types.Rewards, error) {
-	rows, err := a.db.Query(a.getQuery(identityEpochRewardsOldQuery), address, startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var res []types.Rewards
-	var item *types.Rewards
-	for rows.Next() {
-		reward := types.Reward{}
-		var epoch uint64
-		var prevState, state string
-		var age uint16
-		if err := rows.Scan(&epoch, &reward.Balance, &reward.Stake, &reward.Type, &prevState, &state, &age); err != nil {
-			return nil, err
-		}
-		if item == nil || item.Epoch != epoch {
-			if item != nil {
-				res = append(res, *item)
-			}
-			item = &types.Rewards{
-				Epoch:     epoch,
-				PrevState: prevState,
-				State:     state,
-				Age:       age,
-			}
-		}
-		item.Rewards = append(item.Rewards, reward)
-	}
-	if item != nil {
-		res = append(res, *item)
-	}
-	return res, nil
-}
-
 func (a *postgresAccessor) IdentityFlipsCount(address string) (uint64, error) {
 	return a.count(identityFlipsCountQuery, address)
 }
 
 func (a *postgresAccessor) IdentityFlips(address string, count uint64, continuationToken *string) ([]types.FlipSummary, *string, error) {
 	return a.flips(identityFlipsQuery, count, continuationToken, address)
-}
-
-func (a *postgresAccessor) IdentityFlipsOld(address string, startIndex uint64, count uint64) ([]types.FlipSummary, error) {
-	return a.flipsOld(identityFlipsOldQuery, address, startIndex, count)
 }

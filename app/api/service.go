@@ -18,7 +18,6 @@ type Service interface {
 	MemPoolTxsCount() (int, error)
 	GetOnlineIdentitiesCount() (uint64, error)
 	GetOnlineIdentities(count uint64, continuationToken *string) ([]*types.OnlineIdentity, *string, error)
-	GetOnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error)
 	GetOnlineIdentity(address string) (*types.OnlineIdentity, error)
 	GetOnlineCount() (uint64, error)
 	ValidatorsCount() (uint64, error)
@@ -144,11 +143,6 @@ func (s *service) GetOnlineIdentitiesCount() (uint64, error) {
 
 func (s *service) GetOnlineIdentities(count uint64, continuationToken *string) ([]*types.OnlineIdentity, *string, error) {
 	return s.indexerApi.OnlineIdentities(count, continuationToken)
-}
-
-// Deprecated
-func (s *service) GetOnlineIdentitiesOld(startIndex, count uint64) ([]*types.OnlineIdentity, error) {
-	return s.indexerApi.OnlineIdentitiesOld(startIndex, count)
 }
 
 func (s *service) GetOnlineIdentity(address string) (*types.OnlineIdentity, error) {

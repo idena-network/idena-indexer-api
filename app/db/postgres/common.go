@@ -92,41 +92,6 @@ func readInvites(rows *sql.Rows) ([]types.Invite, uint64, error) {
 	return res, id, nil
 }
 
-func readInvitesOld(rows *sql.Rows) ([]types.Invite, error) {
-	defer rows.Close()
-	var res []types.Invite
-	for rows.Next() {
-		item := types.Invite{}
-		var timestamp, activationTimestamp, killInviteeTimestamp int64
-		if err := rows.Scan(
-			&item.Hash,
-			&item.Author,
-			&timestamp,
-			&item.Epoch,
-			&item.ActivationHash,
-			&item.ActivationAuthor,
-			&activationTimestamp,
-			&item.State,
-			&item.KillInviteeHash,
-			&killInviteeTimestamp,
-			&item.KillInviteeEpoch,
-		); err != nil {
-			return nil, err
-		}
-		item.Timestamp = timestampToTimeUTC(timestamp)
-		if activationTimestamp > 0 {
-			t := timestampToTimeUTC(activationTimestamp)
-			item.ActivationTimestamp = &t
-		}
-		if killInviteeTimestamp > 0 {
-			t := timestampToTimeUTC(killInviteeTimestamp)
-			item.KillInviteeTimestamp = &t
-		}
-		res = append(res, item)
-	}
-	return res, nil
-}
-
 func readTxs(rows *sql.Rows) ([]types.TransactionSummary, uint64, error) {
 	defer rows.Close()
 	var res []types.TransactionSummary
@@ -178,56 +143,6 @@ func readTxs(rows *sql.Rows) ([]types.TransactionSummary, uint64, error) {
 		res = append(res, item)
 	}
 	return res, id, nil
-}
-
-func readTxsOld(rows *sql.Rows) ([]types.TransactionSummary, error) {
-	defer rows.Close()
-	var res []types.TransactionSummary
-	for rows.Next() {
-		item := types.TransactionSummary{}
-		var timestamp int64
-		var gasCost, transfer NullDecimal
-		var success, becomeOnline sql.NullBool
-		var gasUsed sql.NullInt64
-		var method, errorMsg sql.NullString
-		if err := rows.Scan(
-			&item.Hash,
-			&item.Type,
-			&timestamp,
-			&item.From,
-			&item.To,
-			&item.Amount,
-			&item.Tips,
-			&item.MaxFee,
-			&item.Fee,
-			&item.Size,
-			&transfer,
-			&becomeOnline,
-			&success,
-			&gasUsed,
-			&gasCost,
-			&method,
-			&errorMsg,
-		); err != nil {
-			return nil, err
-		}
-		item.Timestamp = timestampToTimeUTCp(timestamp)
-		if transfer.Valid {
-			item.Transfer = &transfer.Decimal
-		}
-		item.Data = readTxSpecificData(item.Type, transfer, becomeOnline)
-		if success.Valid {
-			item.TxReceipt = &types.TxReceipt{
-				Success:  success.Bool,
-				GasUsed:  uint64(gasUsed.Int64),
-				GasCost:  gasCost.Decimal,
-				Method:   method.String,
-				ErrorMsg: errorMsg.String,
-			}
-		}
-		res = append(res, item)
-	}
-	return res, nil
 }
 
 func readTxSpecificData(txType string, transfer NullDecimal, becomeOnline sql.NullBool) interface{} {
@@ -360,8 +275,7 @@ func readFlips(rows *sql.Rows) ([]types.FlipSummary, uint64, error) {
 	return res, id, nil
 }
 
-// Deprecated
-func (a *postgresAccessor) flipsOld(queryName string, args ...interface{}) ([]types.FlipSummary, error) {
+func (a *postgresAccessor) flipsWithoutPaging(queryName string, args ...interface{}) ([]types.FlipSummary, error) {
 	rows, err := a.db.Query(a.getQuery(queryName), args...)
 	if err != nil {
 		return nil, err
@@ -449,45 +363,6 @@ func readEpochIdentity(rows *sql.Rows) (types.EpochIdentity, uint64, error) {
 	return res, id, err
 }
 
-func readEpochIdentitiesOld(rows *sql.Rows) ([]types.EpochIdentity, error) {
-	defer rows.Close()
-	var res []types.EpochIdentity
-	for rows.Next() {
-		item, err := readEpochIdentityOld(rows)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, item)
-	}
-	return res, nil
-}
-
-func readEpochIdentityOld(rows *sql.Rows) (types.EpochIdentity, error) {
-	res := types.EpochIdentity{}
-	err := rows.Scan(
-		&res.Address,
-		&res.Epoch,
-		&res.State,
-		&res.PrevState,
-		&res.Approved,
-		&res.Missed,
-		&res.ShortAnswers.Point,
-		&res.ShortAnswers.FlipsCount,
-		&res.TotalShortAnswers.Point,
-		&res.TotalShortAnswers.FlipsCount,
-		&res.LongAnswers.Point,
-		&res.LongAnswers.FlipsCount,
-		&res.RequiredFlips,
-		&res.MadeFlips,
-		&res.AvailableFlips,
-		&res.TotalValidationReward,
-		&res.BirthEpoch,
-		&res.ShortAnswersCount,
-		&res.LongAnswersCount,
-	)
-	return res, err
-}
-
 func readAnswers(rows *sql.Rows) ([]types.Answer, error) {
 	defer rows.Close()
 	var res []types.Answer
@@ -531,7 +406,7 @@ func (a *postgresAccessor) coins(queryName string, args ...interface{}) (types.A
 	return res, nil
 }
 
-func (a *postgresAccessor) rewardsOld(queryName string, args ...interface{}) ([]types.Reward, error) {
+func (a *postgresAccessor) rewards(queryName string, args ...interface{}) ([]types.Reward, error) {
 	rows, err := a.db.Query(a.getQuery(queryName), args...)
 	if err != nil {
 		return nil, err
@@ -569,27 +444,6 @@ func readBadAuthors(rows *sql.Rows) ([]types.BadAuthor, uint64, error) {
 		res = append(res, item)
 	}
 	return res, id, nil
-}
-
-func readBadAuthorsOld(rows *sql.Rows) ([]types.BadAuthor, error) {
-	defer rows.Close()
-	var res []types.BadAuthor
-	for rows.Next() {
-		item := types.BadAuthor{}
-		err := rows.Scan(
-			&item.Address,
-			&item.Epoch,
-			&item.WrongWords,
-			&item.Reason,
-			&item.PrevState,
-			&item.State,
-		)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, item)
-	}
-	return res, nil
 }
 
 func (a *postgresAccessor) adjacentStrValues(queryName string, value string) (types.AdjacentStrValues, error) {

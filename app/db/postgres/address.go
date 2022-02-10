@@ -11,7 +11,6 @@ const (
 	addressQuery                         = "address.sql"
 	addressPenaltiesCountQuery           = "addressPenaltiesCount.sql"
 	addressPenaltiesQuery                = "addressPenalties.sql"
-	addressPenaltiesOldQuery             = "addressPenaltiesOld.sql"
 	addressStatesCountQuery              = "addressStatesCount.sql"
 	addressStatesQuery                   = "addressStates.sql"
 	addressTotalLatestMiningRewardQuery  = "addressTotalLatestMiningReward.sql"
@@ -79,31 +78,6 @@ func (a *postgresAccessor) AddressPenalties(address string, count uint64, contin
 		return nil, nil, err
 	}
 	return res.([]types.Penalty), nextContinuationToken, nil
-}
-
-func (a *postgresAccessor) AddressPenaltiesOld(address string, startIndex uint64, count uint64) ([]types.Penalty, error) {
-	rows, err := a.db.Query(a.getQuery(addressPenaltiesOldQuery), address, startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var res []types.Penalty
-	for rows.Next() {
-		item := types.Penalty{}
-		var timestamp int64
-		err = rows.Scan(&item.Address,
-			&item.Penalty,
-			&item.BlockHeight,
-			&item.BlockHash,
-			&timestamp,
-			&item.Epoch)
-		if err != nil {
-			return nil, err
-		}
-		item.Timestamp = timestampToTimeUTC(timestamp)
-		res = append(res, item)
-	}
-	return res, nil
 }
 
 func (a *postgresAccessor) AddressStatesCount(address string) (uint64, error) {
