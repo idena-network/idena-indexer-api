@@ -21,8 +21,6 @@ type Accessor interface {
 
 	EpochsCount() (uint64, error)
 	Epochs(count uint64, continuationToken *string) ([]types.EpochSummary, *string, error)
-	// Deprecated
-	EpochsOld(startIndex uint64, count uint64) ([]types.EpochSummary, error)
 
 	LastEpoch() (types.EpochDetail, error)
 	Epoch(epoch uint64) (types.EpochDetail, error)

@@ -6212,6 +6212,9 @@
         "Epoch": {
             "type": "object",
             "properties": {
+                "candidateCount": {
+                    "type": "integer"
+                },
                 "epoch": {
                     "type": "integer"
                 },
@@ -6323,6 +6326,9 @@
             "type": "object",
             "properties": {
                 "blockCount": {
+                    "type": "integer"
+                },
+                "candidateCount": {
                     "type": "integer"
                 },
                 "coins": {

@@ -6232,6 +6232,9 @@ var doc = `{
         "Epoch": {
             "type": "object",
             "properties": {
+                "candidateCount": {
+                    "type": "integer"
+                },
                 "epoch": {
                     "type": "integer"
                 },
@@ -6343,6 +6346,9 @@ var doc = `{
             "type": "object",
             "properties": {
                 "blockCount": {
+                    "type": "integer"
+                },
+                "candidateCount": {
                     "type": "integer"
                 },
                 "coins": {

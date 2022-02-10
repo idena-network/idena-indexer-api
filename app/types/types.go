@@ -33,6 +33,7 @@ type EpochSummary struct {
 	EmptyBlockCount   uint32         `json:"emptyBlockCount"`
 	TxCount           uint32         `json:"txCount"`
 	InviteCount       uint32         `json:"inviteCount"`
+	CandidateCount    uint32         `json:"candidateCount"`
 	FlipCount         uint32         `json:"flipCount"`
 	Coins             AllCoins       `json:"coins"`
 	Rewards           RewardsSummary `json:"rewards"`
@@ -68,6 +69,7 @@ type EpochDetail struct {
 	StateRoot                  *string   `json:"stateRoot,omitempty"`
 	ValidationFirstBlockHeight uint64    `json:"validationFirstBlockHeight"`
 	MinScoreForInvite          float32   `json:"minScoreForInvite"`
+	CandidateCount             uint32    `json:"candidateCount"`
 } // @Name Epoch
 
 type BlockSummary struct {

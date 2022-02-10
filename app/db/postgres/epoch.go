@@ -92,6 +92,7 @@ func (a *postgresAccessor) epoch(queryName string, args ...interface{}) (types.E
 		&res.StateRoot,
 		&res.ValidationFirstBlockHeight,
 		&res.MinScoreForInvite,
+		&res.CandidateCount,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound

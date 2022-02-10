@@ -366,6 +366,8 @@ definitions:
     type: object
   Epoch:
     properties:
+      candidateCount:
+        type: integer
       epoch:
         type: integer
       minScoreForInvite:
@@ -446,6 +448,8 @@ definitions:
   EpochSummary:
     properties:
       blockCount:
+        type: integer
+      candidateCount:
         type: integer
       coins:
         $ref: '#/definitions/Coins'

@@ -8,7 +8,6 @@ import (
 const (
 	epochsCountQuery = "epochsCount.sql"
 	epochsQuery      = "epochs.sql"
-	epochsOldQuery   = "epochsOld.sql"
 )
 
 func (a *postgresAccessor) EpochsCount() (uint64, error) {
@@ -47,6 +46,7 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 				&item.Rewards.FoundationPayouts,
 				&item.Rewards.ZeroWalletFund,
 				&item.MinScoreForInvite,
+				&item.CandidateCount,
 			); err != nil {
 				return nil, 0, err
 			}
@@ -60,47 +60,4 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 		return nil, nil, err
 	}
 	return res.([]types.EpochSummary), nextContinuationToken, nil
-}
-
-func (a *postgresAccessor) EpochsOld(startIndex uint64, count uint64) ([]types.EpochSummary, error) {
-	rows, err := a.db.Query(a.getQuery(epochsOldQuery), startIndex, count)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var epochs []types.EpochSummary
-	for rows.Next() {
-		epoch := types.EpochSummary{
-			Coins:   types.AllCoins{},
-			Rewards: types.RewardsSummary{},
-		}
-		var validationTime int64
-		err = rows.Scan(
-			&epoch.Epoch,
-			&validationTime,
-			&epoch.ValidatedCount,
-			&epoch.BlockCount,
-			&epoch.EmptyBlockCount,
-			&epoch.TxCount,
-			&epoch.InviteCount,
-			&epoch.FlipCount,
-			&epoch.Coins.Burnt,
-			&epoch.Coins.Minted,
-			&epoch.Coins.TotalBalance,
-			&epoch.Coins.TotalStake,
-			&epoch.Rewards.Total,
-			&epoch.Rewards.Validation,
-			&epoch.Rewards.Flips,
-			&epoch.Rewards.Invitations,
-			&epoch.Rewards.FoundationPayouts,
-			&epoch.Rewards.ZeroWalletFund,
-			&epoch.MinScoreForInvite,
-		)
-		if err != nil {
-			return nil, err
-		}
-		epoch.ValidationTime = timestampToTimeUTC(validationTime)
-		epochs = append(epochs, epoch)
-	}
-	return epochs, nil
 }

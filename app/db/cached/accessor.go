@@ -307,13 +307,6 @@ func (a *cachedAccessor) Epochs(count uint64, continuationToken *string) ([]type
 	return res.([]types.EpochSummary), nextContinuationToken, err
 }
 
-func (a *cachedAccessor) EpochsOld(startIndex uint64, count uint64) ([]types.EpochSummary, error) {
-	res, err := a.getOrLoad("EpochsOld", func() (interface{}, error) {
-		return a.accessor.EpochsOld(startIndex, count)
-	}, startIndex, count)
-	return res.([]types.EpochSummary), err
-}
-
 func (a *cachedAccessor) LastEpoch() (types.EpochDetail, error) {
 	res, err := a.getOrLoad("LastEpoch", func() (interface{}, error) {
 		return a.accessor.LastEpoch()
