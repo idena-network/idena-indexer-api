@@ -6,7 +6,6 @@ import (
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/pkg/errors"
 	"github.com/shopspring/decimal"
-	"math"
 	"strings"
 	"time"
 )
@@ -237,11 +236,11 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 					}
 					networkSize = &size
 				}
-				d, _ := item.Stake.Mul(decimal.NewFromInt(int64(*networkSize))).Div(decimal.NewFromInt(100)).Float64()
-				terminationDays := uint64(math.Round(math.Pow(d, 1.0/3)))
+				//d, _ := item.Stake.Mul(decimal.NewFromInt(int64(*networkSize))).Div(decimal.NewFromInt(100)).Float64()
+				//terminationDays := uint64(math.Round(math.Pow(d, 1.0/3)))
 				const blocksInDay = 4320
 
-				estimatedTerminationTime := headBlockTime.Add(time.Second * 20 * time.Duration(uint64(countingBlock.Int64)-headBlockHeight+curItem.PublicVotingDuration+terminationDays*blocksInDay))
+				estimatedTerminationTime := headBlockTime.Add(time.Second * 20 * time.Duration(uint64(countingBlock.Int64)-headBlockHeight+curItem.PublicVotingDuration+5))
 				item.EstimatedTerminationTime = &estimatedTerminationTime
 				if itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting {
 					estimatedPublicVotingFinishTime := headBlockTime.Add(time.Second * 20 * time.Duration(uint64(countingBlock.Int64)-headBlockHeight+curItem.PublicVotingDuration))
@@ -254,7 +253,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 			}
 		}
 		if itemState == oracleVotingStatePending && item.EstimatedTerminationTime == nil {
-			v := item.StartTime.Add(time.Hour * 24 * 30)
+			v := item.StartTime.Add(time.Minute * 10)
 			item.EstimatedTerminationTime = &v
 		}
 		if committeeEpoch.Valid {
