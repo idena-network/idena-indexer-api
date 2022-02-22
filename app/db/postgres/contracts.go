@@ -296,7 +296,7 @@ func calculateEstimatedOracleReward(balance decimal.Decimal, votingMinPaymentP *
 	}
 	committeeSizeD := decimal.NewFromInt(int64(committeeSize))
 	if ownerFee > 0 {
-		ownerReward = potentialBalance.Sub(votingMinPayment.Mul(committeeSizeD)).Mul(decimal.NewFromFloat(float64(ownerFee) / 100.0))
+		ownerReward = potentialBalance.Sub(votingMinPayment.Mul(committeeSizeD)).Mul(decimal.NewFromFloat(float64(ownerFee) / 100.0).Ceil())
 	}
 	oracleReward := potentialBalance.Sub(ownerReward).Div(committeeSizeD)
 	return &oracleReward
@@ -326,7 +326,7 @@ func calculateEstimatedMaxOracleReward(balance decimal.Decimal, votingMinPayment
 		ownerReward = potentialBalance.Sub(votingMinPayment.Mul(minVotesCntD)).Mul(decimal.NewFromFloat(float64(ownerFee) / 100.0))
 	}
 
-	oracleReward := potentialBalance.Sub(ownerReward).Div(minVotesCntD.Mul(decimal.New(int64(winnerThreshold), -2)))
+	oracleReward := potentialBalance.Sub(ownerReward).Div(minVotesCntD.Mul(decimal.New(int64(winnerThreshold), -2)).Ceil())
 	return &oracleReward
 }
 

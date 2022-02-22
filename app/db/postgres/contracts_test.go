@@ -17,7 +17,7 @@ func Test_calculateEstimatedMaxOracleReward(t *testing.T) {
 		51,
 		4)
 
-	require.Equal(t, "12.9412", res.StringFixed(4))
+	require.Equal(t, "11.0000", res.StringFixed(4))
 
 	res = calculateEstimatedMaxOracleReward(
 		decimal.New(10, 0),
@@ -28,5 +28,15 @@ func Test_calculateEstimatedMaxOracleReward(t *testing.T) {
 		66,
 		0)
 
-	require.Equal(t, "15.1515", res.StringFixed(4))
+	require.Equal(t, "10.0000", res.StringFixed(4))
+
+	res = calculateEstimatedMaxOracleReward(
+		decimal.New(5000, 0),
+		nil,
+		95,
+		4,
+		5,
+		51,
+		1)
+	require.Equal(t, "250.0000", res.StringFixed(4))
 }
