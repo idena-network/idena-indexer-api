@@ -5500,6 +5500,46 @@ var doc = `{
                 }
             }
         },
+        "/Staking": {
+            "get": {
+                "tags": [
+                    "Coins"
+                ],
+                "operationId": "Staking",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/Staking"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/TimeLockContract/{address}": {
             "get": {
                 "tags": [
@@ -7321,6 +7361,14 @@ var doc = `{
                         "SavedInvite",
                         "SavedInviteWin"
                     ]
+                }
+            }
+        },
+        "Staking": {
+            "type": "object",
+            "properties": {
+                "weight": {
+                    "type": "number"
                 }
             }
         },

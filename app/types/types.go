@@ -353,6 +353,10 @@ type Balance struct {
 	Stake   decimal.Decimal `json:"stake" swaggertype:"string"`
 } // @Name Balance
 
+type Staking struct {
+	Weight float64 `json:"weight"`
+} // @NAme Staking
+
 type TotalMiningReward struct {
 	Address        string          `json:"address,omitempty"`
 	Balance        decimal.Decimal `json:"balance"`

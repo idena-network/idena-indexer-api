@@ -358,6 +358,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.addressDelegateeTotalRewards)
 
 	router.Path(strings.ToLower("/Balances")).HandlerFunc(s.balances)
+	router.Path(strings.ToLower("/Staking")).HandlerFunc(s.staking)
 
 	router.Path(strings.ToLower("/Contract/{address}")).HandlerFunc(s.contract)
 	router.Path(strings.ToLower("/Contract/{address}/BalanceUpdates")).HandlerFunc(s.contractTxBalanceUpdates)
@@ -2485,6 +2486,21 @@ func (s *httpServer) balances(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, nextContinuationToken, err := s.service.Balances(count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+// @Tags Coins
+// @Id Staking
+// @Success 200 {object} api.Response{result=types.Staking}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Staking [get]
+func (s *httpServer) staking(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("staking", r.RequestURI)
+	defer s.pm.Complete(id)
+	resp, err := s.service.Staking()
+	WriteResponse(w, resp, err, s.logger)
 }
 
 // @Tags MemPool

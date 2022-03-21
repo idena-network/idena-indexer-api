@@ -1132,6 +1132,11 @@ definitions:
         - SavedInviteWin
         type: string
     type: object
+  Staking:
+    properties:
+      weight:
+        type: number
+    type: object
   Transaction:
     properties:
       amount:
@@ -4700,6 +4705,29 @@ paths:
           description: Service unavailable
       tags:
       - Search
+  /Staking:
+    get:
+      operationId: Staking
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/Staking'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Coins
   /TimeLockContract/{address}:
     get:
       operationId: TimeLockContract

@@ -26,6 +26,7 @@ type Service interface {
 	OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
+	Staking() (*types.Staking, error)
 
 	IdentityWithProof(address string, height uint64) (*hexutil.Bytes, error)
 
@@ -197,4 +198,14 @@ func (s *service) ForkChangeLog(version string) (*service2.ChangeLogData, error)
 
 func (s *service) IdentityWithProof(address string, epoch uint64) (*hexutil.Bytes, error) {
 	return s.indexerApi.IdentityWithProof(epoch, address)
+}
+
+func (s *service) Staking() (*types.Staking, error) {
+	weight, err := s.indexerApi.Staking()
+	if err != nil {
+		return nil, err
+	}
+	return &types.Staking{
+		Weight: weight,
+	}, nil
 }
