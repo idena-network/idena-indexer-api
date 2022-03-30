@@ -521,6 +521,18 @@ type TimeLockContract struct {
 	Timestamp JSONTime `json:"timestamp" swaggertype:"string" example:"2020-01-01T00:00:00Z"`
 } // @TimeLockContract
 
+type MultisigContract struct {
+	MinVotes uint8                    `json:"minVotes"`
+	MaxVotes uint8                    `json:"maxVotes"`
+	Signers  []MultisigContractSigner `json:"signers,omitempty"`
+} // @MultisigContract
+
+type MultisigContractSigner struct {
+	Address     string          `json:"address"`
+	DestAddress string          `json:"destAddress"`
+	Amount      decimal.Decimal `json:"amount" swaggertype:"string"`
+} // @MultisigContractSigner
+
 type OracleLockContract struct {
 	OracleVotingAddress string `json:"oracleVotingAddress"`
 	Value               byte   `json:"value"`

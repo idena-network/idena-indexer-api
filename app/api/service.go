@@ -209,3 +209,16 @@ func (s *service) Staking() (*types.Staking, error) {
 		Weight: weight,
 	}, nil
 }
+
+func (s *service) MultisigContract(address string) (types.MultisigContract, error) {
+	res, err := s.Accessor.MultisigContract(address)
+	if err != nil {
+		return types.MultisigContract{}, err
+	}
+	indexerContract, err := s.indexerApi.MultisigContract(address)
+	if err != nil {
+		return types.MultisigContract{}, err
+	}
+	res.Signers = indexerContract.Signers
+	return res, nil
+}

@@ -33,6 +33,8 @@ type Api interface {
 	Staking() (float64, error)
 
 	IdentityWithProof(epoch uint64, address string) (*hexutil.Bytes, error)
+
+	MultisigContract(address string) (*types.MultisigContract, error)
 }
 
 func NewApi(client Client, logger log.Logger) Api {
@@ -216,6 +218,14 @@ func (api *apiImpl) Staking() (float64, error) {
 		return 0, api.handleError(err)
 	}
 	return res, nil
+}
+
+func (api *apiImpl) MultisigContract(address string) (*types.MultisigContract, error) {
+	res, _, err := api.client.Get("api/Multisig/"+address, &types.MultisigContract{})
+	if err != nil || res == nil {
+		return nil, api.handleError(err)
+	}
+	return res.(*types.MultisigContract), nil
 }
 
 var indexerError = errors.New("unable to load indexer data")

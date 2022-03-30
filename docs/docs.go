@@ -4900,6 +4900,55 @@ var doc = `{
                 }
             }
         },
+        "/MultisigContract/{address}": {
+            "get": {
+                "tags": [
+                    "Contracts"
+                ],
+                "operationId": "MultisigContract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contract address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/types.MultisigContract"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/OracleLockContract/{address}": {
             "get": {
                 "tags": [
@@ -7711,6 +7760,37 @@ var doc = `{
                         "Multisig",
                         "RefundableOracleLock"
                     ]
+                }
+            }
+        },
+        "types.MultisigContract": {
+            "type": "object",
+            "properties": {
+                "maxVotes": {
+                    "type": "integer"
+                },
+                "minVotes": {
+                    "type": "integer"
+                },
+                "signers": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.MultisigContractSigner"
+                    }
+                }
+            }
+        },
+        "types.MultisigContractSigner": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "type": "string"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "destAddress": {
+                    "type": "string"
                 }
             }
         },

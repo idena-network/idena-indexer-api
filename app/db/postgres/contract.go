@@ -8,6 +8,7 @@ import (
 const (
 	contractQuery                 = "contract.sql"
 	timeLockContractQuery         = "timeLockContract.sql"
+	multisigContractQuery         = "multisigContract.sql"
 	oracleLockContractQuery       = "oracleLockContract.sql"
 	oracleVotingContractQuery     = "oracleVotingContract.sql"
 	contractTxBalanceUpdatesQuery = "contractTxBalanceUpdates.sql"
@@ -139,17 +140,16 @@ func (a *postgresAccessor) OracleLockContract(address string) (types.OracleLockC
 	return res, nil
 }
 
-func (a *postgresAccessor) readTimeLockContracts(rows *sql.Rows) ([]types.TimeLockContract, *string, error) {
-	var res []types.TimeLockContract
-	for rows.Next() {
-		item := types.TimeLockContract{}
-		var timestamp int64
-		if err := rows.Scan(&timestamp); err != nil {
-			return nil, nil, err
-		}
-		item.Timestamp = types.JSONTime(timestampToTimeUTC(timestamp))
+func (a *postgresAccessor) MultisigContract(address string) (types.MultisigContract, error) {
+	res := types.MultisigContract{}
+	err := a.db.QueryRow(a.getQuery(multisigContractQuery), address).Scan(&res.MinVotes, &res.MaxVotes)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
 	}
-	return res, nil, nil
+	if err != nil {
+		return types.MultisigContract{}, err
+	}
+	return res, nil
 }
 
 func (a *postgresAccessor) OracleVotingContract(address, oracle string) (types.OracleVotingContract, error) {

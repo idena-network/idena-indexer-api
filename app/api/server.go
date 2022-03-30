@@ -365,6 +365,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/TimeLockContract/{address}")).HandlerFunc(s.timeLockContract)
 	router.Path(strings.ToLower("/OracleLockContract/{address}")).HandlerFunc(s.oracleLockContract)
+	router.Path(strings.ToLower("/MultisigContract/{address}")).HandlerFunc(s.multisigContract)
 
 	router.Path(strings.ToLower("/OracleVotingContracts")).HandlerFunc(s.oracleVotingContracts)
 	router.Path(strings.ToLower("/OracleVotingContract/{address}")).HandlerFunc(s.oracleVotingContract)
@@ -2662,6 +2663,23 @@ func (s *httpServer) oracleVotingContract(w http.ResponseWriter, r *http.Request
 	defer s.pm.Complete(id)
 
 	resp, err := s.contractsService.OracleVotingContract(mux.Vars(r)["address"], r.Form.Get("oracle"))
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Contracts
+// @Id MultisigContract
+// @Param address path string true "contract address"
+// @Success 200 {object} api.Response{result=types.MultisigContract}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /MultisigContract/{address} [get]
+func (s *httpServer) multisigContract(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("multisigContract", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	resp, err := s.service.MultisigContract(mux.Vars(r)["address"])
 	WriteResponse(w, resp, err, s.logger)
 }
 

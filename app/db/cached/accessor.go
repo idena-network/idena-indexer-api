@@ -992,6 +992,13 @@ func (a *cachedAccessor) TimeLockContract(address string) (types.TimeLockContrac
 	return res.(types.TimeLockContract), err
 }
 
+func (a *cachedAccessor) MultisigContract(address string) (types.MultisigContract, error) {
+	res, err := a.getOrLoad("MultisigContract", func() (interface{}, error) {
+		return a.accessor.MultisigContract(address)
+	}, address)
+	return res.(types.MultisigContract), err
+}
+
 func (a *cachedAccessor) OracleLockContract(address string) (types.OracleLockContract, error) {
 	res, err := a.getOrLoad("OracleLockContract", func() (interface{}, error) {
 		return a.accessor.OracleLockContract(address)

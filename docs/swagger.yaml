@@ -1388,6 +1388,26 @@ definitions:
         - RefundableOracleLock
         type: string
     type: object
+  types.MultisigContract:
+    properties:
+      maxVotes:
+        type: integer
+      minVotes:
+        type: integer
+      signers:
+        items:
+          $ref: '#/definitions/types.MultisigContractSigner'
+        type: array
+    type: object
+  types.MultisigContractSigner:
+    properties:
+      address:
+        type: string
+      amount:
+        type: string
+      destAddress:
+        type: string
+    type: object
   types.OracleLockContract:
     properties:
       failAddress:
@@ -4345,6 +4365,35 @@ paths:
           description: Service unavailable
       tags:
       - Miners
+  /MultisigContract/{address}:
+    get:
+      operationId: MultisigContract
+      parameters:
+      - description: contract address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/types.MultisigContract'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Contracts
   /OracleLockContract/{address}:
     get:
       operationId: OracleLockContract
