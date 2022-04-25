@@ -26,6 +26,12 @@ SELECT coalesce(ei.short_point, 0)                                    short_poin
        coalesce(vrs.reports, 0)                                       reports,
        coalesce(vrs.reports_missed, 0)                                reports_missed,
        coalesce(vrs.reports_missed_reason, 0)                         reports_missed_reason,
+       coalesce(vrs.candidate, 0)                                     canidadate,
+       coalesce(vrs.candidate_missed, 0)                              canidadate_missed,
+       coalesce(vrs.candidate_missed_reason, 0)                       canidadate_missed_reason,
+       coalesce(vrs.staking, 0)                                       staking,
+       coalesce(vrs.staking_missed, 0)                                staking_missed,
+       coalesce(vrs.staking_missed_reason, 0)                         staking_missed_reason,
        coalesce(delegateea.address, '')                               delegatee_address,
        coalesce(dvr.total_balance, 0)                                 delegatee_reward
 FROM epoch_identities ei

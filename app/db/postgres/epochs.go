@@ -43,6 +43,8 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 				&item.Rewards.Flips,
 				&item.Rewards.Invitations,
 				&item.Rewards.Reports,
+				&item.Rewards.Candidate,
+				&item.Rewards.Staking,
 				&item.Rewards.FoundationPayouts,
 				&item.Rewards.ZeroWalletFund,
 				&item.MinScoreForInvite,
@@ -52,6 +54,11 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 			}
 			item.ValidationTime = timestampToTimeUTC(validationTime)
 			item.Epoch = epoch
+			if a.replaceValidationReward {
+				if item.Rewards.Candidate.Sign() > 0 || item.Rewards.Staking.Sign() > 0 {
+					item.Rewards.Validation = item.Rewards.Candidate.Add(item.Rewards.Staking)
+				}
+			}
 			res = append(res, item)
 		}
 		return res, epoch, nil

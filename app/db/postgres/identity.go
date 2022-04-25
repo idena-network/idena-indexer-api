@@ -157,6 +157,9 @@ func (a *postgresAccessor) IdentityRewards(address string, count uint64, continu
 			if err := rows.Scan(&item.Address, &item.Epoch, &item.BlockHeight, &item.Balance, &item.Stake, &item.Type); err != nil {
 				return nil, 0, err
 			}
+			if a.replaceValidationReward {
+				item.Type = replaceCandidatesAndStaking(item.Type)
+			}
 			res = append(res, item)
 		}
 		continuationId, _ := parseUintContinuationToken(continuationToken)
@@ -189,6 +192,9 @@ func (a *postgresAccessor) IdentityEpochRewards(address string, count uint64, co
 			var age uint16
 			if err := rows.Scan(&id, &epoch, &reward.Balance, &reward.Stake, &reward.Type, &prevState, &state, &age); err != nil {
 				return nil, 0, err
+			}
+			if a.replaceValidationReward {
+				reward.Type = replaceCandidatesAndStaking(reward.Type)
 			}
 			if item == nil || item.Epoch != epoch {
 				if item != nil {

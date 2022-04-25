@@ -325,12 +325,14 @@ func (a *postgresAccessor) AddressDelegateeTotalRewards(address string, count ui
 				&rewards.savedInv,
 				&rewards.savedInvWin,
 				&rewards.reports,
+				&rewards.candidate,
+				&rewards.staking,
 				&item.Delegators,
 			)
 			if err != nil {
 				return nil, 0, err
 			}
-			item.Rewards = toDelegationReward(rewards)
+			item.Rewards = toDelegationReward(rewards, a.replaceValidationReward)
 			item.Epoch = epoch
 			res = append(res, item)
 		}

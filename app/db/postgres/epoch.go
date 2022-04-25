@@ -33,7 +33,6 @@ const (
 	epochBadAuthorsCountQuery              = "epochBadAuthorsCount.sql"
 	epochBadAuthorsQuery                   = "epochBadAuthors.sql"
 	epochRewardsCountQuery                 = "epochRewardsCount.sql"
-	epochRewardsQuery                      = "epochRewards.sql"
 	epochIdentitiesRewardsCountQuery       = "epochIdentitiesRewardsCount.sql"
 	epochIdentitiesRewardsQuery            = "epochIdentitiesRewards.sql"
 	epochFundPaymentsQuery                 = "epochFundPayments.sql"
@@ -289,16 +288,25 @@ func (a *postgresAccessor) EpochRewardsSummary(epoch uint64) (types.RewardsSumma
 			&res.Flips,
 			&res.Invitations,
 			&res.Reports,
+			&res.Candidate,
+			&res.Staking,
 			&res.FoundationPayouts,
 			&res.ZeroWalletFund,
 			&res.ValidationShare,
 			&res.FlipsShare,
 			&res.InvitationsShare,
 			&res.ReportsShare,
+			&res.CandidateShare,
+			&res.StakingShare,
 			&res.EpochDuration,
 		)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
+	}
+	if a.replaceValidationReward {
+		if res.Candidate.Sign() > 0 || res.Staking.Sign() > 0 {
+			res.Validation = res.Candidate.Add(res.Staking)
+		}
 	}
 	if err != nil {
 		return types.RewardsSummary{}, err
@@ -351,6 +359,9 @@ func (a *postgresAccessor) EpochIdentitiesRewards(epoch uint64, count uint64, co
 		var age uint16
 		if err := rows.Scan(&address, &reward.Balance, &reward.Stake, &reward.Type, &prevState, &state, &age); err != nil {
 			return nil, nil, err
+		}
+		if a.replaceValidationReward {
+			reward.Type = replaceCandidatesAndStaking(reward.Type)
 		}
 		if item == nil || item.Address != address {
 			if item != nil {
@@ -438,9 +449,11 @@ func (a *postgresAccessor) EpochDelegateeTotalRewards(epoch uint64, count uint64
 			&rewards.savedInv,
 			&rewards.savedInvWin,
 			&rewards.reports,
+			&rewards.candidate,
+			&rewards.staking,
 			&item.Delegators,
 		)
-		item.Rewards = toDelegationReward(rewards)
+		item.Rewards = toDelegationReward(rewards, a.replaceValidationReward)
 		if err != nil {
 			return nil, nil, err
 		}

@@ -54,12 +54,16 @@ type RewardsSummary struct {
 	Flips             decimal.Decimal `json:"flips" swaggertype:"string"`
 	Invitations       decimal.Decimal `json:"invitations" swaggertype:"string"`
 	Reports           decimal.Decimal `json:"reports" swaggertype:"string"`
+	Candidate         decimal.Decimal `json:"candidate" swaggertype:"string"`
+	Staking           decimal.Decimal `json:"staking" swaggertype:"string"`
 	FoundationPayouts decimal.Decimal `json:"foundationPayouts" swaggertype:"string"`
 	ZeroWalletFund    decimal.Decimal `json:"zeroWalletFund" swaggertype:"string"`
 	ValidationShare   decimal.Decimal `json:"validationShare" swaggertype:"string"`
 	FlipsShare        decimal.Decimal `json:"flipsShare" swaggertype:"string"`
 	InvitationsShare  decimal.Decimal `json:"invitationsShare" swaggertype:"string"`
 	ReportsShare      decimal.Decimal `json:"reportsShare" swaggertype:"string"`
+	CandidateShare    decimal.Decimal `json:"candidateShare" swaggertype:"string"`
+	StakingShare      decimal.Decimal `json:"stakingShare" swaggertype:"string"`
 	EpochDuration     uint32          `json:"epochDuration"`
 } // @Name RewardsSummary
 
@@ -380,7 +384,7 @@ type Reward struct {
 	BlockHeight uint64          `json:"blockHeight,omitempty"`
 	Balance     decimal.Decimal `json:"balance" swaggertype:"string"`
 	Stake       decimal.Decimal `json:"stake" swaggertype:"string"`
-	Type        string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin"`
+	Type        string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Candidate,Staking"`
 } // @Name Reward
 
 type Rewards struct {
@@ -697,7 +701,7 @@ type DelegateeReward struct {
 
 type DelegationReward struct {
 	Balance decimal.Decimal `json:"balance" swaggertype:"string"`
-	Type    string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Reports"`
+	Type    string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Reports,Candidate,Staking"`
 } // @Name DelegationReward
 
 type ValidationSummary struct {
@@ -723,6 +727,8 @@ type ValidationRewardSummaries struct {
 	Flips       ValidationRewardSummary `json:"flips"`
 	Invitations ValidationRewardSummary `json:"invitations"`
 	Reports     ValidationRewardSummary `json:"reports"`
+	Candidate   ValidationRewardSummary `json:"candidate"`
+	Staking     ValidationRewardSummary `json:"staking"`
 } // @Name ValidationRewardSummaries
 
 type ValidationRewardSummary struct {

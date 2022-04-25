@@ -418,6 +418,9 @@ func (a *postgresAccessor) rewards(queryName string, args ...interface{}) ([]typ
 		if err := rows.Scan(&item.Address, &item.Epoch, &item.BlockHeight, &item.Balance, &item.Stake, &item.Type); err != nil {
 			return nil, err
 		}
+		if a.replaceValidationReward {
+			item.Type = replaceCandidatesAndStaking(item.Type)
+		}
 		res = append(res, item)
 	}
 	return res, nil
@@ -575,10 +578,10 @@ func parseUintAndAmountToken(continuationToken *string) (id *uint64, amount *dec
 }
 
 type validationRewards struct {
-	validation, flips, inv, inv2, inv3, savedInv, savedInvWin, reports decimal.Decimal
+	validation, flips, inv, inv2, inv3, savedInv, savedInvWin, reports, candidate, staking decimal.Decimal
 }
 
-func toDelegationReward(vr validationRewards) []types.DelegationReward {
+func toDelegationReward(vr validationRewards, replaceValidation bool) []types.DelegationReward {
 	var res []types.DelegationReward
 	if !vr.validation.IsZero() {
 		res = append(res, types.DelegationReward{
@@ -628,5 +631,38 @@ func toDelegationReward(vr validationRewards) []types.DelegationReward {
 			Type:    "Reports",
 		})
 	}
+	if !vr.candidate.IsZero() {
+		if replaceValidation {
+			res = append(res, types.DelegationReward{
+				Balance: vr.candidate,
+				Type:    "Validation",
+			})
+		} else {
+			res = append(res, types.DelegationReward{
+				Balance: vr.candidate,
+				Type:    "Candidate",
+			})
+		}
+	}
+	if !vr.staking.IsZero() {
+		if replaceValidation {
+			res = append(res, types.DelegationReward{
+				Balance: vr.staking,
+				Type:    "Validation",
+			})
+		} else {
+			res = append(res, types.DelegationReward{
+				Balance: vr.staking,
+				Type:    "Staking",
+			})
+		}
+	}
 	return res
+}
+
+func replaceCandidatesAndStaking(rewardType string) string {
+	if rewardType == "Candidate" || rewardType == "Staking" {
+		return "Validation"
+	}
+	return rewardType
 }

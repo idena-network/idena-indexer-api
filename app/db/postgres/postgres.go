@@ -22,6 +22,7 @@ type postgresAccessor struct {
 	dynamicEndpointsTable       string
 	dynamicEndpointStatesTable  string
 	log                         log.Logger
+	replaceValidationReward     bool
 }
 
 const (

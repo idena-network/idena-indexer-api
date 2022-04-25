@@ -6246,7 +6246,9 @@
                         "Invitations3",
                         "SavedInvite",
                         "SavedInviteWin",
-                        "Reports"
+                        "Reports",
+                        "Candidate",
+                        "Staking"
                     ]
                 }
             }
@@ -7113,7 +7115,9 @@
                         "Invitations2",
                         "Invitations3",
                         "SavedInvite",
-                        "SavedInviteWin"
+                        "SavedInviteWin",
+                        "Candidate",
+                        "Staking"
                     ]
                 }
             }
@@ -7337,6 +7341,12 @@
         "RewardsSummary": {
             "type": "object",
             "properties": {
+                "candidate": {
+                    "type": "string"
+                },
+                "candidateShare": {
+                    "type": "string"
+                },
                 "epoch": {
                     "type": "integer"
                 },
@@ -7362,6 +7372,12 @@
                     "type": "string"
                 },
                 "reportsShare": {
+                    "type": "string"
+                },
+                "staking": {
+                    "type": "string"
+                },
+                "stakingShare": {
                     "type": "string"
                 },
                 "total": {
@@ -7600,6 +7616,11 @@
         "ValidationRewardSummaries": {
             "type": "object",
             "properties": {
+                "candidate": {
+                    "description": "todo",
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummary"
+                },
                 "flips": {
                     "type": "object",
                     "$ref": "#/definitions/ValidationRewardSummary"
@@ -7609,6 +7630,10 @@
                     "$ref": "#/definitions/ValidationRewardSummary"
                 },
                 "reports": {
+                    "type": "object",
+                    "$ref": "#/definitions/ValidationRewardSummary"
+                },
+                "staking": {
                     "type": "object",
                     "$ref": "#/definitions/ValidationRewardSummary"
                 },

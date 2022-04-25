@@ -327,6 +327,8 @@ definitions:
         - SavedInvite
         - SavedInviteWin
         - Reports
+        - Candidate
+        - Staking
         type: string
     type: object
   Delegator:
@@ -933,6 +935,8 @@ definitions:
         - Invitations3
         - SavedInvite
         - SavedInviteWin
+        - Candidate
+        - Staking
         type: string
     type: object
   RewardBound:
@@ -1095,6 +1099,10 @@ definitions:
     type: object
   RewardsSummary:
     properties:
+      candidate:
+        type: string
+      candidateShare:
+        type: string
       epoch:
         type: integer
       epochDuration:
@@ -1112,6 +1120,10 @@ definitions:
       reports:
         type: string
       reportsShare:
+        type: string
+      staking:
+        type: string
+      stakingShare:
         type: string
       total:
         type: string
@@ -1283,6 +1295,10 @@ definitions:
     type: object
   ValidationRewardSummaries:
     properties:
+      candidate:
+        $ref: '#/definitions/ValidationRewardSummary'
+        description: todo
+        type: object
       flips:
         $ref: '#/definitions/ValidationRewardSummary'
         type: object
@@ -1290,6 +1306,9 @@ definitions:
         $ref: '#/definitions/ValidationRewardSummary'
         type: object
       reports:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
+      staking:
         $ref: '#/definitions/ValidationRewardSummary'
         type: object
       validation:

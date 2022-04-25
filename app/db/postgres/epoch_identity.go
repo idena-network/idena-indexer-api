@@ -277,7 +277,7 @@ func (a *postgresAccessor) EpochIdentityAvailableInvites(epoch uint64, address s
 
 func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address string) (types.ValidationSummary, error) {
 	res := types.ValidationSummary{}
-	var validationReason, flipsReason, reportsReason, invitationsReason byte
+	var validationReason, flipsReason, reportsReason, invitationsReason, candidateReason, stakingReason byte
 	var delegateeAddress string
 	var delegateeReward decimal.Decimal
 	err := a.db.QueryRow(a.getQuery(epochIdentityValidationSummaryQuery), epoch, address).Scan(
@@ -309,6 +309,12 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 		&res.Rewards.Reports.Earned,
 		&res.Rewards.Reports.Missed,
 		&reportsReason,
+		&res.Rewards.Candidate.Earned,
+		&res.Rewards.Candidate.Missed,
+		&candidateReason,
+		&res.Rewards.Staking.Earned,
+		&res.Rewards.Staking.Missed,
+		&stakingReason,
 		&delegateeAddress,
 		&delegateeReward,
 	)
@@ -322,6 +328,21 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 	res.Rewards.Flips.MissedReason = convertMissedRewardReason(flipsReason)
 	res.Rewards.Invitations.MissedReason = convertMissedRewardReason(invitationsReason)
 	res.Rewards.Reports.MissedReason = convertMissedRewardReason(reportsReason)
+	res.Rewards.Candidate.MissedReason = convertMissedRewardReason(candidateReason)
+	res.Rewards.Staking.MissedReason = convertMissedRewardReason(stakingReason)
+
+	if a.replaceValidationReward {
+		if res.Rewards.Candidate.Earned.Sign() > 0 || res.Rewards.Candidate.Missed.Sign() > 0 || len(res.Rewards.Candidate.MissedReason) > 0 ||
+			res.Rewards.Staking.Earned.Sign() > 0 || res.Rewards.Staking.Missed.Sign() > 0 || len(res.Rewards.Staking.MissedReason) > 0 {
+			res.Rewards.Validation.Earned = res.Rewards.Candidate.Earned.Add(res.Rewards.Staking.Earned)
+			res.Rewards.Validation.Missed = res.Rewards.Candidate.Missed.Add(res.Rewards.Staking.Missed)
+			res.Rewards.Validation.MissedReason = res.Rewards.Candidate.MissedReason
+			if len(res.Rewards.Validation.MissedReason) == 0 {
+				res.Rewards.Validation.MissedReason = res.Rewards.Staking.MissedReason
+			}
+		}
+	}
+
 	if len(delegateeAddress) > 0 {
 		res.DelegateeReward = &types.ValidationDelegateeReward{
 			Address: delegateeAddress,

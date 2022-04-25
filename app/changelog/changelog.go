@@ -117,7 +117,11 @@ func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
 				if len(parts) == 0 {
 					continue
 				}
-				res[v.String()].Changes = append(res[v.String()].Changes, parts[0])
+				change := parts[0]
+				for partIndex := 1; partIndex < len(parts)-1; partIndex++ {
+					change += " (" + parts[partIndex]
+				}
+				res[v.String()].Changes = append(res[v.String()].Changes, change)
 			}
 			break
 		}

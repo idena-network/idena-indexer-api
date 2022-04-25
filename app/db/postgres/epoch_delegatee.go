@@ -38,8 +38,10 @@ func (a *postgresAccessor) EpochDelegateeRewards(epoch uint64, address string, c
 			&rewards.savedInv,
 			&rewards.savedInvWin,
 			&rewards.reports,
+			&rewards.candidate,
+			&rewards.staking,
 		)
-		item.Rewards = toDelegationReward(rewards)
+		item.Rewards = toDelegationReward(rewards, a.replaceValidationReward)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -73,9 +75,11 @@ func (a *postgresAccessor) EpochAddressDelegateeTotalRewards(epoch uint64, addre
 			&rewards.savedInv,
 			&rewards.savedInvWin,
 			&rewards.reports,
+			&rewards.candidate,
+			&rewards.staking,
 			&res.Delegators,
 		)
-		res.Rewards = toDelegationReward(rewards)
+		res.Rewards = toDelegationReward(rewards, a.replaceValidationReward)
 		if err != nil {
 			return types.DelegateeTotalRewards{}, err
 		}
