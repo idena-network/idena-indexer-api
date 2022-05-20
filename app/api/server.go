@@ -2469,6 +2469,7 @@ func (s *httpServer) balancesCount(w http.ResponseWriter, r *http.Request) {
 
 // @Tags Coins
 // @Id Balances
+// @Param sortBy query string false "value to sort" ENUMS(balance,stake)
 // @Param limit query integer true "items to take"
 // @Param continuationToken query string false "continuation token to get next page items"
 // @Success 200 {object} api.ResponsePage{result=[]types.Balance}
@@ -2485,7 +2486,11 @@ func (s *httpServer) balances(w http.ResponseWriter, r *http.Request) {
 		WriteErrorResponse(w, err, s.logger)
 		return
 	}
-	resp, nextContinuationToken, err := s.service.Balances(count, continuationToken)
+	var sortBy *string
+	if v := r.Form.Get("sortby"); len(v) > 0 {
+		sortBy = &v
+	}
+	resp, nextContinuationToken, err := s.service.Balances(sortBy, count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 

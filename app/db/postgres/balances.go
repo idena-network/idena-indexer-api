@@ -12,6 +12,7 @@ import (
 const (
 	balancesCountQuery                 = "balancesCount.sql"
 	balancesQuery                      = "balances.sql"
+	stakesQuery                        = "stakes.sql"
 	totalLatestMiningRewardsCountQuery = "totalLatestMiningRewardsCount.sql"
 	totalLatestMiningRewardsQuery      = "totalLatestMiningRewards.sql"
 	totalLatestBurntCoinsCountQuery    = "totalLatestBurntCoinsCount.sql"
@@ -22,7 +23,7 @@ func (a *postgresAccessor) BalancesCount() (uint64, error) {
 	return a.count(balancesCountQuery)
 }
 
-func (a *postgresAccessor) Balances(count uint64, continuationToken *string) ([]types.Balance, *string, error) {
+func (a *postgresAccessor) Balances(sortBy *string, count uint64, continuationToken *string) ([]types.Balance, *string, error) {
 	parseToken := func(continuationToken *string) (addressId *uint64, balance *decimal.Decimal, err error) {
 		if continuationToken == nil {
 			return
@@ -48,7 +49,14 @@ func (a *postgresAccessor) Balances(count uint64, continuationToken *string) ([]
 	if err != nil {
 		return nil, nil, err
 	}
-	rows, err := a.db.Query(a.getQuery(balancesQuery), count+1, addressId, balance)
+	sortByStake := sortBy != nil && *sortBy == "stake"
+	var query string
+	if sortByStake {
+		query = stakesQuery
+	} else {
+		query = balancesQuery
+	}
+	rows, err := a.db.Query(a.getQuery(query), count+1, addressId, balance)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -69,7 +77,12 @@ func (a *postgresAccessor) Balances(count uint64, continuationToken *string) ([]
 	}
 	var nextContinuationToken *string
 	if len(res) > 0 && len(res) == int(count)+1 {
-		t := strconv.FormatUint(*addressId, 10) + "-" + res[len(res)-1].Balance.String()
+		var t string
+		if sortByStake {
+			t = strconv.FormatUint(*addressId, 10) + "-" + res[len(res)-1].Stake.String()
+		} else {
+			t = strconv.FormatUint(*addressId, 10) + "-" + res[len(res)-1].Balance.String()
+		}
 		nextContinuationToken = &t
 		res = res[:len(res)-1]
 	}

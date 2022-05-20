@@ -597,6 +597,16 @@ var doc = `{
                 "operationId": "Balances",
                 "parameters": [
                     {
+                        "enum": [
+                            "balance",
+                            "stake"
+                        ],
+                        "type": "string",
+                        "description": "value to sort",
+                        "name": "sortBy",
+                        "in": "query"
+                    },
+                    {
                         "type": "integer",
                         "description": "items to take",
                         "name": "limit",
@@ -7637,7 +7647,6 @@ var doc = `{
             "type": "object",
             "properties": {
                 "candidate": {
-                    "description": "todo",
                     "type": "object",
                     "$ref": "#/definitions/ValidationRewardSummary"
                 },

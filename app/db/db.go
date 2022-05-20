@@ -121,7 +121,7 @@ type Accessor interface {
 	TransactionRaw(hash string) (*hexutil.Bytes, error)
 
 	BalancesCount() (uint64, error)
-	Balances(count uint64, continuationToken *string) ([]types.Balance, *string, error)
+	Balances(sortBy *string, count uint64, continuationToken *string) ([]types.Balance, *string, error)
 
 	TotalLatestMiningRewardsCount(afterTime time.Time) (uint64, error)
 	TotalLatestMiningRewards(afterTime time.Time, startIndex uint64, count uint64) ([]types.TotalMiningReward, error)

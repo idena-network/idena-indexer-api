@@ -1297,7 +1297,6 @@ definitions:
     properties:
       candidate:
         $ref: '#/definitions/ValidationRewardSummary'
-        description: todo
         type: object
       flips:
         $ref: '#/definitions/ValidationRewardSummary'
@@ -1798,6 +1797,13 @@ paths:
     get:
       operationId: Balances
       parameters:
+      - description: value to sort
+        enum:
+        - balance
+        - stake
+        in: query
+        name: sortBy
+        type: string
       - description: items to take
         in: query
         name: limit

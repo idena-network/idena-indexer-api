@@ -934,10 +934,10 @@ func (a *cachedAccessor) BalancesCount() (uint64, error) {
 	return res.(uint64), err
 }
 
-func (a *cachedAccessor) Balances(count uint64, continuationToken *string) ([]types.Balance, *string, error) {
+func (a *cachedAccessor) Balances(sortBy *string, count uint64, continuationToken *string) ([]types.Balance, *string, error) {
 	res, nextContinuationToken, err := a.getOrLoadWithConToken("Balances", func() (interface{}, *string, error) {
-		return a.accessor.Balances(count, continuationToken)
-	}, count, continuationToken)
+		return a.accessor.Balances(sortBy, count, continuationToken)
+	}, sortBy, count, continuationToken)
 	return res.([]types.Balance), nextContinuationToken, err
 }
 

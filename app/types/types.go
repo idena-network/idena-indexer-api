@@ -359,7 +359,7 @@ type Balance struct {
 
 type Staking struct {
 	Weight float64 `json:"weight"`
-} // @NAme Staking
+} // @Name Staking
 
 type TotalMiningReward struct {
 	Address        string          `json:"address,omitempty"`
