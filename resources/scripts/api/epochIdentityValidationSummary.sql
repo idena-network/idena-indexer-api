@@ -33,7 +33,8 @@ SELECT coalesce(ei.short_point, 0)                                    short_poin
        coalesce(vrs.staking_missed, 0)                                staking_missed,
        coalesce(vrs.staking_missed_reason, 0)                         staking_missed_reason,
        coalesce(delegateea.address, '')                               delegatee_address,
-       coalesce(dvr.total_balance, 0)                                 delegatee_reward
+       coalesce(dvr.total_balance, 0)                                 delegatee_reward,
+       coalesce(rsa.amount, 0)                                        stake
 FROM epoch_identities ei
          JOIN address_states s ON s.id = ei.address_state_id AND
                                   s.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))
@@ -45,4 +46,5 @@ FROM epoch_identities ei
          LEFT JOIN validation_reward_summaries vrs ON vrs.epoch = ei.epoch AND vrs.address_id = s.address_id
          LEFT JOIN delegatee_validation_rewards dvr ON dvr.epoch = ei.epoch AND dvr.delegator_address_id = s.address_id
          LEFT JOIN addresses delegateea ON delegateea.id = dvr.delegatee_address_id
+         LEFT JOIN reward_staked_amounts rsa ON rsa.ei_address_state_id = ei.address_state_id
 WHERE ei.epoch = $1

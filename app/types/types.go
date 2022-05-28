@@ -720,6 +720,7 @@ type ValidationSummary struct {
 	Missed            bool                       `json:"missed"`
 	Rewards           ValidationRewardSummaries  `json:"rewards"`
 	DelegateeReward   *ValidationDelegateeReward `json:"delegateeReward,omitempty"`
+	Stake             decimal.Decimal            `json:"stake" swaggertype:"string"`
 } // @Name ValidationSummary
 
 type ValidationRewardSummaries struct {

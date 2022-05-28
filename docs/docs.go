@@ -7748,6 +7748,9 @@ var doc = `{
                 "shortAnswersCount": {
                     "type": "integer"
                 },
+                "stake": {
+                    "type": "string"
+                },
                 "state": {
                     "type": "string",
                     "enum": [

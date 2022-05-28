@@ -29,7 +29,7 @@ func NewPostgresAccessor(connStr, scriptsDirPath, dynamicEndpointsTable, dynamic
 		dynamicEndpointsTable:      dynamicEndpointsTable,
 		dynamicEndpointStatesTable: dynamicEndpointStatesTable,
 		log:                        logger,
-		replaceValidationReward:    true,
+		replaceValidationReward:    false,
 	}
 	res.estimatedOracleRewardsCache = newEstimatedOracleRewardsCache(networkSizeLoader.Load)
 	return res

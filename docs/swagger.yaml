@@ -1369,6 +1369,8 @@ definitions:
         type: object
       shortAnswersCount:
         type: integer
+      stake:
+        type: string
       state:
         enum:
         - Undefined

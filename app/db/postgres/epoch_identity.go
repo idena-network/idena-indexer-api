@@ -317,6 +317,7 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 		&stakingReason,
 		&delegateeAddress,
 		&delegateeReward,
+		&res.Stake,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
