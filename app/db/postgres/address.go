@@ -23,8 +23,10 @@ const (
 	addressContractTxBalanceUpdatesQuery = "addressContractTxBalanceUpdates.sql"
 	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
 
-	txBalanceUpdateReason              = "Tx"
-	committeeRewardBalanceUpdateReason = "CommitteeReward"
+	txBalanceUpdateReason               = "Tx"
+	committeeRewardBalanceUpdateReason  = "CommitteeReward"
+	embeddedContractBalanceUpdateReason = "EmbeddedContract"
+	epochRewardBalanceUpdateReason      = "EpochReward"
 )
 
 func (a *postgresAccessor) Address(address string) (types.Address, error) {
@@ -160,6 +162,8 @@ type balanceUpdateOptionalData struct {
 	lastBlockTimestamp int64
 	rewardShare        decimal.Decimal
 	blocksCount        uint32
+	contractAddress    string
+	epoch              uint64
 }
 
 func (a *postgresAccessor) AddressBalanceUpdates(address string, count uint64, continuationToken *string) ([]types.BalanceUpdate, *string, error) {
@@ -189,6 +193,8 @@ func (a *postgresAccessor) AddressBalanceUpdates(address string, count uint64, c
 				&optionalData.lastBlockTimestamp,
 				&optionalData.rewardShare,
 				&optionalData.blocksCount,
+				&optionalData.epoch,
+				&optionalData.contractAddress,
 			); err != nil {
 				return nil, 0, err
 			}
@@ -218,6 +224,14 @@ func readBalanceUpdateSpecificData(reason string, optionalData *balanceUpdateOpt
 			LastBlockTimestamp: timestampToTimeUTC(optionalData.lastBlockTimestamp),
 			RewardShare:        optionalData.rewardShare,
 			BlocksCount:        optionalData.blocksCount,
+		}
+	case epochRewardBalanceUpdateReason:
+		res = &types.EpochRewardBalanceUpdate{
+			Epoch: optionalData.epoch,
+		}
+	case embeddedContractBalanceUpdateReason:
+		res = &types.EmbeddedContractBalanceUpdate{
+			ContractAddress: optionalData.contractAddress,
 		}
 	}
 	return res

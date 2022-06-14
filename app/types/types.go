@@ -499,6 +499,14 @@ type CommitteeRewardBalanceUpdate struct {
 	BlocksCount        uint32          `json:"blocksCount"`
 }
 
+type EmbeddedContractBalanceUpdate struct {
+	ContractAddress string `json:"contractAddress"`
+}
+
+type EpochRewardBalanceUpdate struct {
+	Epoch uint64 `json:"epoch"`
+}
+
 type BalanceUpdatesSummary struct {
 	BalanceIn  decimal.Decimal `json:"balanceIn"`
 	BalanceOut decimal.Decimal `json:"balanceOut"`
