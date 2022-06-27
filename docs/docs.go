@@ -6972,7 +6972,8 @@ var doc = `{
                         "Voted",
                         "Counting",
                         "Archive",
-                        "Terminated"
+                        "Terminated",
+                        "CanBeProlonged"
                     ]
                 },
                 "terminationTime": {

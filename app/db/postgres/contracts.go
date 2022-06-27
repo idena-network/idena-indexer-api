@@ -20,24 +20,26 @@ const (
 	ovcByOracleSortedByDtQuery         = "ovcByOracleSortedByDt.sql"
 	lastBlockFeeRateQuery              = "lastBlockFeeRate.sql"
 
-	oracleVotingStateOpen       = "open"
-	oracleVotingStateVoted      = "voted"
-	oracleVotingStateCounting   = "counting"
-	oracleVotingStatePending    = "pending"
-	oracleVotingStateArchive    = "archive"
-	oracleVotingStateTerminated = "terminated"
+	oracleVotingStateOpen           = "open"
+	oracleVotingStateVoted          = "voted"
+	oracleVotingStateCounting       = "counting"
+	oracleVotingStatePending        = "pending"
+	oracleVotingStateArchive        = "archive"
+	oracleVotingStateTerminated     = "terminated"
+	oracleVotingStateCanBeProlonged = "canbeprolonged"
 )
 
 type contractsFilter struct {
-	authorAddress   *string
-	stateOpen       bool
-	stateVoted      bool
-	stateCounting   bool
-	statePending    bool
-	stateArchive    bool
-	stateTerminated bool
-	sortByReward    bool
-	all             bool
+	authorAddress       *string
+	stateOpen           bool
+	stateVoted          bool
+	stateCounting       bool
+	stateCanBeProlonged bool
+	statePending        bool
+	stateArchive        bool
+	stateTerminated     bool
+	sortByReward        bool
+	all                 bool
 }
 
 func createContractsFilter(authorAddress string, states []string, all bool, sortBy, continuationToken *string) (*contractsFilter, error) {
@@ -50,6 +52,8 @@ func createContractsFilter(authorAddress string, states []string, all bool, sort
 			res.stateVoted = true
 		case oracleVotingStateCounting:
 			res.stateCounting = true
+		case oracleVotingStateCanBeProlonged:
+			res.stateCanBeProlonged = true
 		case oracleVotingStatePending:
 			res.statePending = true
 		case oracleVotingStateArchive:
@@ -60,7 +64,7 @@ func createContractsFilter(authorAddress string, states []string, all bool, sort
 			return nil, errors.Errorf("unknown state %v", state)
 		}
 	}
-	res.sortByReward = (res.stateOpen || res.statePending) && !(res.stateVoted || res.stateCounting || res.stateArchive || res.stateTerminated)
+	res.sortByReward = (res.stateOpen || res.statePending) && !(res.stateVoted || res.stateCounting || res.stateCanBeProlonged || res.stateArchive || res.stateTerminated)
 	if sortBy != nil {
 		if !res.sortByReward && *sortBy == "reward" {
 			return nil, errors.New("invalid combination of values 'states[]' and 'sortBy'")
@@ -96,8 +100,8 @@ func (a *postgresAccessor) OracleVotingContracts(authorAddress, oracleAddress st
 				queryName = ovcAllSortedByDtQuery
 			}
 			rows, err = a.db.Query(a.getQuery(queryName), filter.authorAddress, oracleAddress,
-				filter.statePending, filter.stateCounting, filter.stateArchive, filter.stateTerminated, count+1,
-				continuationToken)
+				filter.statePending, filter.stateCounting, filter.stateArchive, filter.stateTerminated,
+				filter.stateCanBeProlonged, count+1, continuationToken)
 		} else {
 			var queryName string
 			if filter.sortByReward {
@@ -107,7 +111,7 @@ func (a *postgresAccessor) OracleVotingContracts(authorAddress, oracleAddress st
 			}
 			rows, err = a.db.Query(a.getQuery(queryName), filter.authorAddress, oracleAddress,
 				filter.statePending, filter.stateOpen, filter.stateVoted, filter.stateCounting, filter.stateArchive,
-				filter.stateTerminated, count+1, continuationToken)
+				filter.stateTerminated, filter.stateCanBeProlonged, count+1, continuationToken)
 		}
 	} else {
 		var queryName string
@@ -118,7 +122,7 @@ func (a *postgresAccessor) OracleVotingContracts(authorAddress, oracleAddress st
 		}
 		rows, err = a.db.Query(a.getQuery(queryName), filter.authorAddress, oracleAddress,
 			filter.statePending, filter.stateOpen, filter.stateVoted, filter.stateCounting, filter.stateArchive,
-			filter.stateTerminated, count+1, continuationToken)
+			filter.stateTerminated, filter.stateCanBeProlonged, count+1, continuationToken)
 	}
 
 	if err != nil {
@@ -208,7 +212,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 		item.StartTime = timestampToTimeUTC(startTime)
 		itemState := strings.ToLower(item.State)
 		if countingBlock.Valid {
-			if itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting || itemState == oracleVotingStateArchive {
+			if itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting || itemState == oracleVotingStateCanBeProlonged || itemState == oracleVotingStateArchive {
 				headBlockTime := timestampToTimeUTC(headBlockTimestamp)
 
 				if networkSize == nil {
@@ -224,7 +228,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 
 				estimatedTerminationTime := headBlockTime.Add(time.Second * 20 * time.Duration(uint64(countingBlock.Int64)-headBlockHeight+curItem.PublicVotingDuration+terminationDays*blocksInDay))
 				item.EstimatedTerminationTime = &estimatedTerminationTime
-				if itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting {
+				if itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting || itemState == oracleVotingStateCanBeProlonged {
 					estimatedPublicVotingFinishTime := headBlockTime.Add(time.Second * 20 * time.Duration(uint64(countingBlock.Int64)-headBlockHeight+curItem.PublicVotingDuration))
 					item.EstimatedPublicVotingFinishTime = &estimatedPublicVotingFinishTime
 					if itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted {
@@ -265,7 +269,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 			item.TotalReward = &totalReward.Decimal
 		}
 
-		if itemState == oracleVotingStatePending || itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting {
+		if itemState == oracleVotingStatePending || itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting || itemState == oracleVotingStateCanBeProlonged {
 			item.EstimatedOracleReward = calculateEstimatedOracleReward(item.Balance, item.MinPayment, item.OwnerFee, item.CommitteeSize, item.VoteProofsCount)
 			item.EstimatedMaxOracleReward = calculateEstimatedMaxOracleReward(item.Balance, item.MinPayment, item.OwnerFee, item.CommitteeSize, item.Quorum, item.WinnerThreshold, item.VoteProofsCount)
 			item.EstimatedTotalReward = calculateEstimatedTotalReward(item.Balance, item.MinPayment, item.OwnerFee, item.VoteProofsCount)

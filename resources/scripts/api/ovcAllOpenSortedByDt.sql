@@ -12,7 +12,8 @@ SELECT sovc.state_tx_id,
             when sovc.state = 3 then 'Counting'
             when sovc.state = 0 then 'Pending'
             when sovc.state = 2 then 'Archive'
-            when sovc.state = 4 then 'Terminated' end)            state,
+            when sovc.state = 4 then 'Terminated'
+            when sovc.state = 6 then 'CanBeProlonged' end)            state,
        ovcr.option,
        ovcr.votes_count                                           option_votes,
        cb.timestamp                                               create_time,
@@ -49,10 +50,11 @@ FROM (SELECT sovc.*, coalesce(sovcc.voted, false) voted, sovcc.address_id oracle
               OR $6::boolean AND sovc.state = 3 -- counting
               OR $7::boolean AND sovc.state = 2 -- completed
               OR $8::boolean AND sovc.state = 4 -- terminated
+              OR $9::boolean AND sovc.state = 6 -- canBeProlonged
           )
-        AND ($10::bigint is null OR sovc.state_tx_id <= $10)
+        AND ($11::bigint is null OR sovc.state_tx_id <= $11)
       ORDER BY sovc.state_tx_id DESC
-      LIMIT $9) sovc
+      LIMIT $10) sovc
          JOIN contracts c ON c.tx_id = sovc.contract_tx_id
          JOIN addresses a on a.id = c.contract_address_id
          JOIN transactions t on t.id = sovc.contract_tx_id

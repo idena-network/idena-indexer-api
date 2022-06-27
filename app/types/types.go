@@ -564,7 +564,7 @@ type OracleVotingContract struct {
 	SecretVotesCount                uint64                            `json:"secretVotesCount"`
 	VotesCount                      uint64                            `json:"votesCount"`
 	Votes                           []OracleVotingContractOptionVotes `json:"votes,omitempty"`
-	State                           string                            `json:"state" enums:"Pending,Open,Voted,Counting,Archive,Terminated"`
+	State                           string                            `json:"state" enums:"Pending,Open,Voted,Counting,Archive,Terminated,CanBeProlonged"`
 	CreateTime                      time.Time                         `json:"createTime" example:"2020-01-01T00:00:00Z"`
 	StartTime                       time.Time                         `json:"startTime" example:"2020-01-01T00:00:00Z"`
 	EstimatedVotingFinishTime       *time.Time                        `json:"estimatedVotingFinishTime,omitempty" example:"2020-01-01T00:00:00Z"`

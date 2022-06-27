@@ -12,7 +12,8 @@ SELECT sovcc.sort_key,
             when sovcc.state = 3 then 'Counting'
             when sovcc.state = 0 then 'Pending'
             when sovcc.state = 2 then 'Archive'
-            when sovcc.state = 4 then 'Terminated' end)           state,
+            when sovcc.state = 4 then 'Terminated'
+            when sovcc.state = 6 then 'CanBeProlonged' end)       state,
        ovcr.option,
        ovcr.votes_count                                           option_votes,
        cb.timestamp                                               create_time,
@@ -47,10 +48,11 @@ FROM (SELECT *
               OR $6::boolean AND state = 3 -- counting
               OR $7::boolean AND state = 2 -- completed
               OR $8::boolean AND state = 4 -- terminated
+              OR $9::boolean AND state = 6 -- canBeProlonged
           )
-        AND ($10::text IS null OR sort_key <= $10)
+        AND ($11::text IS null OR sort_key <= $11)
       ORDER BY sort_key DESC
-      LIMIT $9) sovcc
+      LIMIT $10) sovcc
          JOIN sorted_oracle_voting_contracts sovc on sovc.contract_tx_id = sovcc.contract_tx_id
          JOIN contracts c ON c.tx_id = sovcc.contract_tx_id
          JOIN addresses a on a.id = c.contract_address_id
