@@ -2587,6 +2587,21 @@ func (s *httpServer) oracleVotingContracts(w http.ResponseWriter, r *http.Reques
 		for _, formValue := range formValues {
 			res = append(res, strings.Split(formValue, ",")...)
 		}
+
+		// todo temporary code to support old UI versions
+		var hasCounting, hasCanBeProlonged bool
+		for _, item := range res {
+			if item == "counting" {
+				hasCounting = true
+			}
+			if item == "canbeprolonged" {
+				hasCanBeProlonged = true
+			}
+		}
+		if hasCounting && !hasCanBeProlonged {
+			res = append(res, "canbeprolonged")
+		}
+
 		return res
 	}
 	states := convertStates(r.Form["states[]"])

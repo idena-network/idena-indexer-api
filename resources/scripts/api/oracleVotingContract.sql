@@ -12,7 +12,8 @@ SELECT sovc.state_tx_id,
             when sovc.state = 3 then 'Counting'
             when sovc.state = 0 then 'Pending'
             when sovc.state = 2 then 'Archive'
-            when sovc.state = 4 then 'Terminated' end)            state,
+            when sovc.state = 4 then 'Terminated'
+            when sovc.state = 6 then 'CanBeProlonged' end)            state,
        ovcr.option,
        ovcr.votes_count                                           option_votes,
        cb.timestamp                                               create_time,

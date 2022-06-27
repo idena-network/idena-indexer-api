@@ -6927,7 +6927,8 @@
                         "Voted",
                         "Counting",
                         "Archive",
-                        "Terminated"
+                        "Terminated",
+                        "CanBeProlonged"
                     ]
                 },
                 "terminationTime": {
