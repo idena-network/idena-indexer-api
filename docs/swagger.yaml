@@ -1604,31 +1604,10 @@ paths:
     get:
       operationId: AddressOracleVotingContracts
       parameters:
-      - description: contract author address
+      - description: address
         in: path
         name: address
         required: true
-        type: string
-      - description: filter by voting states
-        in: query
-        items:
-          type: string
-        name: states[]
-        type: array
-      - description: oracle address
-        in: query
-        name: oracle
-        type: string
-      - description: flag to return all voting contracts independently on oracle address
-        in: query
-        name: all
-        type: boolean
-      - description: value to sort
-        enum:
-        - reward
-        - timestamp
-        in: query
-        name: sortBy
         type: string
       - description: items to take
         in: query
@@ -4498,6 +4477,10 @@ paths:
           type: string
         name: states[]
         type: array
+      - description: author address
+        in: query
+        name: author
+        type: string
       - description: oracle address
         in: query
         name: oracle

@@ -1010,6 +1010,13 @@ func (a *cachedAccessor) OracleVotingContracts(authorAddress, oracleAddress stri
 	return a.accessor.OracleVotingContracts(authorAddress, oracleAddress, states, all, sortBy, count, continuationToken)
 }
 
+func (a *cachedAccessor) AddressOracleVotingContracts(address string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("AddressOracleVotingContracts", func() (interface{}, *string, error) {
+		return a.accessor.AddressOracleVotingContracts(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.OracleVotingContract), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) OracleVotingContract(address, oracle string) (types.OracleVotingContract, error) {
 	return a.accessor.OracleVotingContract(address, oracle)
 }

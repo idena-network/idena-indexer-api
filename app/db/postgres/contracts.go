@@ -18,6 +18,7 @@ const (
 	ovcAllSortedByDtQuery              = "ovcAllSortedByDt.sql"
 	ovcAllOpenSortedByDtQuery          = "ovcAllOpenSortedByDt.sql"
 	ovcByOracleSortedByDtQuery         = "ovcByOracleSortedByDt.sql"
+	addressOracleVotingContractsQuery  = "addressOracleVotingContracts.sql"
 	lastBlockFeeRateQuery              = "lastBlockFeeRate.sql"
 
 	oracleVotingStateOpen           = "open"
@@ -135,6 +136,24 @@ func (a *postgresAccessor) OracleVotingContracts(authorAddress, oracleAddress st
 		return nil, nil, err
 	}
 
+	var nextContinuationToken *string
+	if len(res) > 0 && len(res) == int(count)+1 {
+		nextContinuationToken = lastContinuationToken
+		res = res[:len(res)-1]
+	}
+	return res, nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) AddressOracleVotingContracts(address string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error) {
+	rows, err := a.db.Query(a.getQuery(addressOracleVotingContractsQuery), address, count+1, continuationToken)
+	if err != nil {
+		return nil, nil, err
+	}
+	defer rows.Close()
+	res, lastContinuationToken, err := a.readOracleVotingContracts(rows)
+	if err != nil {
+		return nil, nil, err
+	}
 	var nextContinuationToken *string
 	if len(res) > 0 && len(res) == int(count)+1 {
 		nextContinuationToken = lastContinuationToken
