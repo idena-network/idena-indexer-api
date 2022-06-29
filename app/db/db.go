@@ -136,6 +136,7 @@ type Accessor interface {
 	MultisigContract(address string) (types.MultisigContract, error)
 
 	OracleVotingContracts(authorAddress, oracleAddress string, states []string, all bool, sortBy *string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error)
+	AddressOracleVotingContracts(address string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error)
 	OracleVotingContract(address, oracle string) (types.OracleVotingContract, error)
 	EstimatedOracleRewards() ([]types.EstimatedOracleReward, error)
 

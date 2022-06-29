@@ -2557,6 +2557,7 @@ func getOffsetUTC(hours int) time.Time {
 // @Tags Contracts
 // @Id OracleVotingContracts
 // @Param states[] query []string false "filter by voting states"
+// @Param author query string false "author address"
 // @Param oracle query string false "oracle address"
 // @Param all query boolean false "flag to return all voting contracts independently on oracle address"
 // @Param sortBy query string false "value to sort" ENUMS(reward,timestamp)
@@ -2577,7 +2578,6 @@ func (s *httpServer) oracleVotingContracts(w http.ResponseWriter, r *http.Reques
 		return
 	}
 	all := getFormValue(r.Form, "all") == "true"
-	address := mux.Vars(r)["address"]
 
 	convertStates := func(formValues []string) []string {
 		if len(formValues) == 0 {
@@ -2594,19 +2594,15 @@ func (s *httpServer) oracleVotingContracts(w http.ResponseWriter, r *http.Reques
 	if v := r.Form.Get("sortby"); len(v) > 0 {
 		sortBy = &v
 	}
-	resp, nextContinuationToken, err := s.contractsService.OracleVotingContracts(address, getFormValue(r.Form, "oracle"),
-		states, all, sortBy, count, continuationToken)
+	resp, nextContinuationToken, err := s.contractsService.OracleVotingContracts(getFormValue(r.Form, "author"),
+		getFormValue(r.Form, "oracle"), states, all, sortBy, count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 // @Tags Address
 // @Tags Contracts
 // @Id AddressOracleVotingContracts
-// @Param address path string true "contract author address"
-// @Param states[] query []string false "filter by voting states"
-// @Param oracle query string false "oracle address"
-// @Param all query boolean false "flag to return all voting contracts independently on oracle address"
-// @Param sortBy query string false "value to sort" ENUMS(reward,timestamp)
+// @Param address path string true "address"
 // @Param limit query integer true "items to take"
 // @Param continuationToken query string false "continuation token to get next page items"
 // @Success 200 {object} api.ResponsePage{result=[]types.OracleVotingContract}
@@ -2616,7 +2612,16 @@ func (s *httpServer) oracleVotingContracts(w http.ResponseWriter, r *http.Reques
 // @Failure 503 "Service unavailable"
 // @Router /Address/{address}/OracleVotingContracts [get]
 func (s *httpServer) addressOracleVotingContracts(w http.ResponseWriter, r *http.Request) {
-	s.oracleVotingContracts(w, r)
+	id := s.pm.Start("addressOracleVotingContracts", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	address := mux.Vars(r)["address"]
+	resp, nextContinuationToken, err := s.service.AddressOracleVotingContracts(address, count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 // @Tags Contracts

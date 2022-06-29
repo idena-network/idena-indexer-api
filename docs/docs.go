@@ -274,41 +274,10 @@ var doc = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "contract author address",
+                        "description": "address",
                         "name": "address",
                         "in": "path",
                         "required": true
-                    },
-                    {
-                        "type": "array",
-                        "items": {
-                            "type": "string"
-                        },
-                        "description": "filter by voting states",
-                        "name": "states[]",
-                        "in": "query"
-                    },
-                    {
-                        "type": "string",
-                        "description": "oracle address",
-                        "name": "oracle",
-                        "in": "query"
-                    },
-                    {
-                        "type": "boolean",
-                        "description": "flag to return all voting contracts independently on oracle address",
-                        "name": "all",
-                        "in": "query"
-                    },
-                    {
-                        "enum": [
-                            "reward",
-                            "timestamp"
-                        ],
-                        "type": "string",
-                        "description": "value to sort",
-                        "name": "sortBy",
-                        "in": "query"
                     },
                     {
                         "type": "integer",
@@ -5077,6 +5046,12 @@ var doc = `{
                         },
                         "description": "filter by voting states",
                         "name": "states[]",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "description": "author address",
+                        "name": "author",
                         "in": "query"
                     },
                     {
