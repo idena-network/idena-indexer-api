@@ -30,7 +30,7 @@ type Api interface {
 
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
 
-	Staking() (float64, error)
+	Staking() (*types.Staking, error)
 
 	IdentityWithProof(epoch uint64, address string) (*hexutil.Bytes, error)
 
@@ -212,12 +212,12 @@ func (api *apiImpl) IdentityWithProof(epoch uint64, address string) (*hexutil.By
 	return &res, nil
 }
 
-func (api *apiImpl) Staking() (float64, error) {
-	var res float64
-	if _, _, err := api.client.Get("api/Staking", &res); err != nil {
-		return 0, api.handleError(err)
+func (api *apiImpl) Staking() (*types.Staking, error) {
+	var res types.Staking
+	if _, _, err := api.client.Get("api/StakingV2", &res); err != nil {
+		return nil, api.handleError(err)
 	}
-	return res, nil
+	return &res, nil
 }
 
 func (api *apiImpl) MultisigContract(address string) (*types.MultisigContract, error) {

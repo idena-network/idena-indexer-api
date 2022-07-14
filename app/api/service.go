@@ -201,13 +201,7 @@ func (s *service) IdentityWithProof(address string, epoch uint64) (*hexutil.Byte
 }
 
 func (s *service) Staking() (*types.Staking, error) {
-	weight, err := s.indexerApi.Staking()
-	if err != nil {
-		return nil, err
-	}
-	return &types.Staking{
-		Weight: weight,
-	}, nil
+	return s.indexerApi.Staking()
 }
 
 func (s *service) MultisigContract(address string) (types.MultisigContract, error) {
