@@ -1146,6 +1146,10 @@ definitions:
     type: object
   Staking:
     properties:
+      averageMinerWeight:
+        type: number
+      minersWeight:
+        type: number
       weight:
         type: number
     type: object

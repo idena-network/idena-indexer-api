@@ -7442,6 +7442,12 @@ var doc = `{
         "Staking": {
             "type": "object",
             "properties": {
+                "averageMinerWeight": {
+                    "type": "number"
+                },
+                "minersWeight": {
+                    "type": "number"
+                },
                 "weight": {
                     "type": "number"
                 }
