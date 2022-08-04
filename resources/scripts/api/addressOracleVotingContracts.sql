@@ -35,7 +35,10 @@ SELECT ovc_a_and_ov.deploy_or_vote_tx_id,
        ovcs.termination_timestamp,
        ovcs.total_reward,
        ovcs.stake,
-       coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth
+       coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth,
+       ovc.owner_deposit,
+       ovc.oracle_reward_fund,
+       coalesce(rra.address, '')                                  refund_recipient
 FROM (SELECT ovc.deploy_or_vote_tx_id, ovc.address_id, ovc.contract_tx_id
       FROM oracle_voting_contract_authors_and_open_voters ovc
       WHERE ovc.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))
@@ -57,7 +60,8 @@ FROM (SELECT ovc.deploy_or_vote_tx_id, ovc.address_id, ovc.contract_tx_id
                    ON sovcc.contract_tx_id = ovc_a_and_ov.contract_tx_id AND sovcc.address_id = ovc_a_and_ov.address_id
          LEFT JOIN blocks voting_finish_b ON voting_finish_b.height = sovc.counting_block
          LEFT JOIN blocks public_voting_finish_b
-                   ON public_voting_finish_b.height = sovc.counting_block + ovc.public_voting_duration,
+                   ON public_voting_finish_b.height = sovc.counting_block + ovc.public_voting_duration
+         LEFT JOIN addresses rra ON rra.id = ovc.refund_recipient_address_id,
 
      (SELECT height, timestamp FROM blocks ORDER BY height DESC LIMIT 1) head_block
 ORDER BY ovc_a_and_ov.deploy_or_vote_tx_id DESC

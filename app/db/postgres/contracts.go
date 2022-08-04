@@ -173,7 +173,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 		var option, optionVotes, countingBlock, committeeEpoch sql.NullInt64
 		var createTime, startTime, headBlockTimestamp int64
 		var votingFinishTime, publicVotingFinishTime, finishTime, terminationTime sql.NullInt64
-		var minPayment, totalReward NullDecimal
+		var minPayment, totalReward, ownerDeposit, oracleRewardFund NullDecimal
 		var headBlockHeight uint64
 		if err := rows.Scan(
 			&lastContinuationToken,
@@ -208,6 +208,9 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 			&totalReward,
 			&item.Stake,
 			&item.EpochWithoutGrowth,
+			&ownerDeposit,
+			&oracleRewardFund,
+			&item.RefundRecipient,
 		); err != nil {
 			return nil, nil, err
 		}
@@ -287,11 +290,17 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 		if totalReward.Valid {
 			item.TotalReward = &totalReward.Decimal
 		}
+		if ownerDeposit.Valid {
+			item.OwnerDeposit = &ownerDeposit.Decimal
+		}
+		if oracleRewardFund.Valid {
+			item.OracleRewardFund = &oracleRewardFund.Decimal
+		}
 
 		if itemState == oracleVotingStatePending || itemState == oracleVotingStateOpen || itemState == oracleVotingStateVoted || itemState == oracleVotingStateCounting || itemState == oracleVotingStateCanBeProlonged {
-			item.EstimatedOracleReward = calculateEstimatedOracleReward(item.Balance, item.MinPayment, item.OwnerFee, item.CommitteeSize, item.VoteProofsCount)
-			item.EstimatedMaxOracleReward = calculateEstimatedMaxOracleReward(item.Balance, item.MinPayment, item.OwnerFee, item.CommitteeSize, item.Quorum, item.WinnerThreshold, item.VoteProofsCount)
-			item.EstimatedTotalReward = calculateEstimatedTotalReward(item.Balance, item.MinPayment, item.OwnerFee, item.VoteProofsCount)
+			item.EstimatedOracleReward = calculateEstimatedOracleReward(item.Balance, item.MinPayment, item.OwnerFee, item.CommitteeSize, item.VoteProofsCount, item.OwnerDeposit, item.OracleRewardFund)
+			item.EstimatedMaxOracleReward = calculateEstimatedMaxOracleReward(item.Balance, item.MinPayment, item.OwnerFee, item.CommitteeSize, item.Quorum, item.WinnerThreshold, item.VoteProofsCount, item.OwnerDeposit, item.OracleRewardFund)
+			item.EstimatedTotalReward = calculateEstimatedTotalReward(item.Balance, item.MinPayment, item.OwnerFee, item.VoteProofsCount, item.OwnerDeposit, item.OracleRewardFund)
 		}
 
 		isFirst = false
@@ -302,8 +311,55 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 	return res, &lastContinuationToken, nil
 }
 
-func calculateEstimatedOracleReward(balance decimal.Decimal, votingMinPaymentP *decimal.Decimal, ownerFee uint8, committeeSize, votesCnt uint64) *decimal.Decimal {
-	var ownerReward, votingMinPayment decimal.Decimal
+func calculateEstimatedOwnerReward(
+	balance decimal.Decimal,
+	ownerDeposit *decimal.Decimal,
+	oracleRewardFund *decimal.Decimal,
+	votingMinPayment decimal.Decimal,
+	committeeSize uint64,
+	ownerFee uint8,
+	ceil bool,
+) decimal.Decimal {
+	var ownerReward decimal.Decimal
+	if ownerDeposit != nil {
+		ownerReward = ownerReward.Add(*ownerDeposit)
+		if ownerFee > 0 {
+			replenishedAmount := balance.Sub(*ownerDeposit)
+			if oracleRewardFund != nil {
+				replenishedAmount = replenishedAmount.Sub(*oracleRewardFund)
+			}
+			if replenishedAmount.Sign() > 0 {
+				ownerFeeD := decimal.NewFromFloat(float64(ownerFee) / 100.0)
+				if ceil {
+					ownerFeeD = ownerFeeD.Ceil()
+				}
+				feeAmount := replenishedAmount.Mul(ownerFeeD)
+				ownerReward = ownerReward.Add(feeAmount)
+			}
+		}
+	} else {
+		if ownerFee > 0 {
+			committeeSizeD := decimal.NewFromInt(int64(committeeSize))
+			ownerFeeD := decimal.NewFromFloat(float64(ownerFee) / 100.0)
+			if ceil {
+				ownerFeeD = ownerFeeD.Ceil()
+			}
+			ownerReward = balance.Sub(votingMinPayment.Mul(committeeSizeD)).Mul(ownerFeeD)
+		}
+	}
+	return ownerReward
+}
+
+func calculateEstimatedOracleReward(
+	balance decimal.Decimal,
+	votingMinPaymentP *decimal.Decimal,
+	ownerFee uint8,
+	committeeSize,
+	votesCnt uint64,
+	ownerDeposit *decimal.Decimal,
+	oracleRewardFund *decimal.Decimal,
+) *decimal.Decimal {
+	var votingMinPayment decimal.Decimal
 	if votingMinPaymentP != nil {
 		votingMinPayment = *votingMinPaymentP
 	}
@@ -317,15 +373,25 @@ func calculateEstimatedOracleReward(balance decimal.Decimal, votingMinPaymentP *
 	if committeeSize > votesCnt && votingMinPayment.Sign() == 1 {
 		potentialBalance = potentialBalance.Add(votingMinPayment.Mul(decimal.NewFromInt(int64(committeeSize - votesCnt))))
 	}
-	committeeSizeD := decimal.NewFromInt(int64(committeeSize))
-	if ownerFee > 0 {
-		ownerReward = potentialBalance.Sub(votingMinPayment.Mul(committeeSizeD)).Mul(decimal.NewFromFloat(float64(ownerFee) / 100.0).Ceil())
+	ownerReward := calculateEstimatedOwnerReward(potentialBalance, ownerDeposit, oracleRewardFund, votingMinPayment, committeeSize, ownerFee, true)
+	oracleReward := potentialBalance.Sub(ownerReward).Div(decimal.NewFromInt(int64(committeeSize)))
+	if oracleReward.Sign() < 0 {
+		oracleReward = decimal.NewFromInt32(0)
 	}
-	oracleReward := potentialBalance.Sub(ownerReward).Div(committeeSizeD)
 	return &oracleReward
 }
 
-func calculateEstimatedMaxOracleReward(balance decimal.Decimal, votingMinPaymentP *decimal.Decimal, ownerFee uint8, committeeSize uint64, quorum, winnerThreshold byte, votesCnt uint64) *decimal.Decimal {
+func calculateEstimatedMaxOracleReward(
+	balance decimal.Decimal,
+	votingMinPaymentP *decimal.Decimal,
+	ownerFee uint8,
+	committeeSize uint64,
+	quorum,
+	winnerThreshold byte,
+	votesCnt uint64,
+	ownerDeposit *decimal.Decimal,
+	oracleRewardFund *decimal.Decimal,
+) *decimal.Decimal {
 	quorumSizeF := float64(committeeSize) * float64(quorum) / 100.0
 	quorumSize := uint64(quorumSizeF)
 	if quorumSizeF > float64(quorumSize) || quorumSize == 0 {
@@ -343,24 +409,32 @@ func calculateEstimatedMaxOracleReward(balance decimal.Decimal, votingMinPayment
 		potentialBalance = potentialBalance.Add(votingMinPayment.Mul(decimal.NewFromInt(int64(minVotesCnt - votesCnt))))
 	}
 
-	var ownerReward decimal.Decimal
-	minVotesCntD := decimal.NewFromInt(int64(minVotesCnt))
-	if ownerFee > 0 {
-		ownerReward = potentialBalance.Sub(votingMinPayment.Mul(minVotesCntD)).Mul(decimal.NewFromFloat(float64(ownerFee) / 100.0))
-	}
+	ownerReward := calculateEstimatedOwnerReward(potentialBalance, ownerDeposit, oracleRewardFund, votingMinPayment, minVotesCnt, ownerFee, false)
 
-	oracleReward := potentialBalance.Sub(ownerReward).Div(minVotesCntD.Mul(decimal.New(int64(winnerThreshold), -2)).Ceil())
+	oracleReward := potentialBalance.Sub(ownerReward).Div(decimal.NewFromInt(int64(minVotesCnt)).Mul(decimal.New(int64(winnerThreshold), -2)).Ceil())
+	if oracleReward.Sign() < 0 {
+		oracleReward = decimal.NewFromInt32(0)
+	}
 	return &oracleReward
 }
 
-func calculateEstimatedTotalReward(balance decimal.Decimal, votingMinPaymentP *decimal.Decimal, ownerFee uint8, votesCnt uint64) *decimal.Decimal {
+func calculateEstimatedTotalReward(
+	balance decimal.Decimal,
+	votingMinPaymentP *decimal.Decimal,
+	ownerFee uint8,
+	votesCnt uint64,
+	ownerDeposit *decimal.Decimal,
+	oracleRewardFund *decimal.Decimal,
+) *decimal.Decimal {
 	var votingMinPayment decimal.Decimal
 	if votingMinPaymentP != nil {
 		votingMinPayment = *votingMinPaymentP
 	}
-	votesCntD := decimal.NewFromInt(int64(votesCnt))
-	ownerReward := balance.Sub(votingMinPayment.Mul(votesCntD)).Mul(decimal.NewFromFloat(float64(ownerFee) / 100.0))
+	ownerReward := calculateEstimatedOwnerReward(balance, ownerDeposit, oracleRewardFund, votingMinPayment, votesCnt, ownerFee, false)
 	totalReward := balance.Sub(ownerReward)
+	if totalReward.Sign() < 0 {
+		totalReward = decimal.NewFromInt32(0)
+	}
 	return &totalReward
 }
 

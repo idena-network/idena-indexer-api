@@ -588,6 +588,9 @@ type OracleVotingContract struct {
 	CommitteeEpoch                  *uint64                           `json:"committeeEpoch,omitempty"`
 	TotalReward                     *decimal.Decimal                  `json:"totalReward,omitempty" swaggertype:"string"`
 	EpochWithoutGrowth              byte                              `json:"epochWithoutGrowth"`
+	OwnerDeposit                    *decimal.Decimal                  `json:"ownerDeposit,omitempty" swaggertype:"string"`
+	OracleRewardFund                *decimal.Decimal                  `json:"oracleRewardFund,omitempty" swaggertype:"string"`
+	RefundRecipient                 string                            `json:"refundRecipient,omitempty" swaggertype:"string"`
 } // @Name OracleVotingContract
 
 type OracleVotingContractOptionVotes struct {

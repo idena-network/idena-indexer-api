@@ -35,6 +35,9 @@ type OracleVotingContract struct {
 	Quorum               byte
 	CommitteeSize        uint64
 	OwnerFee             byte
+	OwnerDeposit         *big.Int
+	OracleRewardFund     *big.Int
+	RefundRecipient      *common.Address
 }
 
 type Transaction struct {
@@ -78,10 +81,22 @@ func (c *contractsImpl) OracleVotingContracts(authorAddress, oracleAddress strin
 	if len(authorAddress) > 0 && continuationToken == nil && includePending && all {
 		memPoolContracts, _ := c.contractsMemPool.GetOracleVotingContractDeploys(authorAddress)
 		for _, memPoolContract := range memPoolContracts {
-			var minPayment *decimal.Decimal
+			var minPayment, ownerDeposit, oracleRewardFund *decimal.Decimal
+			var refundRecipient string
 			if memPoolContract.VotingMinPayment != nil {
 				v := blockchain.ConvertToFloat(memPoolContract.VotingMinPayment)
 				minPayment = &v
+			}
+			if memPoolContract.OwnerDeposit != nil {
+				v := blockchain.ConvertToFloat(memPoolContract.OwnerDeposit)
+				ownerDeposit = &v
+			}
+			if memPoolContract.OracleRewardFund != nil {
+				v := blockchain.ConvertToFloat(memPoolContract.OracleRewardFund)
+				oracleRewardFund = &v
+			}
+			if memPoolContract.RefundRecipient != nil {
+				refundRecipient = memPoolContract.RefundRecipient.Hex()
 			}
 			oracleVotingContract := types.OracleVotingContract{
 				ContractAddress:      memPoolContract.ContractAddress.Hex(),
@@ -95,6 +110,9 @@ func (c *contractsImpl) OracleVotingContracts(authorAddress, oracleAddress strin
 				VotingDuration:       memPoolContract.VotingDuration,
 				PublicVotingDuration: memPoolContract.PublicVotingDuration,
 				WinnerThreshold:      memPoolContract.WinnerThreshold,
+				OwnerDeposit:         ownerDeposit,
+				OracleRewardFund:     oracleRewardFund,
+				RefundRecipient:      refundRecipient,
 			}
 			res = append(res, oracleVotingContract)
 		}
