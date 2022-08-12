@@ -38,6 +38,7 @@ type OracleVotingContract struct {
 	OwnerDeposit         *big.Int
 	OracleRewardFund     *big.Int
 	RefundRecipient      *common.Address
+	Hash                 []byte
 }
 
 type Transaction struct {
@@ -113,6 +114,7 @@ func (c *contractsImpl) OracleVotingContracts(authorAddress, oracleAddress strin
 				OwnerDeposit:         ownerDeposit,
 				OracleRewardFund:     oracleRewardFund,
 				RefundRecipient:      refundRecipient,
+				Hash:                 memPoolContract.Hash,
 			}
 			res = append(res, oracleVotingContract)
 		}

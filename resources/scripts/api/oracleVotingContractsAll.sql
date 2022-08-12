@@ -38,7 +38,8 @@ SELECT sovc.sort_key,
        coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth,
        ovc.owner_deposit,
        ovc.oracle_reward_fund,
-       coalesce(rra.address, '')                                  refund_recipient
+       coalesce(rra.address, '')                                  refund_recipient,
+       coalesce(ovc.hash, ''::bytea)                              hash
 FROM (SELECT *
       FROM sorted_oracle_voting_contracts
       WHERE ($1::text is null OR author_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1)))

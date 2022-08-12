@@ -38,7 +38,8 @@ SELECT ovc_a_and_ov.deploy_or_vote_tx_id,
        coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth,
        ovc.owner_deposit,
        ovc.oracle_reward_fund,
-       coalesce(rra.address, '')                                  refund_recipient
+       coalesce(rra.address, '')                                  refund_recipient,
+       coalesce(ovc.hash, ''::bytea)                              hash
 FROM (SELECT ovc.deploy_or_vote_tx_id, ovc.address_id, ovc.contract_tx_id
       FROM oracle_voting_contract_authors_and_open_voters ovc
       WHERE ovc.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))

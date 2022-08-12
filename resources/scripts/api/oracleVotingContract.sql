@@ -39,7 +39,8 @@ SELECT sovc.state_tx_id,
        coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth,
        ovc.owner_deposit,
        ovc.oracle_reward_fund,
-       coalesce(rra.address, '')                                  refund_recipient
+       coalesce(rra.address, '')                                  refund_recipient,
+       coalesce(ovc.hash, ''::bytea)                              hash
 FROM contracts c
          JOIN oracle_voting_contracts ovc ON ovc.contract_tx_id = c.tx_id
          LEFT JOIN balances b on b.address_id = c.contract_address_id

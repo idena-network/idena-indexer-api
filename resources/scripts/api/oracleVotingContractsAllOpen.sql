@@ -39,7 +39,8 @@ SELECT sovc.sort_key,
        coalesce(ovcs.epoch_without_growth, 0)                     epoch_without_growth,
        ovc.owner_deposit,
        ovc.oracle_reward_fund,
-       coalesce(rra.address, '')                                  refund_recipient
+       coalesce(rra.address, '')                                  refund_recipient,
+       coalesce(ovc.hash, ''::bytea)                              hash
 FROM (SELECT sovc.*, coalesce(sovcc.voted, false) voted, sovcc.address_id oracle_address_id
       FROM sorted_oracle_voting_contracts sovc
                LEFT JOIN sorted_oracle_voting_contract_committees sovcc
