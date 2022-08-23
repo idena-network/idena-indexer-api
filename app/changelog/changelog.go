@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"net/http"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -113,14 +114,9 @@ func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
 				if !strings.HasPrefix(line, "- ") {
 					continue
 				}
-				parts := strings.Split(strings.TrimPrefix(line, "- "), " (")
-				if len(parts) == 0 {
-					continue
-				}
-				change := parts[0]
-				for partIndex := 1; partIndex < len(parts)-1; partIndex++ {
-					change += " (" + parts[partIndex]
-				}
+				line = strings.TrimPrefix(line, "- ")
+				r := regexp.MustCompile(` \(\[#+[0-9]*]\)`)
+				change := r.ReplaceAllString(line, "")
 				res[v.String()].Changes = append(res[v.String()].Changes, change)
 			}
 			break
