@@ -390,6 +390,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Validators")).HandlerFunc(s.validators)
 	router.Path(strings.ToLower("/OnlineValidators/Count")).HandlerFunc(s.onlineValidatorsCount)
 	router.Path(strings.ToLower("/OnlineValidators")).HandlerFunc(s.onlineValidators)
+	router.Path(strings.ToLower("/ForkCommittee/Count")).HandlerFunc(s.forkCommitteeCount)
 
 	router.Path(strings.ToLower("/SignatureAddress")).
 		Queries("value", "{value}", "signature", "{signature}").
@@ -2879,6 +2880,11 @@ func (s *httpServer) onlineValidators(w http.ResponseWriter, r *http.Request) {
 	}
 	resp, nextContinuationToken, err := s.service.OnlineValidators(count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+func (s *httpServer) forkCommitteeCount(w http.ResponseWriter, r *http.Request) {
+	resp, err := s.service.ForkCommitteeCount()
+	WriteResponse(w, resp, err, s.logger)
 }
 
 func (s *httpServer) signatureAddress(w http.ResponseWriter, r *http.Request) {

@@ -24,6 +24,7 @@ type Service interface {
 	Validators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
 	OnlineValidatorsCount() (uint64, error)
 	OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
+	ForkCommitteeCount() (uint64, error)
 	SignatureAddress(value, signature string) (string, error)
 	UpgradeVoting() ([]*types.UpgradeVotes, error)
 	Staking() (*types.Staking, error)
@@ -164,6 +165,10 @@ func (s *service) Validators(count uint64, continuationToken *string) ([]types.V
 
 func (s *service) OnlineValidatorsCount() (uint64, error) {
 	return s.indexerApi.OnlineValidatorsCount()
+}
+
+func (s *service) ForkCommitteeCount() (uint64, error) {
+	return s.indexerApi.ForkCommitteeCount()
 }
 
 func (s *service) OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error) {

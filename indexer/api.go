@@ -18,6 +18,7 @@ type Api interface {
 	Validators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
 	OnlineValidatorsCount() (uint64, error)
 	OnlineValidators(count uint64, continuationToken *string) ([]types.Validator, *string, error)
+	ForkCommitteeCount() (uint64, error)
 
 	MemPoolTransaction(hash string) (*types.TransactionDetail, error)
 	MemPoolTransactionRaw(hash string) (*hexutil.Bytes, error)
@@ -131,6 +132,15 @@ func (api *apiImpl) OnlineValidators(count uint64, continuationToken *string) ([
 		return nil, nil, api.handleError(err)
 	}
 	return res, nextContinuationToken, nil
+}
+
+func (api *apiImpl) ForkCommitteeCount() (uint64, error) {
+	var res uint64
+	_, _, err := api.client.Get("api/ForkCommittee/Count", &res)
+	if err != nil {
+		return 0, api.handleError(err)
+	}
+	return res, nil
 }
 
 func (api *apiImpl) MemPoolTransaction(hash string) (*types.TransactionDetail, error) {
