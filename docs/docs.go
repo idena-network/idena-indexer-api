@@ -6910,10 +6910,19 @@ var doc = `{
                     "type": "string",
                     "example": "2020-01-01T00:00:00Z"
                 },
+                "hash": {
+                    "type": "string"
+                },
                 "isOracle": {
                     "type": "boolean"
                 },
                 "minPayment": {
+                    "type": "string"
+                },
+                "oracleRewardFund": {
+                    "type": "string"
+                },
+                "ownerDeposit": {
                     "type": "string"
                 },
                 "ownerFee": {
@@ -6928,6 +6937,9 @@ var doc = `{
                 },
                 "quorum": {
                     "type": "integer"
+                },
+                "refundRecipient": {
+                    "type": "string"
                 },
                 "secretVotesCount": {
                     "type": "integer"
@@ -7022,6 +7034,9 @@ var doc = `{
                 },
                 "penalty": {
                     "type": "string"
+                },
+                "penaltySeconds": {
+                    "type": "integer"
                 },
                 "timestamp": {
                     "type": "string",

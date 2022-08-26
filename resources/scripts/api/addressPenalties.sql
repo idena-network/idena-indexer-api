@@ -1,6 +1,7 @@
 select p.id,
        a.address,
        p.penalty,
+       p.penalty_seconds,
        p.block_height,
        b.hash,
        b.timestamp,

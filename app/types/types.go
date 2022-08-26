@@ -372,12 +372,13 @@ type TotalMiningReward struct {
 }
 
 type Penalty struct {
-	Address     string          `json:"address"`
-	Penalty     decimal.Decimal `json:"penalty" swaggertype:"string"`
-	BlockHeight uint64          `json:"blockHeight"`
-	BlockHash   string          `json:"blockHash"`
-	Timestamp   time.Time       `json:"timestamp" example:"2020-01-01T00:00:00Z"`
-	Epoch       uint64          `json:"epoch"`
+	Address        string          `json:"address"`
+	Penalty        decimal.Decimal `json:"penalty" swaggertype:"string"`
+	PenaltySeconds uint16          `json:"penaltySeconds"`
+	BlockHeight    uint64          `json:"blockHeight"`
+	BlockHash      string          `json:"blockHash"`
+	Timestamp      time.Time       `json:"timestamp" example:"2020-01-01T00:00:00Z"`
+	Epoch          uint64          `json:"epoch"`
 } // @Name Penalty
 
 type Reward struct {
@@ -476,17 +477,20 @@ type EpochInvites struct {
 } // @Name EpochInvites
 
 type BalanceUpdate struct {
-	BalanceOld  decimal.Decimal `json:"balanceOld"`
-	StakeOld    decimal.Decimal `json:"stakeOld"`
-	PenaltyOld  decimal.Decimal `json:"penaltyOld"`
-	BalanceNew  decimal.Decimal `json:"balanceNew"`
-	StakeNew    decimal.Decimal `json:"stakeNew"`
-	PenaltyNew  decimal.Decimal `json:"penaltyNew"`
-	Reason      string          `json:"reason"`
-	BlockHeight uint64          `json:"blockHeight"`
-	BlockHash   string          `json:"blockHash"`
-	Timestamp   time.Time       `json:"timestamp"`
-	Data        interface{}     `json:"data,omitempty"`
+	BalanceOld        decimal.Decimal `json:"balanceOld"`
+	StakeOld          decimal.Decimal `json:"stakeOld"`
+	PenaltyOld        decimal.Decimal `json:"penaltyOld"`
+	PenaltySecondsOld uint16          `json:"penaltySecondsOld"`
+	BalanceNew        decimal.Decimal `json:"balanceNew"`
+	StakeNew          decimal.Decimal `json:"stakeNew"`
+	PenaltyNew        decimal.Decimal `json:"penaltyNew"`
+	PenaltySecondsNew uint16          `json:"penaltySecondsNew"`
+	PenaltyPayment    decimal.Decimal `json:"penaltyPayment"`
+	Reason            string          `json:"reason"`
+	BlockHeight       uint64          `json:"blockHeight"`
+	BlockHash         string          `json:"blockHash"`
+	Timestamp         time.Time       `json:"timestamp"`
+	Data              interface{}     `json:"data,omitempty"`
 }
 
 type TransactionBalanceUpdate struct {
@@ -650,20 +654,22 @@ type Upgrade struct {
 } // @Name Upgrade
 
 type OnlineIdentity struct {
-	Address      string          `json:"address"`
-	LastActivity *time.Time      `json:"lastActivity"`
-	Penalty      decimal.Decimal `json:"penalty"`
-	Online       bool            `json:"online"`
-	Delegetee    *OnlineIdentity `json:"delegatee,omitempty"`
+	Address        string          `json:"address"`
+	LastActivity   *time.Time      `json:"lastActivity"`
+	Penalty        decimal.Decimal `json:"penalty"`
+	PenaltySeconds uint16          `json:"penaltySeconds"`
+	Online         bool            `json:"online"`
+	Delegetee      *OnlineIdentity `json:"delegatee,omitempty"`
 }
 
 type Validator struct {
-	Address      string          `json:"address"`
-	Size         uint32          `json:"size"`
-	Online       bool            `json:"online"`
-	LastActivity *time.Time      `json:"lastActivity"`
-	Penalty      decimal.Decimal `json:"penalty"`
-	IsPool       bool            `json:"isPool"`
+	Address        string          `json:"address"`
+	Size           uint32          `json:"size"`
+	Online         bool            `json:"online"`
+	LastActivity   *time.Time      `json:"lastActivity"`
+	Penalty        decimal.Decimal `json:"penalty"`
+	PenaltySeconds uint16          `json:"penaltySeconds"`
+	IsPool         bool            `json:"isPool"`
 }
 
 type Pool struct {
