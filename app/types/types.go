@@ -361,6 +361,7 @@ type Staking struct {
 	Weight             float64 `json:"weight"`
 	MinersWeight       float64 `json:"minersWeight"`
 	AverageMinerWeight float64 `json:"averageMinerWeight"`
+	MaxMinerWeight     float64 `json:"maxMinerWeight"`
 } // @Name Staking
 
 type TotalMiningReward struct {

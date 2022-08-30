@@ -7436,6 +7436,9 @@ var doc = `{
                 "averageMinerWeight": {
                     "type": "number"
                 },
+                "maxMinerWeight": {
+                    "type": "number"
+                },
                 "minersWeight": {
                     "type": "number"
                 },
