@@ -7,7 +7,8 @@ SELECT ovc_a_and_ov.deploy_or_vote_tx_id,
        coalesce(ovcs.secret_votes_count, 0)                       secret_votes_count,
        ovcs.votes,
        (case
-            when sovc.state = 1 then 'Open'
+            when sovc.state = 1 and not coalesce(sovcc.voted, false) then 'Open'
+            when sovc.state = 1 and coalesce(sovcc.voted, false) then 'Voted'
             when sovc.state = 3 then 'Counting'
             when sovc.state = 0 then 'Pending'
             when sovc.state = 2 then 'Archive'
