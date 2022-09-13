@@ -6292,6 +6292,9 @@ var doc = `{
                 "epoch": {
                     "type": "integer"
                 },
+                "penalizedDelegators": {
+                    "type": "integer"
+                },
                 "rewards": {
                     "type": "array",
                     "items": {

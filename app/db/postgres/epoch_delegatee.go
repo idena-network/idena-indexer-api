@@ -78,6 +78,7 @@ func (a *postgresAccessor) EpochAddressDelegateeTotalRewards(epoch uint64, addre
 			&rewards.candidate,
 			&rewards.staking,
 			&res.Delegators,
+			&res.PenalizedDelegators,
 		)
 		res.Rewards = toDelegationReward(rewards, a.replaceValidationReward)
 		if err != nil {

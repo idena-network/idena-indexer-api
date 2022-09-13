@@ -452,6 +452,7 @@ func (a *postgresAccessor) EpochDelegateeTotalRewards(epoch uint64, count uint64
 			&rewards.candidate,
 			&rewards.staking,
 			&item.Delegators,
+			&item.PenalizedDelegators,
 		)
 		item.Rewards = toDelegationReward(rewards, a.replaceValidationReward)
 		if err != nil {

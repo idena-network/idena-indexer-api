@@ -347,6 +347,7 @@ func (a *postgresAccessor) AddressDelegateeTotalRewards(address string, count ui
 				&rewards.candidate,
 				&rewards.staking,
 				&item.Delegators,
+				&item.PenalizedDelegators,
 			)
 			if err != nil {
 				return nil, 0, err

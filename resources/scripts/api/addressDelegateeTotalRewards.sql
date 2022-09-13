@@ -9,7 +9,8 @@ SELECT vr.epoch,
        coalesce(vr.reports_balance, 0)           reports_balance,
        coalesce(vr.candidate_balance, 0)         candidate_balance,
        coalesce(vr.staking_balance, 0)           staking_balance,
-       vr.delegators
+       vr.delegators,
+       vr.penalized_delegators
 FROM delegatee_total_validation_rewards vr
 WHERE vr.delegatee_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))
   AND ($3::bigint IS NULL OR vr.epoch <= $3)

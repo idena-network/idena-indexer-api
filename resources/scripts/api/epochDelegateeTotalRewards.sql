@@ -11,7 +11,8 @@ SELECT vr.delegatee_address_id,
        coalesce(vr.reports_balance, 0)           reports_balance,
        coalesce(vr.candidate_balance, 0)         candidate_balance,
        coalesce(vr.staking_balance, 0)           staking_balance,
-       vr.delegators
+       vr.delegators,
+       vr.penalized_delegators
 FROM delegatee_total_validation_rewards vr
          LEFT JOIN addresses a ON a.id = vr.delegatee_address_id
 WHERE vr.epoch = $1
