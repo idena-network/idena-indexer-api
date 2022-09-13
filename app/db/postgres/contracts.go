@@ -170,7 +170,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 	var networkSize *uint64
 	for rows.Next() {
 		item := types.OracleVotingContract{}
-		var option, optionVotes, countingBlock, committeeEpoch sql.NullInt64
+		var option, optionVotes, optionAllVotes, countingBlock, committeeEpoch sql.NullInt64
 		var createTime, startTime, headBlockTimestamp int64
 		var votingFinishTime, publicVotingFinishTime, finishTime, terminationTime sql.NullInt64
 		var minPayment, totalReward, ownerDeposit, oracleRewardFund NullDecimal
@@ -187,6 +187,7 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 			&item.State,
 			&option,
 			&optionVotes,
+			&optionAllVotes,
 			&createTime,
 			&startTime,
 			&headBlockHeight,
@@ -224,8 +225,9 @@ func (a *postgresAccessor) readOracleVotingContracts(rows *sql.Rows) ([]types.Or
 		}
 		if option.Valid {
 			curItem.Votes = append(curItem.Votes, types.OracleVotingContractOptionVotes{
-				Option: byte(option.Int64),
-				Count:  uint64(optionVotes.Int64),
+				Option:   byte(option.Int64),
+				Count:    uint64(optionVotes.Int64),
+				AllCount: uint64(optionAllVotes.Int64),
 			})
 		}
 		if !isFirst {

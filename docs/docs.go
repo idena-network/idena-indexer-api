@@ -6997,6 +6997,9 @@ var doc = `{
         "OracleVotingContractOptionVotes": {
             "type": "object",
             "properties": {
+                "allCount": {
+                    "type": "integer"
+                },
                 "count": {
                     "type": "integer"
                 },

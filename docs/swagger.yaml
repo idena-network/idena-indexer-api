@@ -851,6 +851,8 @@ definitions:
     type: object
   OracleVotingContractOptionVotes:
     properties:
+      allCount:
+        type: integer
       count:
         type: integer
       option:

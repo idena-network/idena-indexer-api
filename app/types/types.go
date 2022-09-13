@@ -600,8 +600,9 @@ type OracleVotingContract struct {
 } // @Name OracleVotingContract
 
 type OracleVotingContractOptionVotes struct {
-	Option byte   `json:"option"`
-	Count  uint64 `json:"count"`
+	Option   byte   `json:"option"`
+	Count    uint64 `json:"count"`
+	AllCount uint64 `json:"allCount"`
 } // @Name OracleVotingContractOptionVotes
 
 type EstimatedOracleReward struct {
