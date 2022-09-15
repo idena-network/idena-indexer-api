@@ -221,3 +221,17 @@ func (s *service) MultisigContract(address string) (types.MultisigContract, erro
 	res.Signers = indexerContract.Signers
 	return res, nil
 }
+
+func (s *service) Pool(address string) (*types.Pool, error) {
+	res, err := s.Accessor.Pool(address)
+	if err != nil {
+		return nil, err
+	}
+	indexerPool, err := s.indexerApi.Pool(address)
+	if err != nil {
+		return nil, err
+	}
+	res.TotalStake = indexerPool.TotalStake
+	res.TotalValidatedStake = indexerPool.TotalValidatedStake
+	return res, nil
+}

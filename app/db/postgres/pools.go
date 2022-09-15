@@ -124,6 +124,7 @@ func (a *postgresAccessor) PoolDelegators(address string, count uint64, continua
 			&item.Address,
 			&item.State,
 			&item.Age,
+			&item.Stake,
 		)
 		if err != nil {
 			return nil, nil, err

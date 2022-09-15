@@ -36,6 +36,8 @@ type Api interface {
 	IdentityWithProof(epoch uint64, address string) (*hexutil.Bytes, error)
 
 	MultisigContract(address string) (*types.MultisigContract, error)
+
+	Pool(address string) (*types.Pool, error)
 }
 
 func NewApi(client Client, logger log.Logger) Api {
@@ -236,6 +238,14 @@ func (api *apiImpl) MultisigContract(address string) (*types.MultisigContract, e
 		return nil, api.handleError(err)
 	}
 	return res.(*types.MultisigContract), nil
+}
+
+func (api *apiImpl) Pool(address string) (*types.Pool, error) {
+	res, _, err := api.client.Get("api/Pool/"+address, &types.Pool{})
+	if err != nil || res == nil {
+		return nil, api.handleError(err)
+	}
+	return res.(*types.Pool), nil
 }
 
 var indexerError = errors.New("unable to load indexer data")

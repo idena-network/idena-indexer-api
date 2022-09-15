@@ -6247,6 +6247,9 @@
                 "age": {
                     "type": "integer"
                 },
+                "stake": {
+                    "type": "string"
+                },
                 "state": {
                     "type": "string",
                     "enum": [
@@ -7035,6 +7038,12 @@
                 },
                 "size": {
                     "type": "integer"
+                },
+                "totalStake": {
+                    "type": "string"
+                },
+                "totalValidatedStake": {
+                    "type": "string"
                 }
             }
         },

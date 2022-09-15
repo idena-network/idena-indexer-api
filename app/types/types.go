@@ -675,14 +675,17 @@ type Validator struct {
 }
 
 type Pool struct {
-	Address string `json:"address"`
-	Size    uint64 `json:"size"`
+	Address             string          `json:"address"`
+	Size                uint64          `json:"size"`
+	TotalStake          decimal.Decimal `json:"totalStake" swaggertype:"string"`
+	TotalValidatedStake decimal.Decimal `json:"totalValidatedStake" swaggertype:"string"`
 } // @Name Pool
 
 type Delegator struct {
-	Address string `json:"address"`
-	State   string `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
-	Age     uint16 `json:"age"`
+	Address string          `json:"address"`
+	State   string          `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+	Age     uint16          `json:"age"`
+	Stake   decimal.Decimal `json:"stake" swaggertype:"string"`
 } // @Name Delegator
 
 type MinersHistoryItem struct {

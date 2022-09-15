@@ -6267,6 +6267,9 @@ var doc = `{
                 "age": {
                     "type": "integer"
                 },
+                "stake": {
+                    "type": "string"
+                },
                 "state": {
                     "type": "string",
                     "enum": [
@@ -7055,6 +7058,12 @@ var doc = `{
                 },
                 "size": {
                     "type": "integer"
+                },
+                "totalStake": {
+                    "type": "string"
+                },
+                "totalValidatedStake": {
+                    "type": "string"
                 }
             }
         },
