@@ -22,6 +22,7 @@ const (
 	addressBalanceUpdatesSummaryQuery    = "addressBalanceUpdatesSummary.sql"
 	addressContractTxBalanceUpdatesQuery = "addressContractTxBalanceUpdates.sql"
 	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
+	addressMiningRewardSummariesQuery    = "addressMiningRewardSummaries.sql"
 
 	txBalanceUpdateReason               = "Tx"
 	committeeRewardBalanceUpdateReason  = "CommitteeReward"
@@ -360,4 +361,30 @@ func (a *postgresAccessor) AddressDelegateeTotalRewards(address string, count ui
 		return nil, nil, err
 	}
 	return res.([]types.DelegateeTotalRewards), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) AddressMiningRewardSummaries(address string, count uint64, continuationToken *string) ([]types.MiningRewardSummary, *string, error) {
+	res, nextContinuationToken, err := a.page(addressMiningRewardSummariesQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.MiningRewardSummary
+		var epoch uint64
+		for rows.Next() {
+			item := types.MiningRewardSummary{}
+			err := rows.Scan(
+				&epoch,
+				&item.Amount,
+				&item.Penalty,
+			)
+			if err != nil {
+				return nil, 0, err
+			}
+			item.Epoch = epoch
+			res = append(res, item)
+		}
+		return res, epoch, nil
+	}, count, continuationToken, address)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.MiningRewardSummary), nextContinuationToken, nil
 }

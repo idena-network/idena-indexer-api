@@ -767,3 +767,9 @@ type ValidationDelegateeReward struct {
 	Address string          `json:"address"`
 	Amount  decimal.Decimal `json:"amount" swaggertype:"string"`
 } // @Name ValidationDelegateeReward
+
+type MiningRewardSummary struct {
+	Epoch   uint64          `json:"epoch"`
+	Amount  decimal.Decimal `json:"amount" swaggertype:"string"`
+	Penalty decimal.Decimal `json:"penalty" swaggertype:"string"`
+} // @Name MiningRewardSummary

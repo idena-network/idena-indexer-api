@@ -913,6 +913,13 @@ func (a *cachedAccessor) AddressDelegateeTotalRewards(address string, count uint
 	return res.([]types.DelegateeTotalRewards), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) AddressMiningRewardSummaries(address string, count uint64, continuationToken *string) ([]types.MiningRewardSummary, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("AddressMiningRewardSummaries", func() (interface{}, *string, error) {
+		return a.accessor.AddressMiningRewardSummaries(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.MiningRewardSummary), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) Transaction(hash string) (*types.TransactionDetail, error) {
 	res, err := a.getOrLoad("Transaction", func() (interface{}, error) {
 		return a.accessor.Transaction(hash)

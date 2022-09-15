@@ -116,6 +116,7 @@ type Accessor interface {
 	AddressBalanceUpdatesSummary(address string) (*types.BalanceUpdatesSummary, error)
 	AddressContractTxBalanceUpdates(address string, contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error)
 	AddressDelegateeTotalRewards(address string, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error)
+	AddressMiningRewardSummaries(address string, count uint64, continuationToken *string) ([]types.MiningRewardSummary, *string, error)
 
 	Transaction(hash string) (*types.TransactionDetail, error)
 	TransactionRaw(hash string) (*hexutil.Bytes, error)

@@ -264,6 +264,71 @@ var doc = `{
                 }
             }
         },
+        "/Address/{address}/MiningRewardSummaries": {
+            "get": {
+                "tags": [
+                    "Address"
+                ],
+                "operationId": "AddressMiningRewardSummaries",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/MiningRewardSummary"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Address/{address}/OracleVotingContracts": {
             "get": {
                 "tags": [
@@ -6846,6 +6911,20 @@ var doc = `{
                 "timestamp": {
                     "type": "string",
                     "example": "2020-01-01T00:00:00Z"
+                }
+            }
+        },
+        "MiningRewardSummary": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "string"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "penalty": {
+                    "type": "string"
                 }
             }
         },

@@ -356,6 +356,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Address/{address}/Balance/Changes/Summary")).HandlerFunc(s.addressBalanceUpdatesSummary)
 
 	router.Path(strings.ToLower("/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.addressDelegateeTotalRewards)
+	router.Path(strings.ToLower("/Address/{address}/MiningRewardSummaries")).HandlerFunc(s.addressMiningRewardSummaries)
 
 	router.Path(strings.ToLower("/Balances")).HandlerFunc(s.balances)
 	router.Path(strings.ToLower("/Staking")).HandlerFunc(s.staking)
@@ -2423,6 +2424,30 @@ func (s *httpServer) addressDelegateeTotalRewards(w http.ResponseWriter, r *http
 	}
 	vars := mux.Vars(r)
 	resp, nextContinuationToken, err := s.service.AddressDelegateeTotalRewards(vars["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+// @Tags Address
+// @Id AddressMiningRewardSummaries
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.MiningRewardSummary}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Address/{address}/MiningRewardSummaries [get]
+func (s *httpServer) addressMiningRewardSummaries(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("addressMiningRewardSummaries", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	vars := mux.Vars(r)
+	resp, nextContinuationToken, err := s.service.AddressMiningRewardSummaries(vars["address"], count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
