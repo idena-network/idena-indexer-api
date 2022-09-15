@@ -42,7 +42,7 @@ SELECT ovc_a_and_ov.deploy_or_vote_tx_id,
        coalesce(rra.address, '')                                  refund_recipient,
        coalesce(ovc.hash, ''::bytea)                              hash
 FROM (SELECT ovc.deploy_or_vote_tx_id, ovc.address_id, ovc.contract_tx_id
-      FROM oracle_voting_contract_authors_and_open_voters ovc
+      FROM oracle_voting_contract_authors_and_voters ovc
       WHERE ovc.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))
         AND ($3::bigint is null OR ovc.deploy_or_vote_tx_id::bigint <= $3)
       ORDER BY ovc.deploy_or_vote_tx_id DESC
