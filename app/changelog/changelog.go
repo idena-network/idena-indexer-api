@@ -17,7 +17,7 @@ import (
 type ChangeLog struct {
 	srcUrl              string
 	changeLogsByVersion map[string]*service.ChangeLogData
-	prevLen             int64
+	prevLen             int
 	logger              log.Logger
 }
 
@@ -47,30 +47,69 @@ func (changeLog *ChangeLog) loopRefreshing() {
 	}
 }
 
-func (changeLog *ChangeLog) refresh() {
-	resp, err := http.Get(changeLog.srcUrl)
+func getData(url string) ([]byte, error) {
+	resp, err := http.Get(url)
 	if err != nil {
-		changeLog.logger.Error("Failed to get CHANGELOG file", "err", err)
-		return
+		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		changeLog.logger.Error("Unable to read CHANGELOG file", "err", err)
-		return
+		return nil, err
 	}
-	if resp.ContentLength == changeLog.prevLen {
-		return
-	}
-	changeLog.prevLen = resp.ContentLength
+	return body, nil
+}
 
-	changeLogsByVersion, err := parseChangeLog(body)
+func (changeLog *ChangeLog) refresh() {
+	mainData, err := getData(changeLog.srcUrl)
 	if err != nil {
-		changeLog.logger.Error("Unable to parse CHANGELOG file", "err", err)
+		changeLog.logger.Error("Unable to get CHANGELOG main file", "err", err)
+		return
+	}
+	if len(mainData) == changeLog.prevLen {
+		return
+	}
+	changeLog.prevLen = len(mainData)
+	urls, err := parseMainChangeLog(mainData)
+	if err != nil {
+		changeLog.logger.Error("Unable to parse CHANGELOG main file", "err", err)
+		return
+	}
+
+	var all []byte
+	for i := len(urls) - 1; i >= 0; i-- {
+		url := strings.Replace(changeLog.srcUrl, "CHANGELOG.md", "", 1) + urls[i]
+		data, err := getData(url)
+		if err != nil {
+			changeLog.logger.Error("Unable to get CHANGELOG file", "err", err, "url", url)
+			return
+		}
+		all = append(all, data...)
+	}
+
+	changeLogsByVersion, err := parseChangeLog(all)
+	if err != nil {
+		changeLog.logger.Error("Unable to parse changelogs", "err", err)
 		return
 	}
 
 	changeLog.changeLogsByVersion = changeLogsByVersion
+}
+
+func parseMainChangeLog(data []byte) ([]string, error) {
+	strData := string(data)
+	lines := strings.Split(strData, "\n")
+	var res []string
+	for _, line := range lines {
+		if !strings.HasPrefix(line, "-") {
+			continue
+		}
+		v := regexp.MustCompile(`\(.*\)`).FindString(line)
+		if len(v) > 2 {
+			res = append(res, v[1:len(v)-1])
+		}
+	}
+	return res, nil
 }
 
 func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
