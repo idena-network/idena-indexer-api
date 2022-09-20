@@ -17,6 +17,7 @@ import (
 type ChangeLog struct {
 	srcUrl              string
 	changeLogsByVersion map[string]*service.ChangeLogData
+	urlsByUpgrade       map[uint32]string
 	prevLen             int
 	logger              log.Logger
 }
@@ -25,6 +26,7 @@ func NewChangeLog(srcUrl string, logger log.Logger) *ChangeLog {
 	res := &ChangeLog{
 		srcUrl:              srcUrl,
 		changeLogsByVersion: make(map[string]*service.ChangeLogData),
+		urlsByUpgrade:       make(map[uint32]string),
 		logger:              logger,
 	}
 	go res.loopRefreshing()
@@ -38,6 +40,10 @@ func (changeLog *ChangeLog) ForkChangeLog(version string) (*service.ChangeLogDat
 	}
 	forkVersion := fmt.Sprintf("%v.%v.0", v.Major, v.Minor)
 	return changeLog.changeLogsByVersion[forkVersion], nil
+}
+
+func (changeLog *ChangeLog) Url(upgrade uint32) string {
+	return changeLog.urlsByUpgrade[upgrade]
 }
 
 func (changeLog *ChangeLog) loopRefreshing() {
@@ -70,15 +76,15 @@ func (changeLog *ChangeLog) refresh() {
 		return
 	}
 	changeLog.prevLen = len(mainData)
-	urls, err := parseMainChangeLog(mainData)
+	links, linksByVersion, err := parseMainChangeLog(mainData)
 	if err != nil {
 		changeLog.logger.Error("Unable to parse CHANGELOG main file", "err", err)
 		return
 	}
 
 	var all []byte
-	for i := len(urls) - 1; i >= 0; i-- {
-		url := strings.Replace(changeLog.srcUrl, "CHANGELOG.md", "", 1) + urls[i]
+	for i := len(links) - 1; i >= 0; i-- {
+		url := generateUrl(changeLog.srcUrl, links[i], "")
 		data, err := getData(url)
 		if err != nil {
 			changeLog.logger.Error("Unable to get CHANGELOG file", "err", err, "url", url)
@@ -87,35 +93,44 @@ func (changeLog *ChangeLog) refresh() {
 		all = append(all, data...)
 	}
 
-	changeLogsByVersion, err := parseChangeLog(all)
+	changeLogsByVersion, urlsByUpgrade, err := parseChangeLog(all, linksByVersion)
 	if err != nil {
 		changeLog.logger.Error("Unable to parse changelogs", "err", err)
 		return
 	}
 
 	changeLog.changeLogsByVersion = changeLogsByVersion
+	changeLog.urlsByUpgrade = urlsByUpgrade
 }
 
-func parseMainChangeLog(data []byte) ([]string, error) {
+func parseMainChangeLog(data []byte) ([]string, map[string]string, error) {
 	strData := string(data)
 	lines := strings.Split(strData, "\n")
-	var res []string
+	var links []string
+	linksByVersion := make(map[string]string)
 	for _, line := range lines {
 		if !strings.HasPrefix(line, "-") {
 			continue
 		}
 		v := regexp.MustCompile(`\(.*\)`).FindString(line)
+		url := v[1 : len(v)-1]
 		if len(v) > 2 {
-			res = append(res, v[1:len(v)-1])
+			links = append(links, url)
+			v = regexp.MustCompile(`\[.*]`).FindString(line)
+			if len(v) > 2 {
+				ver := v[1 : len(v)-1]
+				linksByVersion[ver] = url
+			}
 		}
 	}
-	return res, nil
+	return links, linksByVersion, nil
 }
 
-func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
+func parseChangeLog(data []byte, linksByVersion map[string]string) (map[string]*service.ChangeLogData, map[uint32]string, error) {
 	strData := string(data)
 	lines := strings.Split(strData, "\n")
 	res := make(map[string]*service.ChangeLogData)
+	urlsByUpgrade := make(map[uint32]string)
 	var i int
 	for i < len(lines) {
 		line := lines[i]
@@ -131,6 +146,10 @@ func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
 		if err != nil || v.Patch != 0 {
 			continue
 		}
+		anchor, err := generateUrlAnchor(v, line)
+		if err != nil {
+			continue
+		}
 		for i < len(lines) {
 			line = lines[i]
 			i++
@@ -143,6 +162,12 @@ func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
 			}
 			res[v.String()] = &service.ChangeLogData{
 				Upgrade: uint32(upgrade),
+			}
+			major := v.String()[0:strings.LastIndex(v.String(), ".")]
+			if link, ok := linksByVersion[fmt.Sprintf("v%v", major)]; ok {
+				url := generateUrl("https://github.com/idena-network/idena-go/blob/master/CHANGELOG.md", link, anchor)
+				res[v.String()].Url = url
+				urlsByUpgrade[uint32(upgrade)] = url
 			}
 			for i < len(lines) {
 				line = lines[i]
@@ -161,5 +186,18 @@ func parseChangeLog(data []byte) (map[string]*service.ChangeLogData, error) {
 			break
 		}
 	}
-	return res, nil
+	return res, urlsByUpgrade, nil
+}
+
+func generateUrl(baseLink, localLink, anchor string) string {
+	return strings.Replace(baseLink, "CHANGELOG.md", "", 1) + localLink + "#" + anchor
+}
+
+func generateUrlAnchor(ver *semver.Version, v string) (string, error) {
+	sub := regexp.MustCompile(`\(.*\)`).FindString(v)
+	if len(sub) <= 2 {
+		return "", errors.Errorf("failed to extract anchor from: %v", v)
+	}
+	date := sub[1 : len(sub)-1]
+	return fmt.Sprintf("%v%v%v-%v", ver.Major, ver.Minor, ver.Patch, strings.Replace(strings.Replace(date, ", ", "-", 1), " ", "-", 1)), nil
 }

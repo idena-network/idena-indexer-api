@@ -32,6 +32,10 @@ type Service interface {
 	IdentityWithProof(address string, height uint64) (*hexutil.Bytes, error)
 
 	ForkChangeLog(version string) (*service2.ChangeLogData, error)
+
+	Upgrades(count uint64, continuationToken *string) ([]types.ActivatedUpgrade, *string, error)
+	UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error)
+	Upgrade(upgrade uint64) (*types.Upgrade, error)
 }
 
 type MemPool interface {
@@ -199,6 +203,39 @@ func (s *service) UpgradeVoting() ([]*types.UpgradeVotes, error) {
 
 func (s *service) ForkChangeLog(version string) (*service2.ChangeLogData, error) {
 	return s.changeLog.ForkChangeLog(version)
+}
+
+func (s *service) Upgrades(count uint64, continuationToken *string) ([]types.ActivatedUpgrade, *string, error) {
+	upgrades, nextContinuationToken, err := s.Accessor.Upgrades(count, continuationToken)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i, upgrade := range upgrades {
+		if upgrade.Upgrade != nil {
+			upgrades[i].Url = s.changeLog.Url(*upgrade.Upgrade)
+		}
+	}
+	return upgrades, nextContinuationToken, nil
+}
+
+func (s *service) UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error) {
+	upgrades, nextContinuationToken, err := s.Accessor.UpgradeVotings(count, continuationToken)
+	if err != nil {
+		return nil, nil, err
+	}
+	for i, upgrade := range upgrades {
+		upgrades[i].Url = s.changeLog.Url(upgrade.Upgrade)
+	}
+	return upgrades, nextContinuationToken, nil
+}
+
+func (s *service) Upgrade(upgrade uint64) (*types.Upgrade, error) {
+	res, err := s.Accessor.Upgrade(upgrade)
+	if err != nil {
+		return nil, err
+	}
+	res.Url = s.changeLog.Url(res.Upgrade)
+	return res, nil
 }
 
 func (s *service) IdentityWithProof(address string, epoch uint64) (*hexutil.Bytes, error) {

@@ -653,7 +653,13 @@ type Upgrade struct {
 	Upgrade             uint32     `json:"upgrade,omitempty"`
 	StartActivationDate *time.Time `json:"startActivationDate,omitempty" example:"2020-01-01T00:00:00Z"`
 	EndActivationDate   *time.Time `json:"endActivationDate,omitempty" example:"2020-01-01T00:00:00Z"`
+	Url                 string     `json:"url,omitempty"`
 } // @Name Upgrade
+
+type ActivatedUpgrade struct {
+	BlockSummary
+	Url string `json:"url,omitempty"`
+} // @Name ActivatedUpgrade
 
 type OnlineIdentity struct {
 	Address        string          `json:"address"`

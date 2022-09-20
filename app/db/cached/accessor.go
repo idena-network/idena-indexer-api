@@ -1036,11 +1036,11 @@ func (a *cachedAccessor) AddressContractTxBalanceUpdates(address, contractAddres
 	return a.accessor.AddressContractTxBalanceUpdates(address, contractAddress, count, continuationToken)
 }
 
-func (a *cachedAccessor) Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error) {
+func (a *cachedAccessor) Upgrades(count uint64, continuationToken *string) ([]types.ActivatedUpgrade, *string, error) {
 	res, nextContinuationToken, err := a.getOrLoadWithConToken("Upgrades", func() (interface{}, *string, error) {
 		return a.accessor.Upgrades(count, continuationToken)
 	}, count, continuationToken)
-	return res.([]types.BlockSummary), nextContinuationToken, err
+	return res.([]types.ActivatedUpgrade), nextContinuationToken, err
 }
 
 func (a *cachedAccessor) UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error) {

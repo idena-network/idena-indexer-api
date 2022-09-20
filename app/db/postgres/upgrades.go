@@ -13,14 +13,14 @@ const (
 	upgradeVotingsQuery       = "upgradeVotings.sql"
 )
 
-func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]types.BlockSummary, *string, error) {
+func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]types.ActivatedUpgrade, *string, error) {
 	res, nextContinuationToken, err := a.page(upgradesQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
 		defer rows.Close()
-		var res []types.BlockSummary
+		var res []types.ActivatedUpgrade
 		var height uint64
 		for rows.Next() {
-			block := types.BlockSummary{
-				Coins: types.AllCoins{},
+			block := types.ActivatedUpgrade{
+				BlockSummary: types.BlockSummary{Coins: types.AllCoins{}},
 			}
 			var timestamp int64
 			var upgrade sql.NullInt64
@@ -62,7 +62,7 @@ func (a *postgresAccessor) Upgrades(count uint64, continuationToken *string) ([]
 	if err != nil {
 		return nil, nil, err
 	}
-	return res.([]types.BlockSummary), nextContinuationToken, nil
+	return res.([]types.ActivatedUpgrade), nextContinuationToken, nil
 }
 
 func (a *postgresAccessor) UpgradeVotingHistory(upgrade uint64) ([]*types.UpgradeVotingHistoryItem, error) {
