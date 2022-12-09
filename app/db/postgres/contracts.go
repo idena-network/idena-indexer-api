@@ -323,6 +323,11 @@ func calculateEstimatedOwnerReward(
 	ownerFee uint8,
 	ceil bool,
 ) decimal.Decimal {
+	calculateUserLocks := func() decimal.Decimal {
+		committeeSizeD := decimal.NewFromInt(int64(committeeSize))
+		return votingMinPayment.Mul(committeeSizeD)
+	}
+
 	var ownerReward decimal.Decimal
 	if ownerDeposit != nil {
 		ownerReward = ownerReward.Add(*ownerDeposit)
@@ -331,6 +336,7 @@ func calculateEstimatedOwnerReward(
 			if oracleRewardFund != nil {
 				replenishedAmount = replenishedAmount.Sub(*oracleRewardFund)
 			}
+			replenishedAmount = replenishedAmount.Sub(calculateUserLocks())
 			if replenishedAmount.Sign() > 0 {
 				ownerFeeD := decimal.NewFromFloat(float64(ownerFee) / 100.0)
 				if ceil {
@@ -342,12 +348,11 @@ func calculateEstimatedOwnerReward(
 		}
 	} else {
 		if ownerFee > 0 {
-			committeeSizeD := decimal.NewFromInt(int64(committeeSize))
 			ownerFeeD := decimal.NewFromFloat(float64(ownerFee) / 100.0)
 			if ceil {
 				ownerFeeD = ownerFeeD.Ceil()
 			}
-			ownerReward = balance.Sub(votingMinPayment.Mul(committeeSizeD)).Mul(ownerFeeD)
+			ownerReward = balance.Sub(calculateUserLocks()).Mul(ownerFeeD)
 		}
 	}
 	return ownerReward
