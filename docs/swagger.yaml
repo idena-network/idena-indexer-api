@@ -1475,6 +1475,24 @@ definitions:
       value:
         type: integer
     type: object
+  types.RefundableOracleLockContract:
+    properties:
+      depositDeadline:
+        example: "2020-01-01T00:00:00Z"
+        type: string
+      failAddress:
+        type: string
+      oracleVotingAddress:
+        type: string
+      oracleVotingFee:
+        type: integer
+      refundDelay:
+        type: integer
+      successAddress:
+        type: string
+      value:
+        type: integer
+    type: object
   types.TimeLockContract:
     properties:
       timestamp:
@@ -4809,6 +4827,35 @@ paths:
           description: Service unavailable
       tags:
       - Pools
+  /RefundableOracleLockContract/{address}:
+    get:
+      operationId: RefundableOracleLockContract
+      parameters:
+      - description: contract address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/types.RefundableOracleLockContract'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Contracts
   /Search:
     get:
       operationId: Search

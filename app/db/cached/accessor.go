@@ -1013,6 +1013,13 @@ func (a *cachedAccessor) OracleLockContract(address string) (types.OracleLockCon
 	return res.(types.OracleLockContract), err
 }
 
+func (a *cachedAccessor) RefundableOracleLockContract(address string) (types.RefundableOracleLockContract, error) {
+	res, err := a.getOrLoad("RefundableOracleLockContract", func() (interface{}, error) {
+		return a.accessor.RefundableOracleLockContract(address)
+	}, address)
+	return res.(types.RefundableOracleLockContract), err
+}
+
 func (a *cachedAccessor) OracleVotingContracts(authorAddress, oracleAddress string, states []string, all bool, sortBy *string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error) {
 	return a.accessor.OracleVotingContracts(authorAddress, oracleAddress, states, all, sortBy, count, continuationToken)
 }

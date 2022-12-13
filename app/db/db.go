@@ -134,6 +134,7 @@ type Accessor interface {
 
 	TimeLockContract(address string) (types.TimeLockContract, error)
 	OracleLockContract(address string) (types.OracleLockContract, error)
+	RefundableOracleLockContract(address string) (types.RefundableOracleLockContract, error)
 	MultisigContract(address string) (types.MultisigContract, error)
 
 	OracleVotingContracts(authorAddress, oracleAddress string, states []string, all bool, sortBy *string, count uint64, continuationToken *string) ([]types.OracleVotingContract, *string, error)

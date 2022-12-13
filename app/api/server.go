@@ -366,6 +366,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/TimeLockContract/{address}")).HandlerFunc(s.timeLockContract)
 	router.Path(strings.ToLower("/OracleLockContract/{address}")).HandlerFunc(s.oracleLockContract)
+	router.Path(strings.ToLower("/RefundableOracleLockContract/{address}")).HandlerFunc(s.refundableOracleLockContract)
 	router.Path(strings.ToLower("/MultisigContract/{address}")).HandlerFunc(s.multisigContract)
 
 	router.Path(strings.ToLower("/OracleVotingContracts")).HandlerFunc(s.oracleVotingContracts)
@@ -2681,6 +2682,23 @@ func (s *httpServer) oracleLockContract(w http.ResponseWriter, r *http.Request) 
 	defer s.pm.Complete(id)
 
 	resp, err := s.service.OracleLockContract(mux.Vars(r)["address"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Contracts
+// @Id RefundableOracleLockContract
+// @Param address path string true "contract address"
+// @Success 200 {object} api.Response{result=types.RefundableOracleLockContract}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /RefundableOracleLockContract/{address} [get]
+func (s *httpServer) refundableOracleLockContract(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("refundableOracleLockContract", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	resp, err := s.service.RefundableOracleLockContract(mux.Vars(r)["address"])
 	WriteResponse(w, resp, err, s.logger)
 }
 

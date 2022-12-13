@@ -5547,6 +5547,55 @@ var doc = `{
                 }
             }
         },
+        "/RefundableOracleLockContract/{address}": {
+            "get": {
+                "tags": [
+                    "Contracts"
+                ],
+                "operationId": "RefundableOracleLockContract",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "contract address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/types.RefundableOracleLockContract"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Search": {
             "get": {
                 "tags": [
@@ -7933,6 +7982,33 @@ var doc = `{
                 },
                 "oracleVotingAddress": {
                     "type": "string"
+                },
+                "successAddress": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "integer"
+                }
+            }
+        },
+        "types.RefundableOracleLockContract": {
+            "type": "object",
+            "properties": {
+                "depositDeadline": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
+                },
+                "failAddress": {
+                    "type": "string"
+                },
+                "oracleVotingAddress": {
+                    "type": "string"
+                },
+                "oracleVotingFee": {
+                    "type": "integer"
+                },
+                "refundDelay": {
+                    "type": "integer"
                 },
                 "successAddress": {
                     "type": "string"

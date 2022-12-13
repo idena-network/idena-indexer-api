@@ -557,7 +557,17 @@ type OracleLockContract struct {
 	Value               byte   `json:"value"`
 	SuccessAddress      string `json:"successAddress"`
 	FailAddress         string `json:"failAddress"`
-} // @TimeLockContract
+} // @OracleLockContract
+
+type RefundableOracleLockContract struct {
+	OracleVotingAddress string    `json:"oracleVotingAddress"`
+	Value               byte      `json:"value"`
+	SuccessAddress      string    `json:"successAddress"`
+	FailAddress         string    `json:"failAddress"`
+	DepositDeadline     time.Time `json:"depositDeadline" example:"2020-01-01T00:00:00Z"`
+	OracleVotingFee     uint64    `json:"oracleVotingFee"`
+	RefundDelay         uint64    `json:"refundDelay"`
+} // @RefundableOracleLockContract
 
 type OracleVotingContract struct {
 	ContractAddress                 string                            `json:"contractAddress"`

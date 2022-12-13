@@ -6,12 +6,13 @@ import (
 )
 
 const (
-	contractQuery                 = "contract.sql"
-	timeLockContractQuery         = "timeLockContract.sql"
-	multisigContractQuery         = "multisigContract.sql"
-	oracleLockContractQuery       = "oracleLockContract.sql"
-	oracleVotingContractQuery     = "oracleVotingContract.sql"
-	contractTxBalanceUpdatesQuery = "contractTxBalanceUpdates.sql"
+	contractQuery                     = "contract.sql"
+	timeLockContractQuery             = "timeLockContract.sql"
+	multisigContractQuery             = "multisigContract.sql"
+	oracleLockContractQuery           = "oracleLockContract.sql"
+	refundableOracleLockContractQuery = "refundableOracleLockContract.sql"
+	oracleVotingContractQuery         = "oracleVotingContract.sql"
+	contractTxBalanceUpdatesQuery     = "contractTxBalanceUpdates.sql"
 )
 
 func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
@@ -136,6 +137,28 @@ func (a *postgresAccessor) OracleLockContract(address string) (types.OracleLockC
 	}
 	if err != nil {
 		return types.OracleLockContract{}, err
+	}
+	return res, nil
+}
+
+func (a *postgresAccessor) RefundableOracleLockContract(address string) (types.RefundableOracleLockContract, error) {
+	res := types.RefundableOracleLockContract{}
+	var depositDeadline int64
+	err := a.db.QueryRow(a.getQuery(refundableOracleLockContractQuery), address).Scan(
+		&res.OracleVotingAddress,
+		&res.Value,
+		&res.SuccessAddress,
+		&res.FailAddress,
+		&depositDeadline,
+		&res.OracleVotingFee,
+		&res.RefundDelay,
+	)
+	res.DepositDeadline = timestampToTimeUTC(depositDeadline)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return types.RefundableOracleLockContract{}, err
 	}
 	return res, nil
 }
