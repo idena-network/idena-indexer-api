@@ -179,6 +179,7 @@ func parseChangeLog(data []byte, linksByVersion map[string]string) (map[string]*
 					continue
 				}
 				line = strings.TrimPrefix(line, "- ")
+				line = strings.ReplaceAll(line, "], [#", "")
 				r := regexp.MustCompile(` \(\[#+[0-9]*]\)`)
 				change := r.ReplaceAllString(line, "")
 				res[v.String()].Changes = append(res[v.String()].Changes, change)
