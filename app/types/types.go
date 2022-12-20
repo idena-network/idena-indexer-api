@@ -567,6 +567,8 @@ type RefundableOracleLockContract struct {
 	DepositDeadline     time.Time `json:"depositDeadline" example:"2020-01-01T00:00:00Z"`
 	OracleVotingFee     uint64    `json:"oracleVotingFee"`
 	RefundDelay         uint64    `json:"refundDelay"`
+	RefundBlock         uint64    `json:"refundBlock,omitempty"`
+	RefundDelayLeft     uint64    `json:"refundDelayLeft,omitempty"`
 } // @RefundableOracleLockContract
 
 type OracleVotingContract struct {

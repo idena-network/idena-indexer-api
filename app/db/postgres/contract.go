@@ -143,7 +143,9 @@ func (a *postgresAccessor) OracleLockContract(address string) (types.OracleLockC
 
 func (a *postgresAccessor) RefundableOracleLockContract(address string) (types.RefundableOracleLockContract, error) {
 	res := types.RefundableOracleLockContract{}
-	var depositDeadline int64
+	var depositDeadline, headBlockTimestamp int64
+	var headBlockHeight uint64
+	var terminationTime sql.NullInt64
 	err := a.db.QueryRow(a.getQuery(refundableOracleLockContractQuery), address).Scan(
 		&res.OracleVotingAddress,
 		&res.Value,
@@ -152,13 +154,21 @@ func (a *postgresAccessor) RefundableOracleLockContract(address string) (types.R
 		&depositDeadline,
 		&res.OracleVotingFee,
 		&res.RefundDelay,
+		&res.RefundBlock,
+		&headBlockHeight,
+		&headBlockTimestamp,
+		&terminationTime,
 	)
-	res.DepositDeadline = timestampToTimeUTC(depositDeadline)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
 	}
 	if err != nil {
 		return types.RefundableOracleLockContract{}, err
+	}
+	res.DepositDeadline = timestampToTimeUTC(depositDeadline)
+	terminated := terminationTime.Valid
+	if res.RefundBlock > headBlockHeight && !terminated {
+		res.RefundDelayLeft = res.RefundBlock - headBlockHeight
 	}
 	return res, nil
 }

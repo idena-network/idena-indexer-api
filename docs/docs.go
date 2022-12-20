@@ -8007,7 +8007,13 @@ var doc = `{
                 "oracleVotingFee": {
                     "type": "integer"
                 },
+                "refundBlock": {
+                    "type": "integer"
+                },
                 "refundDelay": {
+                    "type": "integer"
+                },
+                "refundDelayLeft": {
                     "type": "integer"
                 },
                 "successAddress": {
