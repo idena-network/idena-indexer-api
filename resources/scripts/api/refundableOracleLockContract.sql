@@ -1,14 +1,14 @@
-SELECT voting_a.address                 oracle_voting_address,
+SELECT voting_a.address                                                                            oracle_voting_address,
        rolc.value,
-       coalesce(success_a.address, '')  success_address,
-       coalesce(fail_a.address, '')     fail_address,
-       rolc.deposit_deadline            deposit_deadline,
-       rolc.oracle_voting_fee           oracle_voting_fee,
-       rolc.refund_delay                refund_delay,
-       coalesce(pushes.refund_block, 0) refund_block,
-       head_block.height                head_block_height,
-       head_block.timestamp             head_block_timestamp,
-       terminationb.timestamp           terminationTxTimestamp
+       coalesce(success_a.address, '')                                                             success_address,
+       coalesce(fail_a.address, '')                                                                fail_address,
+       rolc.deposit_deadline                                                                       deposit_deadline,
+       rolc.oracle_voting_fee                                                                      oracle_voting_fee,
+       rolc.refund_delay                                                                           refund_delay,
+       (case when terminationb.timestamp is null then coalesce(pushes.refund_block, 0) else 0 end) refund_block,
+       head_block.height                                                                           head_block_height,
+       head_block.timestamp                                                                        head_block_timestamp,
+       terminationb.timestamp                                                                      terminationTxTimestamp
 FROM contracts c
          JOIN refundable_oracle_lock_contracts rolc ON rolc.contract_tx_id = c.tx_id
          JOIN addresses voting_a ON voting_a.id = rolc.oracle_voting_address_id
