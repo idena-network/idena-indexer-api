@@ -34,5 +34,5 @@ WHERE ($3::bigint IS NULL OR bu.id <= $3)
   AND bu.contract_tx_id = (SELECT tx_id
                            FROM contracts
                            WHERE contract_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1)))
-ORDER BY bu.tx_id DESC
+ORDER BY bu.id DESC
 LIMIT $2
