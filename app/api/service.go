@@ -9,6 +9,7 @@ import (
 	service2 "github.com/idena-network/idena-indexer-api/app/service"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/idena-network/idena-indexer-api/indexer"
+	"github.com/shopspring/decimal"
 )
 
 type Service interface {
@@ -243,7 +244,40 @@ func (s *service) IdentityWithProof(address string, epoch uint64) (*hexutil.Byte
 }
 
 func (s *service) Staking() (*types.Staking, error) {
-	return s.indexerApi.Staking()
+	staking, err := s.indexerApi.Staking()
+	if err != nil {
+		return nil, err
+	}
+	lastEpoch, err := s.Accessor.LastEpoch()
+	if err != nil {
+		return nil, err
+	}
+	if lastEpoch.Epoch == 0 {
+		return &types.Staking{}, nil
+	}
+	rewardsSummary, err := s.Accessor.EpochRewardsSummary(lastEpoch.Epoch - 1)
+	if err != nil {
+		return nil, err
+	}
+
+	calculateWeight := func(totalReward, rewardShare decimal.Decimal) float64 {
+		if rewardShare.IsZero() {
+			return 0
+		}
+		res, _ := totalReward.Div(rewardShare).Float64()
+		return res
+	}
+
+	staking.ExtraFlipsWeight = calculateWeight(rewardsSummary.ExtraFlips, rewardsSummary.ExtraFlipsShare)
+	staking.InvitationsWeight = calculateWeight(rewardsSummary.Invitations, rewardsSummary.InvitationsShare)
+
+	// TODO remove this temporary code after 98 epoch
+	if lastEpoch.Epoch == 98 {
+		staking.ExtraFlipsWeight = 567335.44
+		staking.InvitationsWeight = 932981.3
+	}
+
+	return staking, nil
 }
 
 func (s *service) MultisigContract(address string) (types.MultisigContract, error) {

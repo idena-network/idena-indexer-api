@@ -52,6 +52,7 @@ type RewardsSummary struct {
 	Total             decimal.Decimal `json:"total" swaggertype:"string"`
 	Validation        decimal.Decimal `json:"validation" swaggertype:"string"`
 	Flips             decimal.Decimal `json:"flips" swaggertype:"string"`
+	ExtraFlips        decimal.Decimal `json:"extraFlips" swaggertype:"string"`
 	Invitations       decimal.Decimal `json:"invitations" swaggertype:"string"`
 	Reports           decimal.Decimal `json:"reports" swaggertype:"string"`
 	Candidate         decimal.Decimal `json:"candidate" swaggertype:"string"`
@@ -60,6 +61,7 @@ type RewardsSummary struct {
 	ZeroWalletFund    decimal.Decimal `json:"zeroWalletFund" swaggertype:"string"`
 	ValidationShare   decimal.Decimal `json:"validationShare" swaggertype:"string"`
 	FlipsShare        decimal.Decimal `json:"flipsShare" swaggertype:"string"`
+	ExtraFlipsShare   decimal.Decimal `json:"extraFlipsShare" swaggertype:"string"`
 	InvitationsShare  decimal.Decimal `json:"invitationsShare" swaggertype:"string"`
 	ReportsShare      decimal.Decimal `json:"reportsShare" swaggertype:"string"`
 	CandidateShare    decimal.Decimal `json:"candidateShare" swaggertype:"string"`
@@ -362,6 +364,8 @@ type Staking struct {
 	MinersWeight       float64 `json:"minersWeight"`
 	AverageMinerWeight float64 `json:"averageMinerWeight"`
 	MaxMinerWeight     float64 `json:"maxMinerWeight"`
+	ExtraFlipsWeight   float64 `json:"extraFlipsWeight"`
+	InvitationsWeight  float64 `json:"invitationsWeight"`
 } // @Name Staking
 
 type TotalMiningReward struct {
@@ -388,7 +392,7 @@ type Reward struct {
 	BlockHeight uint64          `json:"blockHeight,omitempty"`
 	Balance     decimal.Decimal `json:"balance" swaggertype:"string"`
 	Stake       decimal.Decimal `json:"stake" swaggertype:"string"`
-	Type        string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Candidate,Staking"`
+	Type        string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Candidate,Staking,Invitee,Invitee2,Invitee3,ExtraFlips"`
 } // @Name Reward
 
 type Rewards struct {
@@ -471,6 +475,9 @@ type InviteWithRewardFlag struct {
 	RewardType  string `json:"rewardType,omitempty" enums:",Invitations,Invitations2,Invitations3"`
 	EpochHeight uint32 `json:"epochHeight,omitempty"`
 } // @Name RewardedInvite
+
+type InviteeWithRewardFlag struct {
+} // @Name RewardedInvitee
 
 type EpochInvites struct {
 	Epoch   uint64 `json:"epoch"`
@@ -745,7 +752,7 @@ type DelegateeReward struct {
 
 type DelegationReward struct {
 	Balance decimal.Decimal `json:"balance" swaggertype:"string"`
-	Type    string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Reports,Candidate,Staking"`
+	Type    string          `json:"type" enums:"Validation,Flips,Invitations,Invitations2,Invitations3,SavedInvite,SavedInviteWin,Reports,Candidate,Staking,Invitee,Invitee2,Invitee3,ExtraFlips"`
 } // @Name DelegationReward
 
 type ValidationSummary struct {

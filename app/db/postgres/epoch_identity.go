@@ -275,6 +275,11 @@ func (a *postgresAccessor) EpochIdentityAvailableInvites(epoch uint64, address s
 	return res, nil
 }
 
+func (a *postgresAccessor) EpochIdentityInviteeWithRewardFlag(epoch uint64, address string) (*types.InviteeWithRewardFlag, error) {
+	// todo
+	return nil, nil
+}
+
 func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address string) (types.ValidationSummary, error) {
 	res := types.ValidationSummary{}
 	var validationReason, flipsReason, reportsReason, invitationsReason, candidateReason, stakingReason byte

@@ -578,7 +578,7 @@ func parseUintAndAmountToken(continuationToken *string) (id *uint64, amount *dec
 }
 
 type validationRewards struct {
-	validation, flips, inv, inv2, inv3, savedInv, savedInvWin, reports, candidate, staking decimal.Decimal
+	validation, flips, extraFlips, inv, inv2, inv3, invitee, invitee2, invitee3, savedInv, savedInvWin, reports, candidate, staking decimal.Decimal
 }
 
 func toDelegationReward(vr validationRewards, replaceValidation bool) []types.DelegationReward {
@@ -593,6 +593,12 @@ func toDelegationReward(vr validationRewards, replaceValidation bool) []types.De
 		res = append(res, types.DelegationReward{
 			Balance: vr.flips,
 			Type:    "Flips",
+		})
+	}
+	if !vr.extraFlips.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.extraFlips,
+			Type:    "ExtraFlips",
 		})
 	}
 	if !vr.inv.IsZero() {
@@ -611,6 +617,24 @@ func toDelegationReward(vr validationRewards, replaceValidation bool) []types.De
 		res = append(res, types.DelegationReward{
 			Balance: vr.inv3,
 			Type:    "Invitations3",
+		})
+	}
+	if !vr.invitee.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.invitee,
+			Type:    "Invitee",
+		})
+	}
+	if !vr.invitee2.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.invitee2,
+			Type:    "Invitee2",
+		})
+	}
+	if !vr.invitee3.IsZero() {
+		res = append(res, types.DelegationReward{
+			Balance: vr.invitee3,
+			Type:    "Invitee3",
 		})
 	}
 	if !vr.savedInv.IsZero() {

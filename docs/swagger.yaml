@@ -331,6 +331,10 @@ definitions:
         - Reports
         - Candidate
         - Staking
+        - Invitee
+        - Invitee2
+        - Invitee3
+        - ExtraFlips
         type: string
     type: object
   Delegator:
@@ -967,6 +971,10 @@ definitions:
         - SavedInviteWin
         - Candidate
         - Staking
+        - Invitee
+        - Invitee2
+        - Invitee3
+        - ExtraFlips
         type: string
     type: object
   RewardBound:
@@ -1090,6 +1098,8 @@ definitions:
         example: "2020-01-01T00:00:00Z"
         type: string
     type: object
+  RewardedInvitee:
+    type: object
   Rewards:
     properties:
       address:
@@ -1137,6 +1147,10 @@ definitions:
         type: integer
       epochDuration:
         type: integer
+      extraFlips:
+        type: string
+      extraFlipsShare:
+        type: string
       flips:
         type: string
       flipsShare:
@@ -1177,6 +1191,10 @@ definitions:
   Staking:
     properties:
       averageMinerWeight:
+        type: number
+      extraFlipsWeight:
+        type: number
+      invitationsWeight:
         type: number
       maxMinerWeight:
         type: number
@@ -3141,6 +3159,40 @@ paths:
                   items:
                     $ref: '#/definitions/RewardedFlip'
                   type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Identity
+  /Epoch/{epoch}/Identity/{address}/RewardedInvitee:
+    get:
+      operationId: EpochIdentityRewardedInvitee
+      parameters:
+      - description: epoch
+        in: path
+        name: epoch
+        required: true
+        type: integer
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/RewardedInvitee'
               type: object
         "400":
           description: Bad request
