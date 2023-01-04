@@ -1098,8 +1098,6 @@ definitions:
         example: "2020-01-01T00:00:00Z"
         type: string
     type: object
-  RewardedInvitee:
-    type: object
   Rewards:
     properties:
       address:
@@ -1352,10 +1350,16 @@ definitions:
       candidate:
         $ref: '#/definitions/ValidationRewardSummary'
         type: object
+      extraFlips:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
       flips:
         $ref: '#/definitions/ValidationRewardSummary'
         type: object
       invitations:
+        $ref: '#/definitions/ValidationRewardSummary'
+        type: object
+      invitee:
         $ref: '#/definitions/ValidationRewardSummary'
         type: object
       reports:
@@ -3159,40 +3163,6 @@ paths:
                   items:
                     $ref: '#/definitions/RewardedFlip'
                   type: array
-              type: object
-        "400":
-          description: Bad request
-        "429":
-          description: Request number limit exceeded
-        "500":
-          description: Internal server error
-        "503":
-          description: Service unavailable
-      tags:
-      - Identity
-  /Epoch/{epoch}/Identity/{address}/RewardedInvitee:
-    get:
-      operationId: EpochIdentityRewardedInvitee
-      parameters:
-      - description: epoch
-        in: path
-        name: epoch
-        required: true
-        type: integer
-      - description: address
-        in: path
-        name: address
-        required: true
-        type: string
-      responses:
-        "200":
-          description: OK
-          schema:
-            allOf:
-            - $ref: '#/definitions/Response'
-            - properties:
-                result:
-                  $ref: '#/definitions/RewardedInvitee'
               type: object
         "400":
           description: Bad request

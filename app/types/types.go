@@ -477,7 +477,13 @@ type InviteWithRewardFlag struct {
 } // @Name RewardedInvite
 
 type InviteeWithRewardFlag struct {
-} // @Name RewardedInvitee
+	Epoch        uint64          `json:"epoch"`
+	Hash         string          `json:"hash"`
+	Inviter      string          `json:"inviter"`
+	InviterStake decimal.Decimal `json:"inviterStake" swaggertype:"string"`
+	InviterState string          `json:"inviterState" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+	State        string          `json:"state" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
+}
 
 type EpochInvites struct {
 	Epoch   uint64 `json:"epoch"`
@@ -777,7 +783,9 @@ type ValidationSummary struct {
 type ValidationRewardSummaries struct {
 	Validation  ValidationRewardSummary `json:"validation"`
 	Flips       ValidationRewardSummary `json:"flips"`
+	ExtraFlips  ValidationRewardSummary `json:"extraFlips"`
 	Invitations ValidationRewardSummary `json:"invitations"`
+	Invitee     ValidationRewardSummary `json:"invitee"`
 	Reports     ValidationRewardSummary `json:"reports"`
 	Candidate   ValidationRewardSummary `json:"candidate"`
 	Staking     ValidationRewardSummary `json:"staking"`

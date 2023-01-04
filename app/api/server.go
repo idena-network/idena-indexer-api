@@ -1618,16 +1618,6 @@ func (s *httpServer) epochIdentityAvailableInvites(w http.ResponseWriter, r *htt
 	WriteResponse(w, resp, err, s.logger)
 }
 
-// @Tags Identity
-// @Id EpochIdentityRewardedInvitee
-// @Param epoch path integer true "epoch"
-// @Param address path string true "address"
-// @Success 200 {object} api.Response{result=types.InviteeWithRewardFlag}
-// @Failure 400 "Bad request"
-// @Failure 429 "Request number limit exceeded"
-// @Failure 500 "Internal server error"
-// @Failure 503 "Service unavailable"
-// @Router /Epoch/{epoch}/Identity/{address}/RewardedInvitee [get]
 func (s *httpServer) epochIdentityInviteeWithRewardFlag(w http.ResponseWriter, r *http.Request) {
 	id := s.pm.Start("epochIdentityInviteeWithRewardFlag", r.RequestURI)
 	defer s.pm.Complete(id)

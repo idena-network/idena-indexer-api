@@ -20,6 +20,7 @@ const (
 	epochIdentitySavedInviteRewardsQuery  = "epochIdentitySavedInviteRewards.sql"
 	epochIdentityAvailableInvitesQuery    = "epochIdentityAvailableInvites.sql"
 	epochIdentityValidationSummaryQuery   = "epochIdentityValidationSummary.sql"
+	epochIdentityRewardedInviteeQuery     = "epochIdentityRewardedInvitee.sql"
 )
 
 func (a *postgresAccessor) EpochIdentity(epoch uint64, address string) (types.EpochIdentity, error) {
@@ -276,13 +277,27 @@ func (a *postgresAccessor) EpochIdentityAvailableInvites(epoch uint64, address s
 }
 
 func (a *postgresAccessor) EpochIdentityInviteeWithRewardFlag(epoch uint64, address string) (*types.InviteeWithRewardFlag, error) {
-	// todo
-	return nil, nil
+	res := &types.InviteeWithRewardFlag{}
+	err := a.db.QueryRow(a.getQuery(epochIdentityRewardedInviteeQuery), epoch, address).Scan(
+		&res.Epoch,
+		&res.Hash,
+		&res.Inviter,
+		&res.InviterStake,
+		&res.InviterState,
+		&res.State,
+	)
+	if err == sql.ErrNoRows {
+		return nil, nil
+	}
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address string) (types.ValidationSummary, error) {
 	res := types.ValidationSummary{}
-	var validationReason, flipsReason, reportsReason, invitationsReason, candidateReason, stakingReason byte
+	var validationReason, flipsReason, extraFlipsReason, reportsReason, invitationsReason, inviteeReason, candidateReason, stakingReason byte
 	var delegateeAddress string
 	var delegateeReward decimal.Decimal
 	err := a.db.QueryRow(a.getQuery(epochIdentityValidationSummaryQuery), epoch, address).Scan(
@@ -308,9 +323,15 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 		&res.Rewards.Flips.Earned,
 		&res.Rewards.Flips.Missed,
 		&flipsReason,
+		&res.Rewards.ExtraFlips.Earned,
+		&res.Rewards.ExtraFlips.Missed,
+		&extraFlipsReason,
 		&res.Rewards.Invitations.Earned,
 		&res.Rewards.Invitations.Missed,
 		&invitationsReason,
+		&res.Rewards.Invitee.Earned,
+		&res.Rewards.Invitee.Missed,
+		&inviteeReason,
 		&res.Rewards.Reports.Earned,
 		&res.Rewards.Reports.Missed,
 		&reportsReason,
@@ -332,7 +353,9 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 	}
 	res.Rewards.Validation.MissedReason = convertMissedRewardReason(validationReason)
 	res.Rewards.Flips.MissedReason = convertMissedRewardReason(flipsReason)
+	res.Rewards.ExtraFlips.MissedReason = convertMissedRewardReason(extraFlipsReason)
 	res.Rewards.Invitations.MissedReason = convertMissedRewardReason(invitationsReason)
+	res.Rewards.Invitee.MissedReason = convertMissedRewardReason(inviteeReason)
 	res.Rewards.Reports.MissedReason = convertMissedRewardReason(reportsReason)
 	res.Rewards.Candidate.MissedReason = convertMissedRewardReason(candidateReason)
 	res.Rewards.Staking.MissedReason = convertMissedRewardReason(stakingReason)
@@ -346,6 +369,14 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 			if len(res.Rewards.Validation.MissedReason) == 0 {
 				res.Rewards.Validation.MissedReason = res.Rewards.Staking.MissedReason
 			}
+		}
+	}
+
+	if res.Rewards.ExtraFlips.Earned.Sign() > 0 || res.Rewards.ExtraFlips.Missed.Sign() > 0 || len(res.Rewards.ExtraFlips.MissedReason) > 0 {
+		res.Rewards.Flips.Earned = res.Rewards.Flips.Earned.Add(res.Rewards.ExtraFlips.Earned)
+		res.Rewards.Flips.Missed = res.Rewards.Flips.Missed.Add(res.Rewards.ExtraFlips.Missed)
+		if len(res.Rewards.Flips.MissedReason) == 0 {
+			res.Rewards.Flips.MissedReason = res.Rewards.ExtraFlips.MissedReason
 		}
 	}
 
@@ -374,6 +405,12 @@ func convertMissedRewardReason(code byte) string {
 		return "not_all_reports"
 	case 6:
 		return "not_all_invites"
+	case 7:
+		return "inviter_reported"
+	case 8:
+		return "inviter_not_validated"
+	case 9:
+		return "inviter_reset"
 	default:
 		return "unknown_reason"
 	}
