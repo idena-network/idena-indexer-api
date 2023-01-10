@@ -372,14 +372,6 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 		}
 	}
 
-	if res.Rewards.ExtraFlips.Earned.Sign() > 0 || res.Rewards.ExtraFlips.Missed.Sign() > 0 || len(res.Rewards.ExtraFlips.MissedReason) > 0 {
-		res.Rewards.Flips.Earned = res.Rewards.Flips.Earned.Add(res.Rewards.ExtraFlips.Earned)
-		res.Rewards.Flips.Missed = res.Rewards.Flips.Missed.Add(res.Rewards.ExtraFlips.Missed)
-		if len(res.Rewards.Flips.MissedReason) == 0 {
-			res.Rewards.Flips.MissedReason = res.Rewards.ExtraFlips.MissedReason
-		}
-	}
-
 	if len(delegateeAddress) > 0 {
 		res.DelegateeReward = &types.ValidationDelegateeReward{
 			Address: delegateeAddress,
