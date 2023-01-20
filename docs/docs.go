@@ -8033,7 +8033,7 @@ var doc = `{
                     "type": "string"
                 },
                 "oracleVotingFee": {
-                    "type": "integer"
+                    "type": "number"
                 },
                 "refundBlock": {
                     "type": "integer"

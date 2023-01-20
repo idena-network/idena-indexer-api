@@ -146,13 +146,15 @@ func (a *postgresAccessor) RefundableOracleLockContract(address string) (types.R
 	var depositDeadline, headBlockTimestamp int64
 	var headBlockHeight uint64
 	var terminationTime sql.NullInt64
+	var oracleVotingFeeOld, oracleVotingFeeNew sql.NullInt64
 	err := a.db.QueryRow(a.getQuery(refundableOracleLockContractQuery), address).Scan(
 		&res.OracleVotingAddress,
 		&res.Value,
 		&res.SuccessAddress,
 		&res.FailAddress,
 		&depositDeadline,
-		&res.OracleVotingFee,
+		&oracleVotingFeeOld,
+		&oracleVotingFeeNew,
 		&res.RefundDelay,
 		&res.RefundBlock,
 		&headBlockHeight,
@@ -169,6 +171,12 @@ func (a *postgresAccessor) RefundableOracleLockContract(address string) (types.R
 	terminated := terminationTime.Valid
 	if res.RefundBlock > headBlockHeight && !terminated {
 		res.RefundDelayLeft = res.RefundBlock - headBlockHeight
+	}
+	if oracleVotingFeeOld.Valid {
+		res.OracleVotingFee = float32(oracleVotingFeeOld.Int64)
+	}
+	if oracleVotingFeeNew.Valid {
+		res.OracleVotingFee = float32(oracleVotingFeeNew.Int64) / 1000
 	}
 	return res, nil
 }

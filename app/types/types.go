@@ -578,7 +578,7 @@ type RefundableOracleLockContract struct {
 	SuccessAddress      string    `json:"successAddress"`
 	FailAddress         string    `json:"failAddress"`
 	DepositDeadline     time.Time `json:"depositDeadline" example:"2020-01-01T00:00:00Z"`
-	OracleVotingFee     uint64    `json:"oracleVotingFee"`
+	OracleVotingFee     float32   `json:"oracleVotingFee"`
 	RefundDelay         uint64    `json:"refundDelay"`
 	RefundBlock         uint64    `json:"refundBlock,omitempty"`
 	RefundDelayLeft     uint64    `json:"refundDelayLeft,omitempty"`
