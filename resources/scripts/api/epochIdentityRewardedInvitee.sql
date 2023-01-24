@@ -16,7 +16,8 @@ FROM latest_activation_txs lat
          LEFT JOIN epoch_identities invitee_ei ON invitee_ei.address_id = lat.address_id AND invitee_ei.epoch = $1
          LEFT JOIN address_states invitee_s ON invitee_s.id = invitee_ei.address_state_id
          LEFT JOIN dic_identity_states invitee_dics ON invitee_dics.id = invitee_s.state
-WHERE lat.epoch = $1
+WHERE lat.epoch <= $1
+  AND lat.epoch >= $1 - 2
   AND lat.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))
 ORDER BY activation_tx_id DESC
 LIMIT 1;
