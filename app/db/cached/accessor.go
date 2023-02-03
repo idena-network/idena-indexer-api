@@ -941,6 +941,13 @@ func (a *cachedAccessor) TransactionRaw(hash string) (*hexutil.Bytes, error) {
 	return res.(*hexutil.Bytes), err
 }
 
+func (a *cachedAccessor) TransactionEvents(hash string, count uint64, continuationToken *string) ([]types.TxEvent, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("TransactionEvents", func() (interface{}, *string, error) {
+		return a.accessor.TransactionEvents(hash, count, continuationToken)
+	}, hash, count, continuationToken)
+	return res.([]types.TxEvent), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) BalancesCount() (uint64, error) {
 	res, err := a.getOrLoad("BalancesCount", func() (interface{}, error) {
 		return a.accessor.BalancesCount()

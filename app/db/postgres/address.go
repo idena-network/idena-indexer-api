@@ -250,7 +250,6 @@ func (a *postgresAccessor) AddressContractTxBalanceUpdates(address string, contr
 		for rows.Next() {
 			item := types.ContractTxBalanceUpdate{}
 			var timestamp int64
-			var callMethod sql.NullInt32
 			var balanceOld, balanceNew, gasCost NullDecimal
 			var success sql.NullBool
 			var gasUsed sql.NullInt64
@@ -269,7 +268,6 @@ func (a *postgresAccessor) AddressContractTxBalanceUpdates(address string, contr
 				&item.Address,
 				&item.ContractAddress,
 				&item.ContractType,
-				&callMethod,
 				&balanceOld,
 				&balanceNew,
 				&success,
@@ -281,9 +279,6 @@ func (a *postgresAccessor) AddressContractTxBalanceUpdates(address string, contr
 				return nil, 0, err
 			}
 			item.Timestamp = timestampToTimeUTC(timestamp)
-			if callMethod.Valid {
-				item.ContractCallMethod = types.GetCallMethodName(item.ContractType, uint8(callMethod.Int32))
-			}
 			if balanceOld.Valid && balanceNew.Valid {
 				change := balanceNew.Decimal.Sub(balanceOld.Decimal)
 				item.BalanceChange = &change

@@ -121,6 +121,7 @@ type Accessor interface {
 
 	Transaction(hash string) (*types.TransactionDetail, error)
 	TransactionRaw(hash string) (*hexutil.Bytes, error)
+	TransactionEvents(hash string, count uint64, continuationToken *string) ([]types.TxEvent, *string, error)
 
 	BalancesCount() (uint64, error)
 	Balances(sortBy *string, count uint64, continuationToken *string) ([]types.Balance, *string, error)

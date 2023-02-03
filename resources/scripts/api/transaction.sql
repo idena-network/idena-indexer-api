@@ -21,18 +21,21 @@ select b.epoch,
        tr.gas_cost                                                                                  tx_receipt_gas_cost,
        tr.method                                                                                    tx_receipt_method,
        tr.error_msg                                                                                 tx_receipt_error_msg,
-       (case when tr.tx_id is not null then coalesce(adeploy.address, ato.address) end)             tx_receipt_contract_address
+       (case
+            when tr.tx_id is not null
+                then coalesce(adeploy.address, ato.address) end)                                    tx_receipt_contract_address,
+       coalesce(tr.action_result, ''::bytea)                                                        action_result
 from transactions t
-         join blocks b on b.height = t.block_height
-         join addresses afrom on afrom.id = t.from
-         left join addresses ato on ato.id = t.to
-         join dic_tx_types dtt on dtt.id = t.Type
-         left join activation_tx_transfers atxs on atxs.tx_id = t.id and t.type = 1
-         left join kill_tx_transfers ktxs on ktxs.tx_id = t.id and t.type = 3
-         left join kill_invitee_tx_transfers kitxs on kitxs.tx_id = t.id and t.type = 10
-         left join become_online_txs online on online.tx_id = t.id and t.type = 9
-         left join become_offline_txs offline on offline.tx_id = t.id and t.type = 9
-         LEFT JOIN tx_receipts tr on t.type in (15, 16, 17) and tr.tx_id = t.id
+         LEFT JOIN blocks b ON b.height = t.block_height
+         LEFT JOIN addresses afrom ON afrom.id = t.from
+         LEFT JOIN addresses ato ON ato.id = t.to
+         LEFT JOIN dic_tx_types dtt ON dtt.id = t.Type
+         LEFT JOIN activation_tx_transfers atxs ON atxs.tx_id = t.id AND t.type = 1
+         LEFT JOIN kill_tx_transfers ktxs ON ktxs.tx_id = t.id AND t.type = 3
+         LEFT JOIN kill_invitee_tx_transfers kitxs ON kitxs.tx_id = t.id AND t.type = 10
+         LEFT JOIN become_online_txs online ON online.tx_id = t.id AND t.type = 9
+         LEFT JOIN become_offline_txs offline ON offline.tx_id = t.id AND t.type = 9
+         LEFT JOIN tx_receipts tr ON t.type in (15, 16, 17) AND tr.tx_id = t.id
          LEFT JOIN contracts c ON t.type = 15 AND c.tx_id = t.id
          LEFT JOIN addresses adeploy ON adeploy.id = c.contract_address_id
-where lower(t.Hash) = lower($1)
+WHERE lower(t.Hash) = lower($1)

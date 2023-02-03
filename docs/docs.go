@@ -5798,6 +5798,80 @@ var doc = `{
                 }
             }
         },
+        "/Transaction/{hash}/Events": {
+            "get": {
+                "tags": [
+                    "Transaction"
+                ],
+                "operationId": "TransactionEvents",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "transaction hash",
+                        "name": "hash",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "allOf": [
+                                                {
+                                                    "$ref": "#/definitions/Transaction"
+                                                },
+                                                {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "data": {
+                                                            "$ref": "#/definitions/TxEvent"
+                                                        }
+                                                    }
+                                                }
+                                            ]
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Transaction/{hash}/Raw": {
             "get": {
                 "tags": [
@@ -5907,6 +5981,36 @@ var doc = `{
         }
     },
     "definitions": {
+        "ActionResult": {
+            "type": "object",
+            "properties": {
+                "error": {
+                    "type": "string"
+                },
+                "gasUsed": {
+                    "type": "integer"
+                },
+                "inputAction": {
+                    "type": "object",
+                    "$ref": "#/definitions/InputAction"
+                },
+                "outputData": {
+                    "type": "string"
+                },
+                "remainingGas": {
+                    "type": "integer"
+                },
+                "subActionResults": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/ActionResult"
+                    }
+                },
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
         "Address": {
             "type": "object",
             "properties": {
@@ -6242,9 +6346,6 @@ var doc = `{
                     "type": "string"
                 },
                 "contractAddress": {
-                    "type": "string"
-                },
-                "contractCallMethod": {
                     "type": "string"
                 },
                 "contractType": {
@@ -6889,6 +6990,26 @@ var doc = `{
                         "Newbie",
                         "Human"
                     ]
+                }
+            }
+        },
+        "InputAction": {
+            "type": "object",
+            "properties": {
+                "actionType": {
+                    "type": "integer"
+                },
+                "amount": {
+                    "type": "string"
+                },
+                "args": {
+                    "type": "string"
+                },
+                "gasLimit": {
+                    "type": "integer"
+                },
+                "method": {
+                    "type": "string"
                 }
             }
         },
@@ -7772,9 +7893,27 @@ var doc = `{
                 }
             }
         },
+        "TxEvent": {
+            "type": "object",
+            "properties": {
+                "data": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "eventName": {
+                    "type": "string"
+                }
+            }
+        },
         "TxReceipt": {
             "type": "object",
             "properties": {
+                "actionResult": {
+                    "type": "object",
+                    "$ref": "#/definitions/ActionResult"
+                },
                 "contractAddress": {
                     "type": "string"
                 },

@@ -334,6 +334,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/Transaction/{hash}")).HandlerFunc(s.transaction)
 	router.Path(strings.ToLower("/Transaction/{hash}/Raw")).HandlerFunc(s.transactionRaw)
+	router.Path(strings.ToLower("/Transaction/{hash}/Events")).HandlerFunc(s.transactionEvents)
 
 	router.Path(strings.ToLower("/Address/{address}")).HandlerFunc(s.address)
 	router.Path(strings.ToLower("/Address/{address}/Txs/Count")).HandlerFunc(s.identityTxsCount)
@@ -2500,6 +2501,29 @@ func (s *httpServer) transactionRaw(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := s.service.TransactionRaw(mux.Vars(r)["hash"])
 	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Transaction
+// @Id TransactionEvents
+// @Param hash path string true "transaction hash"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.Response{result=types.TransactionDetail{data=types.TxEvent}}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Transaction/{hash}/Events [get]
+func (s *httpServer) transactionEvents(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("transactionEvents", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.TransactionEvents(mux.Vars(r)["hash"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
 func (s *httpServer) balancesCount(w http.ResponseWriter, r *http.Request) {

@@ -4,10 +4,12 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"github.com/idena-network/idena-go/common/hexutil"
 	"github.com/idena-network/idena-indexer-api/app/service"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/idena-network/idena-indexer-api/log"
+	models "github.com/idena-network/idena-wasm-binding/lib/protobuf"
 	"github.com/lib/pq"
 	"github.com/shopspring/decimal"
 	"strconv"
@@ -28,6 +30,7 @@ type postgresAccessor struct {
 const (
 	transactionQuery          = "transaction.sql"
 	transactionRawQuery       = "transactionRaw.sql"
+	transactionEventsQuery    = "transactionEvents.sql"
 	isAddressQuery            = "isAddress.sql"
 	isBlockHashQuery          = "isBlockHash.sql"
 	isBlockHeightQuery        = "isBlockHeight.sql"
@@ -200,6 +203,7 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 	var success, becomeOnline sql.NullBool
 	var gasUsed sql.NullInt64
 	var method, errorMsg, contractAddress sql.NullString
+	var actionResult hexutil.Bytes
 	err := a.db.QueryRow(a.getQuery(transactionQuery), hash).Scan(
 		&res.Epoch,
 		&res.BlockHeight,
@@ -223,6 +227,7 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 		&method,
 		&errorMsg,
 		&contractAddress,
+		&actionResult,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -243,9 +248,44 @@ func (a *postgresAccessor) Transaction(hash string) (*types.TransactionDetail, e
 			Method:          method.String,
 			ErrorMsg:        errorMsg.String,
 			ContractAddress: contractAddress.String,
+			ActionResult:    convertActionResultBytes(actionResult),
 		}
 	}
 	return &res, nil
+}
+
+func convertActionResultBytes(actionResult []byte) *types.ActionResult {
+	if len(actionResult) == 0 {
+		return nil
+	}
+	protoModel := &models.ActionResult{}
+
+	if err := proto.Unmarshal(actionResult, protoModel); err != nil {
+		return nil
+	}
+	return convertActionResult(protoModel)
+}
+
+func convertActionResult(protoModel *models.ActionResult) *types.ActionResult {
+	result := &types.ActionResult{}
+	if protoModel.InputAction != nil {
+		result.InputAction = types.InputAction{
+			Args:       protoModel.InputAction.Args,
+			Method:     protoModel.InputAction.Method,
+			Amount:     protoModel.InputAction.Amount,
+			ActionType: protoModel.InputAction.ActionType,
+			GasLimit:   protoModel.InputAction.GasLimit,
+		}
+	}
+	result.Success = protoModel.Success
+	result.Error = protoModel.Error
+	result.GasUsed = protoModel.GasUsed
+	result.RemainingGas = protoModel.RemainingGas
+	result.OutputData = protoModel.OutputData
+	for _, subAction := range protoModel.SubActionResults {
+		result.SubActionResults = append(result.SubActionResults, convertActionResult(subAction))
+	}
+	return result
 }
 
 func (a *postgresAccessor) TransactionRaw(hash string) (*hexutil.Bytes, error) {
@@ -258,6 +298,33 @@ func (a *postgresAccessor) TransactionRaw(hash string) (*hexutil.Bytes, error) {
 		return nil, err
 	}
 	return &res, nil
+}
+
+func (a *postgresAccessor) TransactionEvents(hash string, count uint64, continuationToken *string) ([]types.TxEvent, *string, error) {
+	res, nextContinuationToken, err := a.page(transactionEventsQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.TxEvent
+		var index uint64
+		for rows.Next() {
+			item := types.TxEvent{}
+			var data pq.ByteaArray
+			if err := rows.Scan(&index, &item.EventName, &data); err != nil {
+				return nil, 0, err
+			}
+			if len(data) > 0 {
+				item.Data = make([]hexutil.Bytes, 0, len(data))
+				for _, v := range data {
+					item.Data = append(item.Data, v)
+				}
+			}
+			res = append(res, item)
+		}
+		return res, index, nil
+	}, count, continuationToken, hash)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.TxEvent), nextContinuationToken, nil
 }
 
 func (a *postgresAccessor) Destroy() {

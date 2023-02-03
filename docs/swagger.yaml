@@ -1,4 +1,24 @@
 definitions:
+  ActionResult:
+    properties:
+      error:
+        type: string
+      gasUsed:
+        type: integer
+      inputAction:
+        $ref: '#/definitions/InputAction'
+        type: object
+      outputData:
+        type: string
+      remainingGas:
+        type: integer
+      subActionResults:
+        items:
+          $ref: '#/definitions/ActionResult'
+        type: array
+      success:
+        type: boolean
+    type: object
   Address:
     properties:
       address:
@@ -236,8 +256,6 @@ definitions:
       balanceChange:
         type: string
       contractAddress:
-        type: string
-      contractCallMethod:
         type: string
       contractType:
         type: string
@@ -697,6 +715,19 @@ definitions:
         - Zombie
         - Newbie
         - Human
+        type: string
+    type: object
+  InputAction:
+    properties:
+      actionType:
+        type: integer
+      amount:
+        type: string
+      args:
+        type: string
+      gasLimit:
+        type: integer
+      method:
         type: string
     type: object
   Invite:
@@ -1323,8 +1354,20 @@ definitions:
         - KillDelegatorTx
         type: string
     type: object
+  TxEvent:
+    properties:
+      data:
+        items:
+          type: string
+        type: array
+      eventName:
+        type: string
+    type: object
   TxReceipt:
     properties:
+      actionResult:
+        $ref: '#/definitions/ActionResult'
+        type: object
       contractAddress:
         type: string
       errorMsg:
@@ -4987,6 +5030,49 @@ paths:
                   - properties:
                       data:
                         $ref: '#/definitions/TransactionSpecificData'
+                    type: object
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Transaction
+  /Transaction/{hash}/Events:
+    get:
+      operationId: TransactionEvents
+      parameters:
+      - description: transaction hash
+        in: path
+        name: hash
+        required: true
+        type: string
+      - description: items to take
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: continuation token to get next page items
+        in: query
+        name: continuationToken
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  allOf:
+                  - $ref: '#/definitions/Transaction'
+                  - properties:
+                      data:
+                        $ref: '#/definitions/TxEvent'
                     type: object
               type: object
         "400":

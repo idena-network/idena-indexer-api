@@ -153,25 +153,25 @@ func (w FlipWord) isEmpty() bool {
 	return w.Index == 0 && len(w.Name) == 0 && len(w.Desc) == 0
 }
 
-// mock type for swagger
+// FlipAnswerCount mock type for swagger
 type FlipAnswerCount struct {
 	Value string `json:"value" enums:",None,Left,Right"`
 	Count uint32 `json:"count"`
 } // @Name FlipAnswerCount
 
-// mock type for swagger
+// FlipStateCount mock type for swagger
 type FlipStateCount struct {
 	Value string `json:"value" enums:",NotQualified,Qualified,WeaklyQualified,QualifiedByNone"`
 	Count uint32 `json:"count"`
 } // @Name FlipStateCount
 
-// mock type for swagger
+// IdentityStateCount mock type for swagger
 type IdentityStateCount struct {
 	Value string `json:"value" enums:"Undefined,Invite,Candidate,Verified,Suspended,Killed,Zombie,Newbie,Human"`
 	Count uint32 `json:"count"`
 } // @Name IdentityStateCount
 
-// mock type for swagger
+// SavedInviteRewardCount mock type for swagger
 type SavedInviteRewardCount struct {
 	Value string `json:"value" enums:"SavedInvite,SavedInviteWin"`
 	Count uint32 `json:"count"`
@@ -220,7 +220,7 @@ type TransactionSummary struct {
 	TxReceipt *TxReceipt `json:"txReceipt,omitempty"`
 } // @Name TransactionSummary
 
-// mock type for swagger
+// TransactionSpecificData mock type for swagger
 type TransactionSpecificData struct {
 	Transfer     *decimal.Decimal `json:"transfer,omitempty" swaggertype:"string"`
 	BecomeOnline bool             `json:"becomeOnline"`
@@ -646,11 +646,10 @@ type ContractTxBalanceUpdate struct {
 	MaxFee    decimal.Decimal `json:"maxFee" swaggertype:"string"`
 	Fee       decimal.Decimal `json:"fee" swaggertype:"string"`
 
-	Address            string           `json:"address"`
-	ContractAddress    string           `json:"contractAddress"`
-	ContractType       string           `json:"contractType"`
-	ContractCallMethod string           `json:"contractCallMethod,omitempty"`
-	BalanceChange      *decimal.Decimal `json:"balanceChange,omitempty" swaggertype:"string"`
+	Address         string           `json:"address"`
+	ContractAddress string           `json:"contractAddress"`
+	ContractType    string           `json:"contractType"`
+	BalanceChange   *decimal.Decimal `json:"balanceChange,omitempty" swaggertype:"string"`
 
 	TxReceipt *TxReceipt `json:"txReceipt,omitempty"`
 } // @Name ContractTxBalanceUpdate
@@ -662,7 +661,31 @@ type TxReceipt struct {
 	Method          string          `json:"method,omitempty"`
 	ErrorMsg        string          `json:"errorMsg,omitempty"`
 	ContractAddress string          `json:"contractAddress,omitempty"`
+	ActionResult    *ActionResult   `json:"actionResult,omitempty"`
 } // @Name TxReceipt
+
+type ActionResult struct {
+	InputAction      InputAction     `json:"inputAction"`
+	Success          bool            `json:"success"`
+	Error            string          `json:"error"`
+	GasUsed          uint64          `json:"gasUsed"`
+	RemainingGas     uint64          `json:"remainingGas"`
+	OutputData       hexutil.Bytes   `json:"outputData"`
+	SubActionResults []*ActionResult `json:"subActionResults"`
+} // @Name ActionResult
+
+type InputAction struct {
+	ActionType uint32        `json:"actionType"`
+	Amount     hexutil.Bytes `json:"amount"`
+	Method     string        `json:"method"`
+	Args       hexutil.Bytes `json:"args"`
+	GasLimit   uint64        `json:"gasLimit"`
+} // @Name InputAction
+
+type TxEvent struct {
+	EventName string          `json:"eventName"`
+	Data      []hexutil.Bytes `json:"data,omitempty" swaggertype:"array"`
+} // @Name TxEvent
 
 type UpgradeVotes struct {
 	Upgrade uint32 `json:"upgrade"`
