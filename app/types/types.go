@@ -519,7 +519,8 @@ type CommitteeRewardBalanceUpdate struct {
 	BlocksCount        uint32          `json:"blocksCount"`
 }
 
-type EmbeddedContractBalanceUpdate struct {
+type ContractBalanceUpdate struct {
+	TransactionBalanceUpdate
 	ContractAddress string `json:"contractAddress"`
 }
 

@@ -24,10 +24,10 @@ const (
 	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
 	addressMiningRewardSummariesQuery    = "addressMiningRewardSummaries.sql"
 
-	txBalanceUpdateReason               = "Tx"
-	committeeRewardBalanceUpdateReason  = "CommitteeReward"
-	embeddedContractBalanceUpdateReason = "EmbeddedContract"
-	epochRewardBalanceUpdateReason      = "EpochReward"
+	txBalanceUpdateReason              = "Tx"
+	committeeRewardBalanceUpdateReason = "CommitteeReward"
+	contractBalanceUpdateReason        = "Contract"
+	epochRewardBalanceUpdateReason     = "EpochReward"
 )
 
 func (a *postgresAccessor) Address(address string) (types.Address, error) {
@@ -234,8 +234,11 @@ func readBalanceUpdateSpecificData(reason string, optionalData *balanceUpdateOpt
 		res = &types.EpochRewardBalanceUpdate{
 			Epoch: optionalData.epoch,
 		}
-	case embeddedContractBalanceUpdateReason:
-		res = &types.EmbeddedContractBalanceUpdate{
+	case contractBalanceUpdateReason:
+		res = &types.ContractBalanceUpdate{
+			TransactionBalanceUpdate: types.TransactionBalanceUpdate{
+				TxHash: optionalData.txHash,
+			},
 			ContractAddress: optionalData.contractAddress,
 		}
 	}
