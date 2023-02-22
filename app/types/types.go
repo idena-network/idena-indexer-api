@@ -321,6 +321,7 @@ type Answer struct {
 	FlipGrade      byte    `json:"flipGrade"`
 	Index          byte    `json:"index"`
 	Considered     bool    `json:"considered"`
+	GradeIgnored   bool    `json:"gradeIgnored"`
 } // @Name Answer
 
 type Identity struct {
@@ -803,6 +804,7 @@ type ValidationSummary struct {
 	Rewards           ValidationRewardSummaries  `json:"rewards"`
 	DelegateeReward   *ValidationDelegateeReward `json:"delegateeReward,omitempty"`
 	Stake             decimal.Decimal            `json:"stake" swaggertype:"string"`
+	WrongGrades       bool                       `json:"wrongGrades"`
 } // @Name ValidationSummary
 
 type ValidationRewardSummaries struct {

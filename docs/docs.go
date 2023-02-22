@@ -6070,6 +6070,9 @@ var doc = `{
                     "description": "Deprecated",
                     "type": "boolean"
                 },
+                "gradeIgnored": {
+                    "type": "boolean"
+                },
                 "index": {
                     "type": "integer"
                 },
@@ -8078,6 +8081,9 @@ var doc = `{
                 "totalShortAnswers": {
                     "type": "object",
                     "$ref": "#/definitions/IdentityAnswersSummary"
+                },
+                "wrongGrades": {
+                    "type": "boolean"
                 }
             }
         },

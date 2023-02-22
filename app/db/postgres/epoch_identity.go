@@ -344,6 +344,7 @@ func (a *postgresAccessor) EpochIdentityValidationSummary(epoch uint64, address 
 		&delegateeAddress,
 		&delegateeReward,
 		&res.Stake,
+		&res.WrongGrades,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -403,6 +404,8 @@ func convertMissedRewardReason(code byte) string {
 		return "inviter_not_validated"
 	case 9:
 		return "inviter_reset"
+	case 10:
+		return "grades_ignored"
 	default:
 		return "unknown_reason"
 	}
