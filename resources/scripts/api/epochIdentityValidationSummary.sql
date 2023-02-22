@@ -40,7 +40,8 @@ SELECT coalesce(ei.short_point, 0)                                    short_poin
        coalesce(vrs.staking_missed_reason, 0)                         staking_missed_reason,
        coalesce(delegateea.address, '')                               delegatee_address,
        coalesce(dvr.total_balance, 0)                                 delegatee_reward,
-       coalesce(rsa.amount, 0)                                        stake
+       coalesce(rsa.amount, 0)                                        stake,
+       coalesce(ei.wrong_grade_reason, 0) > 0                         wrong_grades
 FROM epoch_identities ei
          JOIN address_states s ON s.id = ei.address_state_id AND
                                   s.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))

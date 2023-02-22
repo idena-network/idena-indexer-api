@@ -6050,6 +6050,9 @@
                     "description": "Deprecated",
                     "type": "boolean"
                 },
+                "gradeIgnored": {
+                    "type": "boolean"
+                },
                 "index": {
                     "type": "integer"
                 },
@@ -8058,6 +8061,9 @@
                 "totalShortAnswers": {
                     "type": "object",
                     "$ref": "#/definitions/IdentityAnswersSummary"
+                },
+                "wrongGrades": {
+                    "type": "boolean"
                 }
             }
         },

@@ -381,6 +381,7 @@ func readAnswers(rows *sql.Rows) ([]types.Answer, error) {
 			&item.FlipGrade,
 			&item.Index,
 			&item.Considered,
+			&item.GradeIgnored,
 		)
 		if err != nil {
 			return nil, err

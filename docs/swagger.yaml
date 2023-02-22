@@ -60,6 +60,8 @@ definitions:
       flipWrongWords:
         description: Deprecated
         type: boolean
+      gradeIgnored:
+        type: boolean
       index:
         type: integer
       point:
@@ -1487,6 +1489,8 @@ definitions:
       totalShortAnswers:
         $ref: '#/definitions/IdentityAnswersSummary'
         type: object
+      wrongGrades:
+        type: boolean
     type: object
   types.Contract:
     properties:
