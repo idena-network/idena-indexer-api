@@ -8070,6 +8070,9 @@
                 "author": {
                     "type": "string"
                 },
+                "code": {
+                    "type": "string"
+                },
                 "deployTx": {
                     "type": "object",
                     "$ref": "#/definitions/TransactionSummary"
@@ -8085,7 +8088,8 @@
                         "OracleVoting",
                         "OracleLock",
                         "Multisig",
-                        "RefundableOracleLock"
+                        "RefundableOracleLock",
+                        "Contract"
                     ]
                 }
             }

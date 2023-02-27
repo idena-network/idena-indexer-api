@@ -8090,6 +8090,9 @@ var doc = `{
                 "author": {
                     "type": "string"
                 },
+                "code": {
+                    "type": "string"
+                },
                 "deployTx": {
                     "type": "object",
                     "$ref": "#/definitions/TransactionSummary"
@@ -8105,7 +8108,8 @@ var doc = `{
                         "OracleVoting",
                         "OracleLock",
                         "Multisig",
-                        "RefundableOracleLock"
+                        "RefundableOracleLock",
+                        "Contract"
                     ]
                 }
             }

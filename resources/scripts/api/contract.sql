@@ -1,9 +1,10 @@
-SELECT dict.name              "type",
-       authora.address        author,
-       deployt.hash           deployTxHash,
-       deployb.timestamp      deployTxTimestamp,
-       terminationt.hash      terminationTxHash,
-       terminationb.timestamp terminationTxTimestamp
+SELECT dict.name                   "type",
+       authora.address             author,
+       deployt.hash                deployTxHash,
+       deployb.timestamp           deployTxTimestamp,
+       terminationt.hash           terminationTxHash,
+       terminationb.timestamp      terminationTxTimestamp,
+       coalesce(tr.raw, ''::bytea) tx_raw
 FROM contracts c
          JOIN dic_contract_types dict on dict.id = c.type
          JOIN addresses a ON a.id = c.contract_address_id AND lower(a.address) = lower($1)
@@ -24,3 +25,4 @@ FROM contracts c
                                                  c.type = 4 AND terminationt.id = mct.termination_tx_id OR
                                                  c.type = 5 AND terminationt.id = rolct.termination_tx_id)
          LEFT JOIN blocks terminationb on terminationb.height = terminationt.block_height
+         LEFT JOIN transaction_raws tr ON c.type = 6 AND tr.tx_id = c.tx_id

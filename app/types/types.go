@@ -544,10 +544,11 @@ type StrValueCount struct {
 
 type Contract struct {
 	Address       string              `json:"address"`
-	Type          string              `json:"type" enums:"TimeLock,OracleVoting,OracleLock,Multisig,RefundableOracleLock"`
+	Type          string              `json:"type" enums:"TimeLock,OracleVoting,OracleLock,Multisig,RefundableOracleLock,Contract"`
 	Author        string              `json:"author"`
 	DeployTx      TransactionSummary  `json:"deployTx"`
 	TerminationTx *TransactionSummary `json:"terminationTx,omitempty"`
+	Code          hexutil.Bytes       `json:"code,omitempty"`
 } // @Contract
 
 type TimeLockContract struct {

@@ -1494,6 +1494,8 @@ definitions:
         type: string
       author:
         type: string
+      code:
+        type: string
       deployTx:
         $ref: '#/definitions/TransactionSummary'
         type: object
@@ -1507,6 +1509,7 @@ definitions:
         - OracleLock
         - Multisig
         - RefundableOracleLock
+        - Contract
         type: string
     type: object
   types.MultisigContract:
