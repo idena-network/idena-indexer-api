@@ -6723,6 +6723,9 @@
                 "grade": {
                     "type": "integer"
                 },
+                "gradeScore": {
+                    "type": "number"
+                },
                 "size": {
                     "type": "integer"
                 },
@@ -6840,6 +6843,9 @@
                 },
                 "grade": {
                     "type": "integer"
+                },
+                "gradeScore": {
+                    "type": "number"
                 },
                 "icon": {
                     "type": "string"
@@ -7456,6 +7462,9 @@
                 },
                 "grade": {
                     "type": "integer"
+                },
+                "gradeScore": {
+                    "type": "number"
                 },
                 "icon": {
                     "type": "string"

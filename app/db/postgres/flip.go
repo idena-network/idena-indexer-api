@@ -40,6 +40,7 @@ func (a *postgresAccessor) Flip(hash string) (types.Flip, error) {
 			&words.Word2.Desc,
 			&flip.WithPrivatePart,
 			&flip.Grade,
+			&flip.GradeScore,
 		)
 	if err == sql.ErrNoRows {
 		err = NoDataFound

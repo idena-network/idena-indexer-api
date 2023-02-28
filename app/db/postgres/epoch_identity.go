@@ -142,6 +142,7 @@ func (a *postgresAccessor) EpochIdentityFlipsWithRewardFlag(epoch uint64, addres
 			&words.Word2.Desc,
 			&item.WithPrivatePart,
 			&item.Grade,
+			&item.GradeScore,
 			&item.Rewarded,
 		)
 		if err != nil {
