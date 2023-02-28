@@ -132,6 +132,7 @@ type FlipSummary struct {
 	Words           *FlipWords    `json:"words"`
 	WithPrivatePart bool          `json:"withPrivatePart"`
 	Grade           byte          `json:"grade"`
+	GradeScore      float32       `json:"gradeScore"`
 } // @Name FlipSummary
 
 type FlipWords struct {
@@ -292,6 +293,7 @@ type Flip struct {
 	Words           *FlipWords `json:"words"`
 	WithPrivatePart bool       `json:"withPrivatePart"`
 	Grade           byte       `json:"grade"`
+	GradeScore      float32    `json:"gradeScore"`
 } // @Name Flip
 
 type FlipContent struct {

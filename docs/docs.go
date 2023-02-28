@@ -6743,6 +6743,9 @@ var doc = `{
                 "grade": {
                     "type": "integer"
                 },
+                "gradeScore": {
+                    "type": "number"
+                },
                 "size": {
                     "type": "integer"
                 },
@@ -6860,6 +6863,9 @@ var doc = `{
                 },
                 "grade": {
                     "type": "integer"
+                },
+                "gradeScore": {
+                    "type": "number"
                 },
                 "icon": {
                     "type": "string"
@@ -7476,6 +7482,9 @@ var doc = `{
                 },
                 "grade": {
                     "type": "integer"
+                },
+                "gradeScore": {
+                    "type": "number"
                 },
                 "icon": {
                     "type": "string"

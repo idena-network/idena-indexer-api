@@ -17,7 +17,8 @@ select f.Cid,
        coalesce(wd2.name, '')            word_name_2,
        coalesce(wd2.description, '')     word_desc_2,
        coalesce(fs.encrypted, false)     with_private_part,
-       coalesce(f.grade, 0)              grade
+       coalesce(f.grade, 0)              grade,
+       coalesce(f.grade_score, 0)        grade_score
 from flips f
          join transactions t on t.id = f.tx_id
          join addresses a on a.id = t.from and lower(a.address) = lower($2)

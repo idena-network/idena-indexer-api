@@ -262,6 +262,7 @@ func readFlips(rows *sql.Rows) ([]types.FlipSummary, uint64, error) {
 			&words.Word2.Desc,
 			&item.WithPrivatePart,
 			&item.Grade,
+			&item.GradeScore,
 		)
 		if err != nil {
 			return nil, 0, err
@@ -307,6 +308,7 @@ func (a *postgresAccessor) flipsWithoutPaging(queryName string, args ...interfac
 			&words.Word2.Desc,
 			&item.WithPrivatePart,
 			&item.Grade,
+			&item.GradeScore,
 		)
 		if err != nil {
 			return nil, err
