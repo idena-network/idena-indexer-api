@@ -1240,6 +1240,27 @@ definitions:
       weight:
         type: number
     type: object
+  Token:
+    properties:
+      contractAddress:
+        type: string
+      decimal:
+        type: integer
+      name:
+        type: string
+      symbol:
+        type: string
+    type: object
+  TokenBalance:
+    properties:
+      address:
+        type: string
+      balance:
+        type: string
+      token:
+        $ref: '#/definitions/Token'
+        type: object
+    type: object
   Transaction:
     properties:
       amount:
@@ -1881,6 +1902,47 @@ paths:
           description: Service unavailable
       tags:
       - Address
+  /Address/{address}/Tokens:
+    get:
+      operationId: AddressTokens
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: items to take
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: continuation token to get next page items
+        in: query
+        name: continuationToken
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ResponsePage'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/TokenBalance'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Address
+      - Tokens
   /Address/{address}/Txs:
     get:
       operationId: AddressTxs
@@ -5021,6 +5083,35 @@ paths:
           description: Service unavailable
       tags:
       - Contracts
+  /Token/{address}:
+    get:
+      operationId: Token
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/Token'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Tokens
   /Transaction/{hash}:
     get:
       operationId: Transaction

@@ -118,6 +118,7 @@ type Accessor interface {
 	AddressContractTxBalanceUpdates(address string, contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error)
 	AddressDelegateeTotalRewards(address string, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error)
 	AddressMiningRewardSummaries(address string, count uint64, continuationToken *string) ([]types.MiningRewardSummary, *string, error)
+	AddressTokens(address string, count uint64, continuationToken *string) ([]types.TokenBalance, *string, error)
 
 	Transaction(hash string) (*types.TransactionDetail, error)
 	TransactionRaw(hash string) (*hexutil.Bytes, error)
@@ -155,6 +156,8 @@ type Accessor interface {
 
 	DynamicEndpoints() ([]types.DynamicEndpoint, error)
 	DynamicEndpointData(dataSource string, limit *int) (*types.DynamicEndpointResult, error)
+
+	Token(address string) (types.Token, error)
 
 	Destroy()
 }

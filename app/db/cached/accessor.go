@@ -934,6 +934,13 @@ func (a *cachedAccessor) AddressMiningRewardSummaries(address string, count uint
 	return res.([]types.MiningRewardSummary), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) AddressTokens(address string, count uint64, continuationToken *string) ([]types.TokenBalance, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("AddressTokens", func() (interface{}, *string, error) {
+		return a.accessor.AddressTokens(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.TokenBalance), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) Transaction(hash string) (*types.TransactionDetail, error) {
 	res, err := a.getOrLoad("Transaction", func() (interface{}, error) {
 		tx, err := a.accessor.Transaction(hash)
@@ -1158,6 +1165,13 @@ func (a *cachedAccessor) DynamicEndpointData(name string, limit *int) (*types.Dy
 		return a.accessor.DynamicEndpointData(name, limit)
 	}, name, limit)
 	return res.(*types.DynamicEndpointResult), err
+}
+
+func (a *cachedAccessor) Token(address string) (types.Token, error) {
+	res, err := a.getOrLoad("Token", func() (interface{}, error) {
+		return a.accessor.Token(address)
+	}, address)
+	return res.(types.Token), err
 }
 
 func (a *cachedAccessor) Destroy() {

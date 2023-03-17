@@ -23,6 +23,7 @@ const (
 	addressContractTxBalanceUpdatesQuery = "addressContractTxBalanceUpdates.sql"
 	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
 	addressMiningRewardSummariesQuery    = "addressMiningRewardSummaries.sql"
+	addressTokensQuery                   = "addressTokens.sql"
 
 	txBalanceUpdateReason              = "Tx"
 	committeeRewardBalanceUpdateReason = "CommitteeReward"
@@ -390,4 +391,34 @@ func (a *postgresAccessor) AddressMiningRewardSummaries(address string, count ui
 		return nil, nil, err
 	}
 	return res.([]types.MiningRewardSummary), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) AddressTokens(address string, count uint64, continuationToken *string) ([]types.TokenBalance, *string, error) {
+	res, nextContinuationToken, err := a.page(addressTokensQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.TokenBalance
+		var id uint64
+		for rows.Next() {
+			item := types.TokenBalance{}
+			err := rows.Scan(
+				&id,
+				&item.Token.ContractAddress,
+				&item.Balance,
+				&item.Token.Name,
+				&item.Token.Symbol,
+				&item.Token.Decimals,
+			)
+			if err != nil {
+				return nil, 0, err
+			}
+			item.Address = address
+			item.Balance = item.Balance.Div(decimal.New(1, int32(item.Token.Decimals)))
+			res = append(res, item)
+		}
+		return res, id, nil
+	}, count, continuationToken, address)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.TokenBalance), nextContinuationToken, nil
 }

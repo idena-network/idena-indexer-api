@@ -836,3 +836,16 @@ type MiningRewardSummary struct {
 	Amount  decimal.Decimal `json:"amount" swaggertype:"string"`
 	Penalty decimal.Decimal `json:"penalty" swaggertype:"string"`
 } // @Name MiningRewardSummary
+
+type Token struct {
+	ContractAddress string `json:"contractAddress"`
+	Name            string `json:"name"`
+	Symbol          string `json:"symbol"`
+	Decimals        byte   `json:"decimal"`
+} // @Name Token
+
+type TokenBalance struct {
+	Token   Token           `json:"token"`
+	Address string          `json:"address"`
+	Balance decimal.Decimal `json:"balance" swaggertype:"string"`
+} // @Name TokenBalance
