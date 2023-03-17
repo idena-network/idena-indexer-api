@@ -5,7 +5,6 @@ import (
 	"github.com/idena-network/idena-go/common/hexutil"
 	"github.com/idena-network/idena-go/crypto"
 	"github.com/idena-network/idena-indexer-api/app/db"
-	"github.com/idena-network/idena-indexer-api/app/db/postgres"
 	service2 "github.com/idena-network/idena-indexer-api/app/service"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/idena-network/idena-indexer-api/indexer"
@@ -83,29 +82,11 @@ func (s *service) Search(value string) ([]types.Entity, error) {
 }
 
 func (s *service) Transaction(hash string) (*types.TransactionDetail, error) {
-	res, err := s.Accessor.Transaction(hash)
-	if err != postgres.NoDataFound {
-		return res, err
-	}
-
-	res, err = s.memPool.GetTransaction(hash)
-	if err == nil && res == nil {
-		err = postgres.NoDataFound
-	}
-	return res, err
+	return s.Accessor.Transaction(hash)
 }
 
 func (s *service) TransactionRaw(hash string) (*hexutil.Bytes, error) {
-	res, err := s.Accessor.TransactionRaw(hash)
-	if err != postgres.NoDataFound {
-		return res, err
-	}
-
-	res, err = s.memPool.GetTransactionRaw(hash)
-	if err == nil && res == nil {
-		err = postgres.NoDataFound
-	}
-	return res, err
+	return s.Accessor.TransactionRaw(hash)
 }
 
 func (s *service) IdentityTxs(address string, count uint64, continuationToken *string) ([]types.TransactionSummary, *string, error) {
@@ -270,12 +251,6 @@ func (s *service) Staking() (*types.Staking, error) {
 
 	staking.ExtraFlipsWeight = calculateWeight(rewardsSummary.ExtraFlips, rewardsSummary.ExtraFlipsShare)
 	staking.InvitationsWeight = calculateWeight(rewardsSummary.Invitations, rewardsSummary.InvitationsShare)
-
-	// TODO remove this temporary code after 98 epoch
-	if lastEpoch.Epoch == 98 {
-		staking.ExtraFlipsWeight = 567335.44
-		staking.InvitationsWeight = 932981.3
-	}
 
 	return staking, nil
 }

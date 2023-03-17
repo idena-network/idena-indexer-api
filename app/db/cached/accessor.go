@@ -2,8 +2,11 @@ package cached
 
 import (
 	"fmt"
+	"github.com/idena-network/idena-go/common/eventbus"
 	"github.com/idena-network/idena-go/common/hexutil"
+	"github.com/idena-network/idena-indexer-api/app/api"
 	"github.com/idena-network/idena-indexer-api/app/db"
+	"github.com/idena-network/idena-indexer-api/app/db/postgres"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/idena-network/idena-indexer-api/log"
 	"github.com/patrickmn/go-cache"
@@ -44,6 +47,8 @@ const (
 
 type cachedAccessor struct {
 	accessor                 db.Accessor
+	memPool                  api.MemPool
+	eventBus                 eventbus.Bus
 	maxItemCountsByMethod    map[string]int
 	defaultCacheMaxItemCount int
 	maxItemLifeTimesByMethod map[string]time.Duration
@@ -55,6 +60,7 @@ type cachedAccessor struct {
 
 func NewCachedAccessor(
 	db db.Accessor,
+	memPool api.MemPool,
 	defaultCacheMaxItemCount int,
 	defaultCacheItemLifeTime time.Duration,
 	logger log.Logger,
@@ -66,6 +72,7 @@ func NewCachedAccessor(
 		maxItemLifeTimesByMethod: createMaxItemLifeTimesByMethod(),
 		defaultCacheItemLifeTime: defaultCacheItemLifeTime,
 		logger:                   logger,
+		memPool:                  memPool,
 	}
 	go func() {
 		for {
@@ -929,14 +936,22 @@ func (a *cachedAccessor) AddressMiningRewardSummaries(address string, count uint
 
 func (a *cachedAccessor) Transaction(hash string) (*types.TransactionDetail, error) {
 	res, err := a.getOrLoad("Transaction", func() (interface{}, error) {
-		return a.accessor.Transaction(hash)
+		tx, err := a.accessor.Transaction(hash)
+		if err == postgres.NoDataFound {
+			tx, err = a.memPool.GetTransaction(hash)
+		}
+		return tx, err
 	}, hash)
 	return res.(*types.TransactionDetail), err
 }
 
 func (a *cachedAccessor) TransactionRaw(hash string) (*hexutil.Bytes, error) {
 	res, err := a.getOrLoad("TransactionRaw", func() (interface{}, error) {
-		return a.accessor.TransactionRaw(hash)
+		txRaw, err := a.accessor.TransactionRaw(hash)
+		if err == postgres.NoDataFound {
+			txRaw, err = a.memPool.GetTransactionRaw(hash)
+		}
+		return txRaw, err
 	}, hash)
 	return res.(*hexutil.Bytes), err
 }

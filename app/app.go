@@ -55,6 +55,7 @@ func InitializeApp(
 			cachedNetworkSizeLoader,
 			logger,
 		),
+		memPool,
 		conf.DefaultCacheMaxItemCount,
 		time.Second*time.Duration(conf.DefaultCacheItemLifeTimeSec),
 		logger.New("component", "cachedDbAccessor"),
