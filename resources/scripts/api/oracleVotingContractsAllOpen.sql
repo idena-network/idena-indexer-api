@@ -60,7 +60,7 @@ FROM (SELECT sovc.*, coalesce(sovcc.voted, false) voted, sovcc.address_id oracle
         AND ($11::text is null OR sovc.sort_key <= $11)
       ORDER BY sovc.sort_key DESC
       LIMIT $10) sovc
-         JOIN contracts c ON c.tx_id = sovc.contract_tx_id
+         JOIN contracts c ON c.tx_id = sovc.contract_tx_id AND c."type" = 2
          JOIN addresses a on a.id = c.contract_address_id
          JOIN transactions t on t.id = sovc.contract_tx_id
          JOIN blocks cb on cb.height = t.block_height

@@ -36,6 +36,5 @@ from transactions t
          LEFT JOIN become_online_txs online ON online.tx_id = t.id AND t.type = 9
          LEFT JOIN become_offline_txs offline ON offline.tx_id = t.id AND t.type = 9
          LEFT JOIN tx_receipts tr ON t.type in (15, 16, 17) AND tr.tx_id = t.id
-         LEFT JOIN contracts c ON t.type = 15 AND c.tx_id = t.id
-         LEFT JOIN addresses adeploy ON adeploy.id = c.contract_address_id
+         LEFT JOIN addresses adeploy ON t.type = 15 AND adeploy.id = tr.contract_address_id
 WHERE lower(t.Hash) = lower($1)

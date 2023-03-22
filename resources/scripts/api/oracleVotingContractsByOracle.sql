@@ -59,7 +59,7 @@ FROM (SELECT *
       ORDER BY sort_key DESC
       LIMIT $10) sovcc
          JOIN sorted_oracle_voting_contracts sovc on sovc.contract_tx_id = sovcc.contract_tx_id
-         JOIN contracts c ON c.tx_id = sovcc.contract_tx_id
+         JOIN contracts c ON c.tx_id = sovcc.contract_tx_id AND c."type" = 2
          JOIN addresses a on a.id = c.contract_address_id
          JOIN transactions t on t.id = sovcc.contract_tx_id
          JOIN blocks cb on cb.height = t.block_height

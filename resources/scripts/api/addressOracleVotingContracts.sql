@@ -48,7 +48,7 @@ FROM (SELECT ovc.deploy_or_vote_tx_id, ovc.address_id, ovc.contract_tx_id
         AND ($3::bigint is null OR ovc.deploy_or_vote_tx_id::bigint <= $3)
       ORDER BY ovc.deploy_or_vote_tx_id DESC
       LIMIT $2) ovc_a_and_ov
-         JOIN contracts c ON c.tx_id = ovc_a_and_ov.contract_tx_id
+         JOIN contracts c ON c.tx_id = ovc_a_and_ov.contract_tx_id AND c."type" = 2
          JOIN addresses a on a.id = c.contract_address_id
          JOIN transactions t on t.id = ovc_a_and_ov.contract_tx_id
          JOIN blocks cb on cb.height = t.block_height

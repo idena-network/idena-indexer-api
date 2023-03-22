@@ -54,7 +54,7 @@ FROM (SELECT *
         AND ($9::text IS null OR sort_key <= $9)
       ORDER BY sort_key DESC
       LIMIT $8) sovc
-         JOIN contracts c ON c.tx_id = sovc.contract_tx_id
+         JOIN contracts c ON c.tx_id = sovc.contract_tx_id AND c."type" = 2
          JOIN addresses a on a.id = c.contract_address_id
          JOIN transactions t on t.id = sovc.contract_tx_id
          JOIN blocks cb on cb.height = t.block_height

@@ -54,7 +54,7 @@ FROM (SELECT *
         AND ($9::bigint IS null OR state_tx_id <= $9)
       ORDER BY state_tx_id DESC
       LIMIT $8) sovc
-         JOIN contracts c ON c.tx_id = sovc.contract_tx_id
+         JOIN contracts c ON c.tx_id = sovc.contract_tx_id AND c."type" = 2
          JOIN addresses a on a.id = c.contract_address_id
          JOIN transactions t on t.id = sovc.contract_tx_id
          JOIN blocks cb on cb.height = t.block_height

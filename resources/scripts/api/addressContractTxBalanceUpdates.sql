@@ -25,14 +25,12 @@ FROM contract_tx_balance_updates bu
          JOIN addresses afrom on afrom.id = t.from
          LEFT JOIN addresses ato on ato.id = t.to
          JOIN addresses abu on abu.id = bu.address_id
-         JOIN contracts c on c.tx_id = bu.contract_tx_id
+         JOIN contracts c on c.contract_address_id = bu.contract_address_id
          JOIN addresses ac on ac.id = c.contract_address_id
          JOIN dic_contract_types dct on dct.id = c.type
          LEFT JOIN tx_receipts tr on t.type in (15, 16, 17) and tr.tx_id = t.id
 WHERE ($4::bigint IS NULL OR bu.tx_id <= $4)
   AND bu.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))
-  AND bu.contract_tx_id = (SELECT tx_id
-                           FROM contracts
-                           WHERE contract_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2)))
-ORDER BY tx_id DESC
+  AND bu.contract_address_id = (SELECT id FROM addresses WHERE lower(address) = lower($2))
+ORDER BY bu.tx_id DESC
 LIMIT $3

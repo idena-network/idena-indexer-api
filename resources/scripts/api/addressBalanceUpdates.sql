@@ -25,12 +25,13 @@ FROM balance_updates bu
          LEFT JOIN dic_balance_update_reasons dicr ON dicr.id = bu.reason
          LEFT JOIN blocks b ON b.height = bu.block_height
          LEFT JOIN blocks lb ON lb.height = bu.last_block_height
-         LEFT JOIN contracts c ON bu.reason = 10 AND t.type = 15 AND c.tx_id = t.id
+         LEFT JOIN tx_receipts tr
+                   ON bu.reason = 10 AND t.type = 15 AND bu.contract_address_id is null AND tr.tx_id = t.id
          LEFT JOIN addresses contract_a
                    ON bu.reason = 10 AND
                       (bu.contract_address_id is not null AND contract_a.id = bu.contract_address_id OR
                        bu.contract_address_id is null AND (t.type in (16, 17) AND contract_a.id = t.to OR
-                                                           t.type = 15 AND contract_a.id = c.contract_address_id))
+                                                           t.type = 15 AND contract_a.id = tr.contract_address_id))
 WHERE ($3::bigint IS NULL
     OR bu.id <= $3)
   AND bu.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))
