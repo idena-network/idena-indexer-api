@@ -1244,7 +1244,7 @@ definitions:
     properties:
       contractAddress:
         type: string
-      decimal:
+      decimals:
         type: integer
       name:
         type: string

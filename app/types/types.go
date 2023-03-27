@@ -841,7 +841,7 @@ type Token struct {
 	ContractAddress string `json:"contractAddress"`
 	Name            string `json:"name"`
 	Symbol          string `json:"symbol"`
-	Decimals        byte   `json:"decimal"`
+	Decimals        byte   `json:"decimals"`
 } // @Name Token
 
 type TokenBalance struct {

@@ -7864,7 +7864,7 @@ var doc = `{
                 "contractAddress": {
                     "type": "string"
                 },
-                "decimal": {
+                "decimals": {
                     "type": "integer"
                 },
                 "name": {
