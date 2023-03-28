@@ -7794,6 +7794,12 @@ var doc = `{
                 "invitationsShare": {
                     "type": "string"
                 },
+                "prevEpochDurations": {
+                    "type": "array",
+                    "items": {
+                        "type": "integer"
+                    }
+                },
                 "reports": {
                     "type": "string"
                 },

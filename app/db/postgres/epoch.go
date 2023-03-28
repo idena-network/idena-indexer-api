@@ -280,6 +280,7 @@ func (a *postgresAccessor) EpochCoins(epoch uint64) (types.AllCoins, error) {
 
 func (a *postgresAccessor) EpochRewardsSummary(epoch uint64) (types.RewardsSummary, error) {
 	res := types.RewardsSummary{}
+	var prevEpochDuration, prevPrevEpochDuration uint32
 	err := a.db.QueryRow(a.getQuery(epochRewardsSummaryQuery), epoch).
 		Scan(
 			&res.Epoch,
@@ -301,17 +302,25 @@ func (a *postgresAccessor) EpochRewardsSummary(epoch uint64) (types.RewardsSumma
 			&res.CandidateShare,
 			&res.StakingShare,
 			&res.EpochDuration,
+			&prevEpochDuration,
+			&prevPrevEpochDuration,
 		)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
+	}
+	if err != nil {
+		return types.RewardsSummary{}, err
 	}
 	if a.replaceValidationReward {
 		if res.Candidate.Sign() > 0 || res.Staking.Sign() > 0 {
 			res.Validation = res.Candidate.Add(res.Staking)
 		}
 	}
-	if err != nil {
-		return types.RewardsSummary{}, err
+	if prevPrevEpochDuration > 0 {
+		res.PrevEpochDurations = append(res.PrevEpochDurations, prevPrevEpochDuration)
+	}
+	if prevEpochDuration > 0 {
+		res.PrevEpochDurations = append(res.PrevEpochDurations, prevEpochDuration)
 	}
 	return res, nil
 }

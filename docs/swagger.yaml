@@ -1198,6 +1198,10 @@ definitions:
         type: string
       invitationsShare:
         type: string
+      prevEpochDurations:
+        items:
+          type: integer
+        type: array
       reports:
         type: string
       reportsShare:

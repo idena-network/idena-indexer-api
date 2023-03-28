@@ -48,25 +48,26 @@ type AllCoins struct {
 } // @Name Coins
 
 type RewardsSummary struct {
-	Epoch             uint64          `json:"epoch,omitempty"`
-	Total             decimal.Decimal `json:"total" swaggertype:"string"`
-	Validation        decimal.Decimal `json:"validation" swaggertype:"string"`
-	Flips             decimal.Decimal `json:"flips" swaggertype:"string"`
-	ExtraFlips        decimal.Decimal `json:"extraFlips" swaggertype:"string"`
-	Invitations       decimal.Decimal `json:"invitations" swaggertype:"string"`
-	Reports           decimal.Decimal `json:"reports" swaggertype:"string"`
-	Candidate         decimal.Decimal `json:"candidate" swaggertype:"string"`
-	Staking           decimal.Decimal `json:"staking" swaggertype:"string"`
-	FoundationPayouts decimal.Decimal `json:"foundationPayouts" swaggertype:"string"`
-	ZeroWalletFund    decimal.Decimal `json:"zeroWalletFund" swaggertype:"string"`
-	ValidationShare   decimal.Decimal `json:"validationShare" swaggertype:"string"`
-	FlipsShare        decimal.Decimal `json:"flipsShare" swaggertype:"string"`
-	ExtraFlipsShare   decimal.Decimal `json:"extraFlipsShare" swaggertype:"string"`
-	InvitationsShare  decimal.Decimal `json:"invitationsShare" swaggertype:"string"`
-	ReportsShare      decimal.Decimal `json:"reportsShare" swaggertype:"string"`
-	CandidateShare    decimal.Decimal `json:"candidateShare" swaggertype:"string"`
-	StakingShare      decimal.Decimal `json:"stakingShare" swaggertype:"string"`
-	EpochDuration     uint32          `json:"epochDuration"`
+	Epoch              uint64          `json:"epoch,omitempty"`
+	Total              decimal.Decimal `json:"total" swaggertype:"string"`
+	Validation         decimal.Decimal `json:"validation" swaggertype:"string"`
+	Flips              decimal.Decimal `json:"flips" swaggertype:"string"`
+	ExtraFlips         decimal.Decimal `json:"extraFlips" swaggertype:"string"`
+	Invitations        decimal.Decimal `json:"invitations" swaggertype:"string"`
+	Reports            decimal.Decimal `json:"reports" swaggertype:"string"`
+	Candidate          decimal.Decimal `json:"candidate" swaggertype:"string"`
+	Staking            decimal.Decimal `json:"staking" swaggertype:"string"`
+	FoundationPayouts  decimal.Decimal `json:"foundationPayouts" swaggertype:"string"`
+	ZeroWalletFund     decimal.Decimal `json:"zeroWalletFund" swaggertype:"string"`
+	ValidationShare    decimal.Decimal `json:"validationShare" swaggertype:"string"`
+	FlipsShare         decimal.Decimal `json:"flipsShare" swaggertype:"string"`
+	ExtraFlipsShare    decimal.Decimal `json:"extraFlipsShare" swaggertype:"string"`
+	InvitationsShare   decimal.Decimal `json:"invitationsShare" swaggertype:"string"`
+	ReportsShare       decimal.Decimal `json:"reportsShare" swaggertype:"string"`
+	CandidateShare     decimal.Decimal `json:"candidateShare" swaggertype:"string"`
+	StakingShare       decimal.Decimal `json:"stakingShare" swaggertype:"string"`
+	EpochDuration      uint32          `json:"epochDuration"`
+	PrevEpochDurations []uint32        `json:"prevEpochDurations"`
 } // @Name RewardsSummary
 
 type EpochDetail struct {

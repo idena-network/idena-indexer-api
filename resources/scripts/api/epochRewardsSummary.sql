@@ -16,8 +16,12 @@ SELECT tr.epoch,
        coalesce(tr.reports_share, 0)     reports_share,
        coalesce(tr.candidate_share, 0)   candidate_share,
        coalesce(tr.staking_share, 0)     staking_share,
-       es.block_count as                 epoch_duration
+       es.block_count                    epoch_duration,
+       coalesce(prev1.block_count, 0)    prev_epoch_duration_1,
+       coalesce(prev2.block_count, 0)    prev_epoch_duration_2
 FROM total_rewards tr
          LEFT JOIN epoch_summaries es
                    ON es.epoch = tr.epoch
+         LEFT JOIN epoch_summaries prev1 ON prev1.epoch = tr.epoch - 1
+         LEFT JOIN epoch_summaries prev2 ON prev2.epoch = tr.epoch - 2
 WHERE tr.epoch = $1
