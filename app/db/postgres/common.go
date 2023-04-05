@@ -693,3 +693,12 @@ func replaceCandidatesAndStaking(rewardType string) string {
 	}
 	return rewardType
 }
+
+func feeRate(feeRate decimal.Decimal, height, embeddedContractForkHeight uint64) (feePerGas, feePerByte *decimal.Decimal) {
+	if height < embeddedContractForkHeight {
+		feePerByte = &feeRate
+	} else {
+		feePerGas = &feeRate
+	}
+	return
+}

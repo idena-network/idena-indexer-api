@@ -113,6 +113,7 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 			var timestamp int64
 			var upgrade sql.NullInt64
 			var offlineAddress sql.NullString
+			var blockFeeRate decimal.Decimal
 			if err := rows.Scan(&height,
 				&block.Hash,
 				&timestamp,
@@ -123,7 +124,7 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 				&block.BodySize,
 				&block.FullSize,
 				&block.VrfProposerThreshold,
-				&block.FeeRate,
+				&blockFeeRate,
 				&block.Coins.Burnt,
 				&block.Coins.Minted,
 				&block.Coins.TotalBalance,
@@ -143,9 +144,7 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 			if offlineAddress.Valid {
 				block.OfflineAddress = &offlineAddress.String
 			}
-			if block.Height < a.embeddedContractForkHeight {
-				block.FeeRate = block.FeeRate.Div(decimal.NewFromInt(10))
-			}
+			block.FeeRate, block.FeeRatePerByte = feeRate(blockFeeRate, block.Height, a.embeddedContractForkHeight)
 			res = append(res, block)
 		}
 		return res, height, nil

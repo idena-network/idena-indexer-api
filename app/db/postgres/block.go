@@ -36,6 +36,7 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 	var timestamp int64
 	var upgrade sql.NullInt64
 	var offlineAddress sql.NullString
+	var blockFeeRate decimal.Decimal
 	err := a.db.QueryRow(a.getQuery(query), args...).Scan(
 		&res.Epoch,
 		&res.Height,
@@ -49,7 +50,7 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 		&res.BodySize,
 		&res.FullSize,
 		&res.VrfProposerThreshold,
-		&res.FeeRate,
+		&blockFeeRate,
 		pq.Array(&res.Flags),
 		&upgrade,
 		&offlineAddress,
@@ -68,9 +69,7 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 	if offlineAddress.Valid {
 		res.OfflineAddress = &offlineAddress.String
 	}
-	if res.Height < a.embeddedContractForkHeight {
-		res.FeeRate = res.FeeRate.Div(decimal.NewFromInt(10))
-	}
+	res.FeeRate, res.FeeRatePerByte = feeRate(blockFeeRate, res.Height, a.embeddedContractForkHeight)
 	return res, nil
 }
 

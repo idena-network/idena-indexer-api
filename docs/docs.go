@@ -6310,6 +6310,9 @@ var doc = `{
                 "feeRate": {
                     "type": "string"
                 },
+                "feeRatePerByte": {
+                    "type": "string"
+                },
                 "flags": {
                     "type": "array",
                     "items": {
@@ -6378,6 +6381,9 @@ var doc = `{
                     "$ref": "#/definitions/Coins"
                 },
                 "feeRate": {
+                    "type": "string"
+                },
+                "feeRatePerByte": {
                     "type": "string"
                 },
                 "flags": {

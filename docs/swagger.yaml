@@ -149,6 +149,8 @@ definitions:
         type: integer
       feeRate:
         type: string
+      feeRatePerByte:
+        type: string
       flags:
         items:
           enum:
@@ -198,6 +200,8 @@ definitions:
         $ref: '#/definitions/Coins'
         type: object
       feeRate:
+        type: string
+      feeRatePerByte:
         type: string
       flags:
         items:

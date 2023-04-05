@@ -80,40 +80,42 @@ type EpochDetail struct {
 } // @Name Epoch
 
 type BlockSummary struct {
-	Height               uint64          `json:"height"`
-	Hash                 string          `json:"hash"`
-	Timestamp            time.Time       `json:"timestamp" example:"2020-01-01T00:00:00Z"`
-	TxCount              uint16          `json:"txCount"`
-	IsEmpty              bool            `json:"isEmpty"`
-	Coins                AllCoins        `json:"coins"`
-	BodySize             uint32          `json:"bodySize"`
-	FullSize             uint32          `json:"fullSize"`
-	VrfProposerThreshold float64         `json:"vrfProposerThreshold"`
-	Proposer             string          `json:"proposer"`
-	ProposerVrfScore     float64         `json:"proposerVrfScore,omitempty"`
-	FeeRate              decimal.Decimal `json:"feeRate" swaggertype:"string"`
-	Flags                []string        `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
-	Upgrade              *uint32         `json:"upgrade,omitempty"`
-	OfflineAddress       *string         `json:"offlineAddress,omitempty"`
+	Height               uint64           `json:"height"`
+	Hash                 string           `json:"hash"`
+	Timestamp            time.Time        `json:"timestamp" example:"2020-01-01T00:00:00Z"`
+	TxCount              uint16           `json:"txCount"`
+	IsEmpty              bool             `json:"isEmpty"`
+	Coins                AllCoins         `json:"coins"`
+	BodySize             uint32           `json:"bodySize"`
+	FullSize             uint32           `json:"fullSize"`
+	VrfProposerThreshold float64          `json:"vrfProposerThreshold"`
+	Proposer             string           `json:"proposer"`
+	ProposerVrfScore     float64          `json:"proposerVrfScore,omitempty"`
+	FeeRate              *decimal.Decimal `json:"feeRate,omitempty" swaggertype:"string"`
+	FeeRatePerByte       *decimal.Decimal `json:"feeRatePerByte,omitempty" swaggertype:"string"`
+	Flags                []string         `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
+	Upgrade              *uint32          `json:"upgrade,omitempty"`
+	OfflineAddress       *string          `json:"offlineAddress,omitempty"`
 } // @Name BlockSummary
 
 type BlockDetail struct {
-	Epoch                uint64          `json:"epoch"`
-	Height               uint64          `json:"height"`
-	Hash                 string          `json:"hash"`
-	Timestamp            time.Time       `json:"timestamp" example:"2020-01-01T00:00:00Z"`
-	TxCount              uint16          `json:"txCount"`
-	ValidatorsCount      uint16          `json:"validatorsCount"`
-	IsEmpty              bool            `json:"isEmpty"`
-	BodySize             uint32          `json:"bodySize"`
-	FullSize             uint32          `json:"fullSize"`
-	VrfProposerThreshold float64         `json:"vrfProposerThreshold"`
-	Proposer             string          `json:"proposer"`
-	ProposerVrfScore     float64         `json:"proposerVrfScore,omitempty"`
-	FeeRate              decimal.Decimal `json:"feeRate" swaggertype:"string"`
-	Flags                []string        `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
-	Upgrade              *uint32         `json:"upgrade,omitempty"`
-	OfflineAddress       *string         `json:"offlineAddress,omitempty"`
+	Epoch                uint64           `json:"epoch"`
+	Height               uint64           `json:"height"`
+	Hash                 string           `json:"hash"`
+	Timestamp            time.Time        `json:"timestamp" example:"2020-01-01T00:00:00Z"`
+	TxCount              uint16           `json:"txCount"`
+	ValidatorsCount      uint16           `json:"validatorsCount"`
+	IsEmpty              bool             `json:"isEmpty"`
+	BodySize             uint32           `json:"bodySize"`
+	FullSize             uint32           `json:"fullSize"`
+	VrfProposerThreshold float64          `json:"vrfProposerThreshold"`
+	Proposer             string           `json:"proposer"`
+	ProposerVrfScore     float64          `json:"proposerVrfScore,omitempty"`
+	FeeRate              *decimal.Decimal `json:"feeRate,omitempty" swaggertype:"string"`
+	FeeRatePerByte       *decimal.Decimal `json:"feeRatePerByte,omitempty" swaggertype:"string"`
+	Flags                []string         `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
+	Upgrade              *uint32          `json:"upgrade,omitempty"`
+	OfflineAddress       *string          `json:"offlineAddress,omitempty"`
 } // @Name Block
 
 type FlipSummary struct {
