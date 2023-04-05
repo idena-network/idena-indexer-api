@@ -25,6 +25,7 @@ type postgresAccessor struct {
 	dynamicEndpointStatesTable  string
 	log                         log.Logger
 	replaceValidationReward     bool
+	embeddedContractForkHeight  uint64
 }
 
 const (

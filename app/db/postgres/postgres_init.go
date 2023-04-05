@@ -12,7 +12,7 @@ import (
 	"time"
 )
 
-func NewPostgresAccessor(connStr, scriptsDirPath, dynamicEndpointsTable, dynamicEndpointStatesTable string, networkSizeLoader service.NetworkSizeLoader, logger log.Logger) db.Accessor {
+func NewPostgresAccessor(connStr, scriptsDirPath, dynamicEndpointsTable, dynamicEndpointStatesTable string, networkSizeLoader service.NetworkSizeLoader, embeddedContractForkHeight uint64, logger log.Logger) db.Accessor {
 	dbAccessor, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
@@ -30,6 +30,7 @@ func NewPostgresAccessor(connStr, scriptsDirPath, dynamicEndpointsTable, dynamic
 		dynamicEndpointStatesTable: dynamicEndpointStatesTable,
 		log:                        logger,
 		replaceValidationReward:    false,
+		embeddedContractForkHeight: embeddedContractForkHeight,
 	}
 	res.estimatedOracleRewardsCache = newEstimatedOracleRewardsCache(networkSizeLoader.Load)
 	return res

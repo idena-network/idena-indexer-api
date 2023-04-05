@@ -5,6 +5,7 @@ import (
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/lib/pq"
 	"github.com/pkg/errors"
+	"github.com/shopspring/decimal"
 	"strconv"
 )
 
@@ -141,6 +142,9 @@ func (a *postgresAccessor) EpochBlocks(epoch uint64, count uint64, continuationT
 			}
 			if offlineAddress.Valid {
 				block.OfflineAddress = &offlineAddress.String
+			}
+			if block.Height < a.embeddedContractForkHeight {
+				block.FeeRate = block.FeeRate.Div(decimal.NewFromInt(10))
 			}
 			res = append(res, block)
 		}

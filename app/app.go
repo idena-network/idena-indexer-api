@@ -53,6 +53,7 @@ func InitializeApp(
 			conf.DynamicEndpointsTable,
 			conf.DynamicEndpointStatesTable,
 			cachedNetworkSizeLoader,
+			conf.EmbeddedContractForkHeight,
 			logger,
 		),
 		memPool,

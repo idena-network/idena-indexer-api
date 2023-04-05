@@ -30,6 +30,7 @@ type Config struct {
 	DynamicEndpointsTable       string
 	DynamicEndpointStatesTable  string
 	Cors                        bool
+	EmbeddedContractForkHeight  uint64
 }
 
 type IndexerConfig struct {

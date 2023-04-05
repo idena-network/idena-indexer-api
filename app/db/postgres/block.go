@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"github.com/idena-network/idena-indexer-api/app/types"
 	"github.com/lib/pq"
+	"github.com/shopspring/decimal"
 )
 
 const (
@@ -66,6 +67,9 @@ func (a *postgresAccessor) block(query string, args ...interface{}) (types.Block
 	}
 	if offlineAddress.Valid {
 		res.OfflineAddress = &offlineAddress.String
+	}
+	if res.Height < a.embeddedContractForkHeight {
+		res.FeeRate = res.FeeRate.Div(decimal.NewFromInt(10))
 	}
 	return res, nil
 }
