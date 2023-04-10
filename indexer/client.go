@@ -12,6 +12,7 @@ import (
 
 type Client interface {
 	Get(query string, resultType interface{}) (interface{}, *string, error)
+	Post(url string, body []byte) (userErr, err error)
 }
 
 func NewClient(indexerUrl string, maxConnections int) Client {
@@ -52,6 +53,36 @@ func (client *clientImpl) Get(query string, resultType interface{}) (interface{}
 	return resp.Result, resp.ContinuationToken, nil
 }
 
+func (client *clientImpl) Post(url string, body []byte) (userErr, err error) {
+	url = strings.Join([]string{client.indexerUrl, url}, "/")
+	req := fasthttp.AcquireRequest()
+	req.SetRequestURI(url)
+	req.Header.SetMethod("POST")
+	req.SetBody(body)
+	resp := fasthttp.AcquireResponse()
+	if err := client.pool.Do(req, resp); err != nil {
+		return nil, errors.Wrapf(err, "unable to send request %v", url)
+	}
+	if resp.StatusCode() != fasthttp.StatusOK {
+		return nil, errors.New(fmt.Sprintf("unable to send request %v, status code: %v", url, resp.StatusCode()))
+	}
+	respBody := &response{
+		Error: new(respError),
+	}
+	if err := json.Unmarshal(resp.Body(), respBody); err != nil {
+		return nil, errors.Wrapf(err, "unable to parse response of %v", url)
+	}
+	if respBody.Error != nil {
+		if len(respBody.Error.UserMessage) > 0 {
+			return errors.New(respBody.Error.UserMessage), nil
+		}
+		if len(respBody.Error.Message) > 0 {
+			return nil, errors.New(fmt.Sprintf("got error response from %v: %v", url, respBody.Error.Message))
+		}
+	}
+	return nil, nil
+}
+
 type response struct {
 	Result            interface{} `json:"result,omitempty"`
 	Error             *respError  `json:"error,omitempty"`
@@ -59,5 +90,6 @@ type response struct {
 }
 
 type respError struct {
-	Message string `json:"message"`
+	UserMessage string `json:"userMessage"`
+	Message     string `json:"message"`
 }

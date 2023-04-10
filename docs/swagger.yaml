@@ -1550,6 +1550,13 @@ definitions:
         - RefundableOracleLock
         - Contract
         type: string
+      verification:
+        enum:
+        - ""
+        - Pending
+        - Verified
+        - Failed
+        type: string
     type: object
   types.MultisigContract:
     properties:

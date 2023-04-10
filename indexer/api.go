@@ -38,6 +38,8 @@ type Api interface {
 	MultisigContract(address string) (*types.MultisigContract, error)
 
 	Pool(address string) (*types.Pool, error)
+
+	VerifyContract(address string, data []byte) error
 }
 
 func NewApi(client Client, logger log.Logger) Api {
@@ -246,6 +248,14 @@ func (api *apiImpl) Pool(address string) (*types.Pool, error) {
 		return nil, api.handleError(err)
 	}
 	return res.(*types.Pool), nil
+}
+
+func (api *apiImpl) VerifyContract(address string, data []byte) error {
+	msgErr, err := api.client.Post("api/Contract/"+address+"/Verify", data)
+	if msgErr != nil {
+		return msgErr
+	}
+	return api.handleError(err)
 }
 
 var indexerError = errors.New("unable to load indexer data")

@@ -8285,6 +8285,15 @@ var doc = `{
                         "RefundableOracleLock",
                         "Contract"
                     ]
+                },
+                "verification": {
+                    "type": "string",
+                    "enum": [
+                        "",
+                        "Pending",
+                        "Verified",
+                        "Failed"
+                    ]
                 }
             }
         },

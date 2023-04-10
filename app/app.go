@@ -74,6 +74,7 @@ func InitializeApp(
 			conf.Port,
 			conf.LatestHours,
 			conf.ActiveAddressHours,
+			conf.ContractSizeLimit,
 			conf.FrozenBalanceAddrs,
 			func() string {
 				c := dynamicConfigHolder.GetConfig()

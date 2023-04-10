@@ -2,11 +2,7 @@ package postgres
 
 import (
 	"database/sql"
-	"github.com/idena-network/idena-go/blockchain/attachments"
-	types2 "github.com/idena-network/idena-go/blockchain/types"
-	"github.com/idena-network/idena-go/common/hexutil"
 	"github.com/idena-network/idena-indexer-api/app/types"
-	"github.com/pkg/errors"
 )
 
 const (
@@ -24,7 +20,6 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 	var terminationTxTime sql.NullInt64
 	var terminationTxHash sql.NullString
 	var deployTxTimestamp int64
-	var rawTx hexutil.Bytes
 	err := a.db.QueryRow(a.getQuery(contractQuery), address).Scan(
 		&res.Type,
 		&res.Author,
@@ -32,7 +27,8 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 		&deployTxTimestamp,
 		&terminationTxHash,
 		&terminationTxTime,
-		&rawTx,
+		&res.Code,
+		&res.Verification,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -47,17 +43,6 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 			Hash:      terminationTxHash.String,
 			Timestamp: timestampToTimeUTCp(terminationTxTime.Int64),
 		}
-	}
-	if len(rawTx) > 0 {
-		var tx types2.Transaction
-		if err := tx.FromBytes(rawTx); err != nil {
-			return types.Contract{}, err
-		}
-		attachment := attachments.ParseDeployContractAttachment(&tx)
-		if attachment == nil {
-			return types.Contract{}, errors.New("invalid payload")
-		}
-		res.Code = attachment.Code
 	}
 	return res, nil
 }

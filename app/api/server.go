@@ -16,6 +16,7 @@ import (
 	"github.com/patrickmn/go-cache"
 	"github.com/pkg/errors"
 	httpSwagger "github.com/swaggo/http-swagger"
+	"io"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -32,6 +33,7 @@ func NewServer(
 	port int,
 	latestHours int,
 	activeAddrHours int,
+	contractSizeLimit int,
 	frozenBalanceAddrs []string,
 	getDumpLink func() string,
 	service Service,
@@ -55,6 +57,7 @@ func NewServer(
 		logger:             logger,
 		latestHours:        latestHours,
 		activeAddrHours:    activeAddrHours,
+		contractSizeLimit:  contractSizeLimit,
 		frozenBalanceAddrs: lowerFrozenBalanceAddrs,
 		getDumpLink:        getDumpLink,
 		pm:                 pm,
@@ -74,6 +77,7 @@ type httpServer struct {
 	port               int
 	latestHours        int
 	activeAddrHours    int
+	contractSizeLimit  int
 	frozenBalanceAddrs []string
 	service            Service
 	contractsService   service2.Contracts
@@ -367,6 +371,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 
 	router.Path(strings.ToLower("/Contract/{address}")).HandlerFunc(s.contract)
 	router.Path(strings.ToLower("/Contract/{address}/BalanceUpdates")).HandlerFunc(s.contractTxBalanceUpdates)
+	router.Path(strings.ToLower("/Contract/{address}/Verify")).HandlerFunc(s.verifyContract)
 
 	router.Path(strings.ToLower("/TimeLockContract/{address}")).HandlerFunc(s.timeLockContract)
 	router.Path(strings.ToLower("/OracleLockContract/{address}")).HandlerFunc(s.oracleLockContract)
@@ -2861,6 +2866,26 @@ func (s *httpServer) contract(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := s.service.Contract(mux.Vars(r)["address"])
 	WriteResponse(w, resp, err, s.logger)
+}
+
+func (s *httpServer) verifyContract(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("verifyContract", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	data, err := io.ReadAll(r.Body)
+	if err != nil {
+		WriteResponse(w, nil, errors.Wrap(err, "failed to read request data"), s.logger)
+		return
+	}
+
+	if len(data) >= s.contractSizeLimit {
+		WriteResponse(w, nil, errors.New("too large file"), s.logger)
+		return
+	}
+
+	address := mux.Vars(r)["address"]
+	err = s.service.VerifyContract(address, data)
+	WriteResponse(w, nil, err, s.logger)
 }
 
 // @Tags Contracts

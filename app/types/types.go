@@ -555,6 +555,7 @@ type Contract struct {
 	DeployTx      TransactionSummary  `json:"deployTx"`
 	TerminationTx *TransactionSummary `json:"terminationTx,omitempty"`
 	Code          hexutil.Bytes       `json:"code,omitempty"`
+	Verification  string              `json:"verification" enums:",Pending,Verified,Failed"`
 } // @Contract
 
 type TimeLockContract struct {

@@ -36,6 +36,8 @@ type Service interface {
 	Upgrades(count uint64, continuationToken *string) ([]types.ActivatedUpgrade, *string, error)
 	UpgradeVotings(count uint64, continuationToken *string) ([]types.Upgrade, *string, error)
 	Upgrade(upgrade uint64) (*types.Upgrade, error)
+
+	VerifyContract(address string, data []byte) error
 }
 
 type MemPool interface {
@@ -280,4 +282,8 @@ func (s *service) Pool(address string) (*types.Pool, error) {
 	res.TotalStake = indexerPool.TotalStake
 	res.TotalValidatedStake = indexerPool.TotalValidatedStake
 	return res, nil
+}
+
+func (s *service) VerifyContract(address string, data []byte) error {
+	return s.indexerApi.VerifyContract(address, data)
 }
