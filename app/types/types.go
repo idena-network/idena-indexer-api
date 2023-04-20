@@ -96,6 +96,7 @@ type BlockSummary struct {
 	Flags                []string         `json:"flags" enums:"IdentityUpdate,FlipLotteryStarted,ShortSessionStarted,LongSessionStarted,AfterLongSessionStarted,ValidationFinished,Snapshot,OfflinePropose,OfflineCommit,NewGenesis"`
 	Upgrade              *uint32          `json:"upgrade,omitempty"`
 	OfflineAddress       *string          `json:"offlineAddress,omitempty"`
+	Epoch                uint64           `json:"epoch,omitempty"`
 } // @Name BlockSummary
 
 type BlockDetail struct {
@@ -853,3 +854,12 @@ type TokenBalance struct {
 	Address string          `json:"address"`
 	Balance decimal.Decimal `json:"balance" swaggertype:"string"`
 } // @Name TokenBalance
+
+type Delegation struct {
+	DelegateeAddress   string              `json:"delegateeAddress"`
+	DelegationTx       TransactionSummary  `json:"delegationTx"`
+	DelegationBlock    *BlockSummary       `json:"delegationBlock,omitempty"`
+	UndelegationTx     *TransactionSummary `json:"undelegationTx,omitempty"`
+	UndelegationBlock  *BlockSummary       `json:"undelegationBlock,omitempty"`
+	UndelegationReason string              `json:"undelegationReason,omitempty" enums:"Undelegation,Termination,ValidationFailure,TransitionRemove,InactiveIdentity"`
+} // @Name Delegation

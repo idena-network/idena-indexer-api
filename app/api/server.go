@@ -365,6 +365,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.addressDelegateeTotalRewards)
 	router.Path(strings.ToLower("/Address/{address}/MiningRewardSummaries")).HandlerFunc(s.addressMiningRewardSummaries)
 	router.Path(strings.ToLower("/Address/{address}/Tokens")).HandlerFunc(s.addressTokens)
+	router.Path(strings.ToLower("/Address/{address}/Delegations")).HandlerFunc(s.addressDelegations)
 
 	router.Path(strings.ToLower("/Balances")).HandlerFunc(s.balances)
 	router.Path(strings.ToLower("/Staking")).HandlerFunc(s.staking)
@@ -2499,6 +2500,30 @@ func (s *httpServer) addressTokens(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	resp, nextContinuationToken, err := s.service.AddressTokens(vars["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+// @Tags Address
+// @Id AddressDelegations
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.Delegation}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Address/{address}/Delegatees [get]
+func (s *httpServer) addressDelegations(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("addressDelegations", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	vars := mux.Vars(r)
+	resp, nextContinuationToken, err := s.service.AddressDelegations(vars["address"], count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 

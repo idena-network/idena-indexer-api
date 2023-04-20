@@ -264,6 +264,71 @@ var doc = `{
                 }
             }
         },
+        "/Address/{address}/Delegatees": {
+            "get": {
+                "tags": [
+                    "Address"
+                ],
+                "operationId": "AddressDelegations",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/Delegation"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Address/{address}/MiningRewardSummaries": {
             "get": {
                 "tags": [
@@ -6380,6 +6445,9 @@ var doc = `{
                     "type": "object",
                     "$ref": "#/definitions/Coins"
                 },
+                "epoch": {
+                    "type": "integer"
+                },
                 "feeRate": {
                     "type": "string"
                 },
@@ -6574,6 +6642,40 @@ var doc = `{
                     "items": {
                         "$ref": "#/definitions/DelegationReward"
                     }
+                }
+            }
+        },
+        "Delegation": {
+            "type": "object",
+            "properties": {
+                "delegateeAddress": {
+                    "type": "string"
+                },
+                "delegationBlock": {
+                    "type": "object",
+                    "$ref": "#/definitions/BlockSummary"
+                },
+                "delegationTx": {
+                    "type": "object",
+                    "$ref": "#/definitions/TransactionSummary"
+                },
+                "undelegationBlock": {
+                    "type": "object",
+                    "$ref": "#/definitions/BlockSummary"
+                },
+                "undelegationReason": {
+                    "type": "string",
+                    "enum": [
+                        "Undelegation",
+                        "Termination",
+                        "ValidationFailure",
+                        "TransitionRemove",
+                        "InactiveIdentity"
+                    ]
+                },
+                "undelegationTx": {
+                    "type": "object",
+                    "$ref": "#/definitions/TransactionSummary"
                 }
             }
         },

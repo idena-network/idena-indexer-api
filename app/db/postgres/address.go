@@ -24,6 +24,7 @@ const (
 	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
 	addressMiningRewardSummariesQuery    = "addressMiningRewardSummaries.sql"
 	addressTokensQuery                   = "addressTokens.sql"
+	addressDelegationsQuery              = "addressDelegations.sql"
 
 	txBalanceUpdateReason              = "Tx"
 	committeeRewardBalanceUpdateReason = "CommitteeReward"
@@ -421,4 +422,69 @@ func (a *postgresAccessor) AddressTokens(address string, count uint64, continuat
 		return nil, nil, err
 	}
 	return res.([]types.TokenBalance), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) AddressDelegations(address string, count uint64, continuationToken *string) ([]types.Delegation, *string, error) {
+	res, nextContinuationToken, err := a.page(addressDelegationsQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.Delegation
+		var id uint64
+		for rows.Next() {
+			item := types.Delegation{}
+			var delegationTxTimestamp int64
+			var delegationBlockHeight, delegationBlockEpoch, delegationBlockTimestamp, undelegationBlockHeight, undelegationBlockEpoch, undelegationBlockTimestamp, undelegationTxTimestamp sql.NullInt64
+			var delegationBlockHash, undelegationBlockHash, undelegationTxHash, undelegationTxType, undelegationReason sql.NullString
+			err := rows.Scan(
+				&id,
+				&item.DelegateeAddress,
+				&item.DelegationTx.Hash,
+				&delegationTxTimestamp,
+				&delegationBlockHeight,
+				&delegationBlockHash,
+				&delegationBlockEpoch,
+				&delegationBlockTimestamp,
+				&undelegationTxHash,
+				&undelegationTxType,
+				&undelegationTxTimestamp,
+				&undelegationBlockHeight,
+				&undelegationBlockHash,
+				&undelegationBlockEpoch,
+				&undelegationBlockTimestamp,
+				&undelegationReason,
+			)
+			if err != nil {
+				return nil, 0, err
+			}
+			item.DelegationTx.Timestamp = timestampToTimeUTCp(delegationTxTimestamp)
+			if delegationBlockHeight.Valid {
+				item.DelegationBlock = &types.BlockSummary{}
+				item.DelegationBlock.Height = uint64(delegationBlockHeight.Int64)
+				item.DelegationBlock.Hash = delegationBlockHash.String
+				item.DelegationBlock.Epoch = uint64(delegationBlockEpoch.Int64)
+				item.DelegationBlock.Timestamp = timestampToTimeUTC(delegationBlockTimestamp.Int64)
+			}
+			if undelegationTxHash.Valid {
+				item.UndelegationTx = &types.TransactionSummary{}
+				item.UndelegationTx.Hash = undelegationTxHash.String
+				item.UndelegationTx.Type = undelegationTxType.String
+				item.UndelegationTx.Timestamp = timestampToTimeUTCp(undelegationTxTimestamp.Int64)
+			}
+			if undelegationBlockHeight.Valid {
+				item.UndelegationBlock = &types.BlockSummary{}
+				item.UndelegationBlock.Height = uint64(undelegationBlockHeight.Int64)
+				item.UndelegationBlock.Hash = undelegationBlockHash.String
+				item.UndelegationBlock.Epoch = uint64(undelegationBlockEpoch.Int64)
+				item.UndelegationBlock.Timestamp = timestampToTimeUTC(undelegationBlockTimestamp.Int64)
+			}
+			if undelegationReason.Valid {
+				item.UndelegationReason = undelegationReason.String
+			}
+			res = append(res, item)
+		}
+		return res, id, nil
+	}, count, continuationToken, address)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.Delegation), nextContinuationToken, nil
 }

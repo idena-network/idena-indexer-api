@@ -941,6 +941,13 @@ func (a *cachedAccessor) AddressTokens(address string, count uint64, continuatio
 	return res.([]types.TokenBalance), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) AddressDelegations(address string, count uint64, continuationToken *string) ([]types.Delegation, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("AddressDelegations", func() (interface{}, *string, error) {
+		return a.accessor.AddressDelegations(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.Delegation), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) Transaction(hash string) (*types.TransactionDetail, error) {
 	res, err := a.getOrLoad("Transaction", func() (interface{}, error) {
 		tx, err := a.accessor.Transaction(hash)

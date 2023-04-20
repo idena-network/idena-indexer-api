@@ -119,6 +119,7 @@ type Accessor interface {
 	AddressDelegateeTotalRewards(address string, count uint64, continuationToken *string) ([]types.DelegateeTotalRewards, *string, error)
 	AddressMiningRewardSummaries(address string, count uint64, continuationToken *string) ([]types.MiningRewardSummary, *string, error)
 	AddressTokens(address string, count uint64, continuationToken *string) ([]types.TokenBalance, *string, error)
+	AddressDelegations(address string, count uint64, continuationToken *string) ([]types.Delegation, *string, error)
 
 	Transaction(hash string) (*types.TransactionDetail, error)
 	TransactionRaw(hash string) (*hexutil.Bytes, error)
