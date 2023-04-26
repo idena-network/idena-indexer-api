@@ -7,6 +7,7 @@ import (
 
 const (
 	contractQuery                     = "contract.sql"
+	contractVerifiedCodeFileQuery     = "contractVerifiedCodeFile.sql"
 	timeLockContractQuery             = "timeLockContract.sql"
 	multisigContractQuery             = "multisigContract.sql"
 	oracleLockContractQuery           = "oracleLockContract.sql"
@@ -20,6 +21,8 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 	var terminationTxTime sql.NullInt64
 	var terminationTxHash sql.NullString
 	var deployTxTimestamp int64
+	var verification types.ContractVerification
+	var verificationStateTimestamp int64
 	err := a.db.QueryRow(a.getQuery(contractQuery), address).Scan(
 		&res.Type,
 		&res.Author,
@@ -28,7 +31,11 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 		&terminationTxHash,
 		&terminationTxTime,
 		&res.Code,
-		&res.Verification,
+		&verification.State,
+		&verificationStateTimestamp,
+		&verification.FileName,
+		&verification.FileSize,
+		&verification.ErrorMessage,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -42,6 +49,15 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 		res.TerminationTx = &types.TransactionSummary{
 			Hash:      terminationTxHash.String,
 			Timestamp: timestampToTimeUTCp(terminationTxTime.Int64),
+		}
+	}
+	if len(verification.State) > 0 {
+		if verificationStateTimestamp > 0 {
+			verification.Timestamp = timestampToTimeUTCp(verificationStateTimestamp)
+		}
+		res.Verification = &verification
+		if len(res.Verification.FileName) == 0 {
+			res.Verification.FileName = types.DefaultContractVerifiedCodeFile(address)
 		}
 	}
 	return res, nil
@@ -105,6 +121,20 @@ func (a *postgresAccessor) ContractTxBalanceUpdates(contractAddress string, coun
 		return nil, nil, err
 	}
 	return res.([]types.ContractTxBalanceUpdate), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) ContractVerifiedCodeFile(address string) ([]byte, error) {
+	var res []byte
+	err := a.db.QueryRow(a.getQuery(contractVerifiedCodeFileQuery), address).Scan(
+		&res,
+	)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
 }
 
 func (a *postgresAccessor) TimeLockContract(address string) (types.TimeLockContract, error) {

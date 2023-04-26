@@ -550,14 +550,22 @@ type StrValueCount struct {
 }
 
 type Contract struct {
-	Address       string              `json:"address"`
-	Type          string              `json:"type" enums:"TimeLock,OracleVoting,OracleLock,Multisig,RefundableOracleLock,Contract"`
-	Author        string              `json:"author"`
-	DeployTx      TransactionSummary  `json:"deployTx"`
-	TerminationTx *TransactionSummary `json:"terminationTx,omitempty"`
-	Code          hexutil.Bytes       `json:"code,omitempty"`
-	Verification  string              `json:"verification" enums:",Pending,Verified,Failed"`
+	Address       string                `json:"address"`
+	Type          string                `json:"type" enums:"TimeLock,OracleVoting,OracleLock,Multisig,RefundableOracleLock,Contract"`
+	Author        string                `json:"author"`
+	DeployTx      TransactionSummary    `json:"deployTx"`
+	TerminationTx *TransactionSummary   `json:"terminationTx,omitempty"`
+	Code          hexutil.Bytes         `json:"code,omitempty"`
+	Verification  *ContractVerification `json:"verification,omitempty"`
 } // @Contract
+
+type ContractVerification struct {
+	State        string     `json:"state" enums:"Pending,Verified,Failed"`
+	Timestamp    *time.Time `json:"timestamp,omitempty" example:"2020-01-01T00:00:00Z"`
+	FileName     string     `json:"fileName,omitempty"`
+	FileSize     uint32     `json:"fileSize,omitempty"`
+	ErrorMessage string     `json:"errorMessage,omitempty"`
+} // @ContractVerification
 
 type TimeLockContract struct {
 	Timestamp JSONTime `json:"timestamp" swaggertype:"string" example:"2020-01-01T00:00:00Z"`

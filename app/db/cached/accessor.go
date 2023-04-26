@@ -1035,6 +1035,13 @@ func (a *cachedAccessor) ContractTxBalanceUpdates(contractAddress string, count 
 	return res.([]types.ContractTxBalanceUpdate), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) ContractVerifiedCodeFile(address string) ([]byte, error) {
+	res, err := a.getOrLoad("ContractVerifiedCodeFile", func() (interface{}, error) {
+		return a.accessor.ContractVerifiedCodeFile(address)
+	}, address)
+	return res.([]byte), err
+}
+
 func (a *cachedAccessor) TimeLockContract(address string) (types.TimeLockContract, error) {
 	res, err := a.getOrLoad("TimeLockContract", func() (interface{}, error) {
 		return a.accessor.TimeLockContract(address)

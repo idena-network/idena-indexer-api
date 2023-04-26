@@ -1,15 +1,19 @@
-SELECT dict.name                   "type",
-       authora.address             author,
-       deployt.hash                deployTxHash,
-       deployb.timestamp           deployTxTimestamp,
-       terminationt.hash           terminationTxHash,
-       terminationb.timestamp      terminationTxTimestamp,
-       coalesce(c.code, ''::bytea) code,
+SELECT dict.name                       "type",
+       authora.address                 author,
+       deployt.hash                    deployTxHash,
+       deployb.timestamp               deployTxTimestamp,
+       terminationt.hash               terminationTxHash,
+       terminationb.timestamp          terminationTxTimestamp,
+       coalesce(c.code, ''::bytea)     code,
        (case
             when cv.state = 0 then 'Pending'
             when cv.state = 1 then 'Verified'
             when cv.state = 2 then 'Failed'
-            else '' end)           verification
+            else '' end)               verificationState,
+       coalesce(cv.state_timestamp, 0) verificationStateTimestamp,
+       coalesce(cv.file_name, '')      verificationFileName,
+       coalesce(length(cv.data), 0)    verificationFileSize,
+       coalesce(cv.error_message, '')  verificationErrorMessage
 FROM contracts c
          JOIN dic_contract_types dict on dict.id = c.type
          JOIN addresses a ON a.id = c.contract_address_id AND lower(a.address) = lower($1)

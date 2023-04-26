@@ -135,6 +135,7 @@ type Accessor interface {
 
 	Contract(address string) (types.Contract, error)
 	ContractTxBalanceUpdates(contractAddress string, count uint64, continuationToken *string) ([]types.ContractTxBalanceUpdate, *string, error)
+	ContractVerifiedCodeFile(address string) ([]byte, error)
 
 	TimeLockContract(address string) (types.TimeLockContract, error)
 	OracleLockContract(address string) (types.OracleLockContract, error)

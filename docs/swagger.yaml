@@ -1578,11 +1578,25 @@ definitions:
         - Contract
         type: string
       verification:
+        $ref: '#/definitions/types.ContractVerification'
+        type: object
+    type: object
+  types.ContractVerification:
+    properties:
+      errorMessage:
+        type: string
+      fileName:
+        type: string
+      fileSize:
+        type: integer
+      state:
         enum:
-        - ""
         - Pending
         - Verified
         - Failed
+        type: string
+      timestamp:
+        example: "2020-01-01T00:00:00Z"
         type: string
     type: object
   types.MultisigContract:

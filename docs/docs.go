@@ -8389,13 +8389,34 @@ var doc = `{
                     ]
                 },
                 "verification": {
+                    "type": "object",
+                    "$ref": "#/definitions/types.ContractVerification"
+                }
+            }
+        },
+        "types.ContractVerification": {
+            "type": "object",
+            "properties": {
+                "errorMessage": {
+                    "type": "string"
+                },
+                "fileName": {
+                    "type": "string"
+                },
+                "fileSize": {
+                    "type": "integer"
+                },
+                "state": {
                     "type": "string",
                     "enum": [
-                        "",
                         "Pending",
                         "Verified",
                         "Failed"
                     ]
+                },
+                "timestamp": {
+                    "type": "string",
+                    "example": "2020-01-01T00:00:00Z"
                 }
             }
         },

@@ -121,3 +121,15 @@ func WriteTextPlainResponse(w http.ResponseWriter, result string, err error, log
 		logger.Error(fmt.Sprintf("Unable to write API response: %v", err))
 	}
 }
+
+func WriteFileResponse(w http.ResponseWriter, fileName string, fileData []byte, err error, logger log.Logger) {
+	if err != nil {
+		WriteResponse(w, nil, err, logger)
+		return
+	}
+	w.Header().Set("Content-Disposition", fmt.Sprintf("attachment; filename=%v", fileName))
+	w.Header().Set("Content-Length", strconv.Itoa(len(fileData)))
+	if _, err := w.Write(fileData); err != nil {
+		logger.Error(fmt.Sprintf("Unable to write API response: %v", err))
+	}
+}

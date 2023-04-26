@@ -373,6 +373,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Contract/{address}")).HandlerFunc(s.contract)
 	router.Path(strings.ToLower("/Contract/{address}/BalanceUpdates")).HandlerFunc(s.contractTxBalanceUpdates)
 	router.Path(strings.ToLower("/Contract/{address}/Verify")).HandlerFunc(s.verifyContract)
+	router.Path(strings.ToLower("/Contract/{address}/DownloadVerifiedCodeFile")).HandlerFunc(s.downloadVerifiedCodeFile)
 
 	router.Path(strings.ToLower("/TimeLockContract/{address}")).HandlerFunc(s.timeLockContract)
 	router.Path(strings.ToLower("/OracleLockContract/{address}")).HandlerFunc(s.oracleLockContract)
@@ -2911,6 +2912,15 @@ func (s *httpServer) verifyContract(w http.ResponseWriter, r *http.Request) {
 	address := mux.Vars(r)["address"]
 	err = s.service.VerifyContract(address, data)
 	WriteResponse(w, nil, err, s.logger)
+}
+
+func (s *httpServer) downloadVerifiedCodeFile(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("downloadVerifiedCodeFile", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	address := mux.Vars(r)["address"]
+	fileData, err := s.service.ContractVerifiedCodeFile(address)
+	WriteFileResponse(w, types.DefaultContractVerifiedCodeFile(address), fileData, err, s.logger)
 }
 
 // @Tags Contracts
