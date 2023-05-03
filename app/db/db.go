@@ -152,6 +152,7 @@ type Accessor interface {
 	Pool(address string) (*types.Pool, error)
 	PoolDelegatorsCount(address string) (uint64, error)
 	PoolDelegators(address string, count uint64, continuationToken *string) ([]*types.Delegator, *string, error)
+	PoolSizeHistory(address string, count uint64, continuationToken *string) ([]types.PoolSizeHistoryItem, *string, error)
 
 	MinersHistory() ([]types.MinersHistoryItem, error)
 	PeersHistory(count uint64) ([]types.PeersHistoryItem, error)

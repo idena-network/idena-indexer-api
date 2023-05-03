@@ -1156,6 +1156,13 @@ func (a *cachedAccessor) PoolDelegators(address string, count uint64, continuati
 	return res.([]*types.Delegator), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) PoolSizeHistory(address string, count uint64, continuationToken *string) ([]types.PoolSizeHistoryItem, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("PoolSizeHistory", func() (interface{}, *string, error) {
+		return a.accessor.PoolSizeHistory(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.PoolSizeHistoryItem), nextContinuationToken, err
+}
+
 func (a *cachedAccessor) MinersHistory() ([]types.MinersHistoryItem, error) {
 	res, err := a.getOrLoad("MinersHistory", func() (interface{}, error) {
 		return a.accessor.MinersHistory()

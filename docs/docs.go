@@ -5580,6 +5580,71 @@ var doc = `{
                 }
             }
         },
+        "/Pool/{address}/SizeHistory": {
+            "get": {
+                "tags": [
+                    "Pools"
+                ],
+                "operationId": "PoolSizeHistory",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/PoolSizeHistoryItem"
+                                            }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Pools": {
             "get": {
                 "tags": [
@@ -7552,6 +7617,23 @@ var doc = `{
                 },
                 "totalValidatedStake": {
                     "type": "string"
+                }
+            }
+        },
+        "PoolSizeHistoryItem": {
+            "type": "object",
+            "properties": {
+                "endSize": {
+                    "type": "integer"
+                },
+                "epoch": {
+                    "type": "integer"
+                },
+                "startSize": {
+                    "type": "integer"
+                },
+                "validationSize": {
+                    "type": "integer"
                 }
             }
         },

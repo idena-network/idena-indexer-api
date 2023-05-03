@@ -14,6 +14,7 @@ const (
 	poolQuery                = "pool.sql"
 	poolDelegatorsCountQuery = "poolDelegatorsCount.sql"
 	poolDelegatorsQuery      = "poolDelegators.sql"
+	poolSizeHistoryQuery     = "poolSizeHistory.sql"
 )
 
 func (a *postgresAccessor) PoolsCount() (uint64, error) {
@@ -138,4 +139,30 @@ func (a *postgresAccessor) PoolDelegators(address string, count uint64, continua
 		res = res[:len(res)-1]
 	}
 	return res, nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) PoolSizeHistory(address string, count uint64, continuationToken *string) ([]types.PoolSizeHistoryItem, *string, error) {
+	res, nextContinuationToken, err := a.page(poolSizeHistoryQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+		defer rows.Close()
+		var res []types.PoolSizeHistoryItem
+		var epoch uint64
+		for rows.Next() {
+			item := types.PoolSizeHistoryItem{}
+			if err := rows.Scan(
+				&epoch,
+				&item.StartSize,
+				&item.ValidationSize,
+				&item.EndSize,
+			); err != nil {
+				return nil, 0, err
+			}
+			item.Epoch = epoch
+			res = append(res, item)
+		}
+		return res, epoch, nil
+	}, count, continuationToken, address)
+	if err != nil {
+		return nil, nil, err
+	}
+	return res.([]types.PoolSizeHistoryItem), nextContinuationToken, nil
 }

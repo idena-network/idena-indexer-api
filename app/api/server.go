@@ -422,6 +422,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Pool/{address}")).HandlerFunc(s.pool)
 	router.Path(strings.ToLower("/Pool/{address}/Delegators/Count")).HandlerFunc(s.poolDelegatorsCount)
 	router.Path(strings.ToLower("/Pool/{address}/Delegators")).HandlerFunc(s.poolDelegators)
+	router.Path(strings.ToLower("/Pool/{address}/SizeHistory")).HandlerFunc(s.poolSizeHistory)
 
 	router.Path(strings.ToLower("/Token/{address}")).HandlerFunc(s.token)
 
@@ -3216,6 +3217,30 @@ func (s *httpServer) poolDelegators(w http.ResponseWriter, r *http.Request) {
 	}
 	vars := mux.Vars(r)
 	resp, nextContinuationToken, err := s.service.PoolDelegators(vars["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
+}
+
+// @Tags Pools
+// @Id PoolSizeHistory
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.PoolSizeHistoryItem}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Pool/{address}/SizeHistory [get]
+func (s *httpServer) poolSizeHistory(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("poolSizeHistory", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	vars := mux.Vars(r)
+	resp, nextContinuationToken, err := s.service.PoolSizeHistory(vars["address"], count, continuationToken)
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 

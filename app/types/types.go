@@ -871,3 +871,10 @@ type Delegation struct {
 	UndelegationBlock  *BlockSummary       `json:"undelegationBlock,omitempty"`
 	UndelegationReason string              `json:"undelegationReason,omitempty" enums:"Undelegation,Termination,ValidationFailure,TransitionRemove,InactiveIdentity"`
 } // @Name Delegation
+
+type PoolSizeHistoryItem struct {
+	Epoch          uint64 `json:"epoch"`
+	StartSize      uint64 `json:"startSize"`
+	ValidationSize uint64 `json:"validationSize"`
+	EndSize        uint64 `json:"endSize"`
+} // @Name PoolSizeHistoryItem
