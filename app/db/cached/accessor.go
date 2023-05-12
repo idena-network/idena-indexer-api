@@ -941,6 +941,13 @@ func (a *cachedAccessor) AddressTokens(address string, count uint64, continuatio
 	return res.([]types.TokenBalance), nextContinuationToken, err
 }
 
+func (a *cachedAccessor) AddressToken(address, tokenAddress string) (types.TokenBalance, error) {
+	res, err := a.getOrLoad("AddressToken", func() (interface{}, error) {
+		return a.accessor.AddressToken(address, tokenAddress)
+	}, address, tokenAddress)
+	return res.(types.TokenBalance), err
+}
+
 func (a *cachedAccessor) AddressDelegations(address string, count uint64, continuationToken *string) ([]types.Delegation, *string, error) {
 	res, nextContinuationToken, err := a.getOrLoadWithConToken("AddressDelegations", func() (interface{}, *string, error) {
 		return a.accessor.AddressDelegations(address, count, continuationToken)
@@ -1193,6 +1200,13 @@ func (a *cachedAccessor) Token(address string) (types.Token, error) {
 		return a.accessor.Token(address)
 	}, address)
 	return res.(types.Token), err
+}
+
+func (a *cachedAccessor) TokenHolders(address string, count uint64, continuationToken *string) ([]types.TokenBalance, *string, error) {
+	res, nextContinuationToken, err := a.getOrLoadWithConToken("TokenHolders", func() (interface{}, *string, error) {
+		return a.accessor.TokenHolders(address, count, continuationToken)
+	}, address, count, continuationToken)
+	return res.([]types.TokenBalance), nextContinuationToken, err
 }
 
 func (a *cachedAccessor) Destroy() {

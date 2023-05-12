@@ -23,6 +23,8 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 	var deployTxTimestamp int64
 	var verification types.ContractVerification
 	var verificationStateTimestamp int64
+	var isToken bool
+	var token types.Token
 	err := a.db.QueryRow(a.getQuery(contractQuery), address).Scan(
 		&res.Type,
 		&res.Author,
@@ -36,6 +38,10 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 		&verification.FileName,
 		&verification.FileSize,
 		&verification.ErrorMessage,
+		&isToken,
+		&token.Name,
+		&token.Symbol,
+		&token.Decimals,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -59,6 +65,10 @@ func (a *postgresAccessor) Contract(address string) (types.Contract, error) {
 		if len(res.Verification.FileName) == 0 {
 			res.Verification.FileName = types.DefaultContractVerifiedCodeFile(address)
 		}
+	}
+	if isToken {
+		token.ContractAddress = res.Address
+		res.Token = &token
 	}
 	return res, nil
 }

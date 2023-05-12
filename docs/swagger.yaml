@@ -31,6 +31,8 @@ definitions:
         type: integer
       stake:
         type: string
+      tokenCount:
+        type: integer
       txCount:
         type: integer
     type: object
@@ -1579,6 +1581,9 @@ definitions:
       terminationTx:
         $ref: '#/definitions/TransactionSummary'
         type: object
+      token:
+        $ref: '#/definitions/Token'
+        type: object
       type:
         enum:
         - TimeLock
@@ -2009,6 +2014,41 @@ paths:
           description: Service unavailable
       tags:
       - Address
+  /Address/{address}/Token/{tokenAddress}:
+    get:
+      operationId: AddressToken
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: token contract address
+        in: path
+        name: tokenAddress
+        required: true
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/Response'
+            - properties:
+                result:
+                  $ref: '#/definitions/TokenBalance'
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Address
+      - Token
   /Address/{address}/Tokens:
     get:
       operationId: AddressTokens
@@ -5258,7 +5298,47 @@ paths:
         "503":
           description: Service unavailable
       tags:
-      - Tokens
+      - Token
+  /Token/{address}/Holders:
+    get:
+      operationId: TokenHolders
+      parameters:
+      - description: address
+        in: path
+        name: address
+        required: true
+        type: string
+      - description: items to take
+        in: query
+        name: limit
+        required: true
+        type: integer
+      - description: continuation token to get next page items
+        in: query
+        name: continuationToken
+        type: string
+      responses:
+        "200":
+          description: OK
+          schema:
+            allOf:
+            - $ref: '#/definitions/ResponsePage'
+            - properties:
+                result:
+                  items:
+                    $ref: '#/definitions/TokenBalance'
+                  type: array
+              type: object
+        "400":
+          description: Bad request
+        "429":
+          description: Request number limit exceeded
+        "500":
+          description: Internal server error
+        "503":
+          description: Service unavailable
+      tags:
+      - Token
   /Transaction/{hash}:
     get:
       operationId: Transaction

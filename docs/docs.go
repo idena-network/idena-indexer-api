@@ -574,6 +574,63 @@ var doc = `{
                 }
             }
         },
+        "/Address/{address}/Token/{tokenAddress}": {
+            "get": {
+                "tags": [
+                    "Address",
+                    "Token"
+                ],
+                "operationId": "AddressToken",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "token contract address",
+                        "name": "tokenAddress",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/Response"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "$ref": "#/definitions/TokenBalance"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
         "/Address/{address}/Tokens": {
             "get": {
                 "tags": [
@@ -5936,7 +5993,7 @@ var doc = `{
         "/Token/{address}": {
             "get": {
                 "tags": [
-                    "Tokens"
+                    "Token"
                 ],
                 "operationId": "Token",
                 "parameters": [
@@ -5961,6 +6018,71 @@ var doc = `{
                                     "properties": {
                                         "result": {
                                             "$ref": "#/definitions/Token"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    "400": {
+                        "description": "Bad request"
+                    },
+                    "429": {
+                        "description": "Request number limit exceeded"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    },
+                    "503": {
+                        "description": "Service unavailable"
+                    }
+                }
+            }
+        },
+        "/Token/{address}/Holders": {
+            "get": {
+                "tags": [
+                    "Token"
+                ],
+                "operationId": "TokenHolders",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "address",
+                        "name": "address",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "items to take",
+                        "name": "limit",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "continuation token to get next page items",
+                        "name": "continuationToken",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "allOf": [
+                                {
+                                    "$ref": "#/definitions/ResponsePage"
+                                },
+                                {
+                                    "type": "object",
+                                    "properties": {
+                                        "result": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#/definitions/TokenBalance"
+                                            }
                                         }
                                     }
                                 }
@@ -6273,6 +6395,9 @@ var doc = `{
                 },
                 "stake": {
                     "type": "string"
+                },
+                "tokenCount": {
+                    "type": "integer"
                 },
                 "txCount": {
                     "type": "integer"
@@ -8458,6 +8583,10 @@ var doc = `{
                 "terminationTx": {
                     "type": "object",
                     "$ref": "#/definitions/TransactionSummary"
+                },
+                "token": {
+                    "type": "object",
+                    "$ref": "#/definitions/Token"
                 },
                 "type": {
                     "type": "string",

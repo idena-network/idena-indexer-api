@@ -358,6 +358,7 @@ type Address struct {
 	TxCount            uint32          `json:"txCount"`
 	FlipsCount         uint32          `json:"flipsCount"`
 	ReportedFlipsCount uint32          `json:"reportedFlipsCount"`
+	TokenCount         uint32          `json:"tokenCount"`
 } // @Name Address
 
 type Balance struct {
@@ -557,6 +558,7 @@ type Contract struct {
 	TerminationTx *TransactionSummary   `json:"terminationTx,omitempty"`
 	Code          hexutil.Bytes         `json:"code,omitempty"`
 	Verification  *ContractVerification `json:"verification,omitempty"`
+	Token         *Token                `json:"token,omitempty"`
 } // @Contract
 
 type ContractVerification struct {

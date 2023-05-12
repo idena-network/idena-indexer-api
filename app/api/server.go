@@ -365,6 +365,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Address/{address}/DelegateeTotalRewards")).HandlerFunc(s.addressDelegateeTotalRewards)
 	router.Path(strings.ToLower("/Address/{address}/MiningRewardSummaries")).HandlerFunc(s.addressMiningRewardSummaries)
 	router.Path(strings.ToLower("/Address/{address}/Tokens")).HandlerFunc(s.addressTokens)
+	router.Path(strings.ToLower("/Address/{address}/Token/{tokenAddress}")).HandlerFunc(s.addressToken)
 	router.Path(strings.ToLower("/Address/{address}/Delegations")).HandlerFunc(s.addressDelegations)
 
 	router.Path(strings.ToLower("/Balances")).HandlerFunc(s.balances)
@@ -425,6 +426,7 @@ func (s *httpServer) initRouter(router *mux.Router) {
 	router.Path(strings.ToLower("/Pool/{address}/SizeHistory")).HandlerFunc(s.poolSizeHistory)
 
 	router.Path(strings.ToLower("/Token/{address}")).HandlerFunc(s.token)
+	router.Path(strings.ToLower("/Token/{address}/Holders")).HandlerFunc(s.tokenHolders)
 
 	if s.dynamicEndpointLoader != nil {
 		router.PathPrefix(strings.ToLower("/Data/")).HandlerFunc(s.data)
@@ -2506,6 +2508,26 @@ func (s *httpServer) addressTokens(w http.ResponseWriter, r *http.Request) {
 }
 
 // @Tags Address
+// @Tags Token
+// @Id AddressToken
+// @Param address path string true "address"
+// @Param tokenAddress path string true "token contract address"
+// @Success 200 {object} api.Response{result=types.TokenBalance}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Address/{address}/Token/{tokenAddress} [get]
+func (s *httpServer) addressToken(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("addressToken", r.RequestURI)
+	defer s.pm.Complete(id)
+
+	vars := mux.Vars(r)
+	resp, err := s.service.AddressToken(vars["address"], vars["tokenaddress"])
+	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Address
 // @Id AddressDelegations
 // @Param address path string true "address"
 // @Param limit query integer true "items to take"
@@ -3244,7 +3266,7 @@ func (s *httpServer) poolSizeHistory(w http.ResponseWriter, r *http.Request) {
 	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }
 
-// @Tags Tokens
+// @Tags Token
 // @Id Token
 // @Param address path string true "address"
 // @Success 200 {object} api.Response{result=types.Token}
@@ -3259,4 +3281,27 @@ func (s *httpServer) token(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := s.service.Token(mux.Vars(r)["address"])
 	WriteResponse(w, resp, err, s.logger)
+}
+
+// @Tags Token
+// @Id TokenHolders
+// @Param address path string true "address"
+// @Param limit query integer true "items to take"
+// @Param continuationToken query string false "continuation token to get next page items"
+// @Success 200 {object} api.ResponsePage{result=[]types.TokenBalance}
+// @Failure 400 "Bad request"
+// @Failure 429 "Request number limit exceeded"
+// @Failure 500 "Internal server error"
+// @Failure 503 "Service unavailable"
+// @Router /Token/{address}/Holders [get]
+func (s *httpServer) tokenHolders(w http.ResponseWriter, r *http.Request) {
+	id := s.pm.Start("tokenHolders", r.RequestURI)
+	defer s.pm.Complete(id)
+	count, continuationToken, err := ReadPaginatorParams(r.Form)
+	if err != nil {
+		WriteErrorResponse(w, err, s.logger)
+		return
+	}
+	resp, nextContinuationToken, err := s.service.TokenHolders(mux.Vars(r)["address"], count, continuationToken)
+	WriteResponsePage(w, resp, nextContinuationToken, err, s.logger)
 }

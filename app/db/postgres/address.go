@@ -24,6 +24,7 @@ const (
 	addressDelegateeTotalRewardsQuery    = "addressDelegateeTotalRewards.sql"
 	addressMiningRewardSummariesQuery    = "addressMiningRewardSummaries.sql"
 	addressTokensQuery                   = "addressTokens.sql"
+	addressTokenQuery                    = "addressToken.sql"
 	addressDelegationsQuery              = "addressDelegations.sql"
 
 	txBalanceUpdateReason              = "Tx"
@@ -41,6 +42,7 @@ func (a *postgresAccessor) Address(address string) (types.Address, error) {
 		&res.TxCount,
 		&res.FlipsCount,
 		&res.ReportedFlipsCount,
+		&res.TokenCount,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -422,6 +424,26 @@ func (a *postgresAccessor) AddressTokens(address string, count uint64, continuat
 		return nil, nil, err
 	}
 	return res.([]types.TokenBalance), nextContinuationToken, nil
+}
+
+func (a *postgresAccessor) AddressToken(address, tokenAddress string) (types.TokenBalance, error) {
+	res := types.TokenBalance{}
+	err := a.db.QueryRow(a.getQuery(addressTokenQuery), address, tokenAddress).Scan(
+		&res.Balance,
+		&res.Token.Name,
+		&res.Token.Symbol,
+		&res.Token.Decimals,
+	)
+	if err == sql.ErrNoRows {
+		err = NoDataFound
+	}
+	if err != nil {
+		return types.TokenBalance{}, err
+	}
+	res.Address = address
+	res.Token.ContractAddress = tokenAddress
+	res.Balance = res.Balance.Div(decimal.New(1, int32(res.Token.Decimals)))
+	return res, nil
 }
 
 func (a *postgresAccessor) AddressDelegations(address string, count uint64, continuationToken *string) ([]types.Delegation, *string, error) {
