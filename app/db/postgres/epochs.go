@@ -25,6 +25,7 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 				Rewards: types.RewardsSummary{},
 			}
 			var validationTime int64
+			var discriminationStakeThreshold NullDecimal
 			if err := rows.Scan(
 				&epoch,
 				&validationTime,
@@ -49,6 +50,7 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 				&item.Rewards.ZeroWalletFund,
 				&item.MinScoreForInvite,
 				&item.CandidateCount,
+				&discriminationStakeThreshold,
 			); err != nil {
 				return nil, 0, err
 			}
@@ -58,6 +60,9 @@ func (a *postgresAccessor) Epochs(count uint64, continuationToken *string) ([]ty
 				if item.Rewards.Candidate.Sign() > 0 || item.Rewards.Staking.Sign() > 0 {
 					item.Rewards.Validation = item.Rewards.Candidate.Add(item.Rewards.Staking)
 				}
+			}
+			if discriminationStakeThreshold.Valid {
+				item.DiscriminationStakeThreshold = &discriminationStakeThreshold.Decimal
 			}
 			res = append(res, item)
 		}

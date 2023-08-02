@@ -6952,6 +6952,9 @@ var doc = `{
                 "candidateCount": {
                     "type": "integer"
                 },
+                "discriminationStakeThreshold": {
+                    "type": "string"
+                },
                 "epoch": {
                     "type": "integer"
                 },
@@ -7071,6 +7074,9 @@ var doc = `{
                 "coins": {
                     "type": "object",
                     "$ref": "#/definitions/Coins"
+                },
+                "discriminationStakeThreshold": {
+                    "type": "string"
                 },
                 "emptyBlockCount": {
                     "type": "integer"

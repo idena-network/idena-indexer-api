@@ -20,7 +20,8 @@ SELECT e.epoch,
        coalesce(trew.foundation, 0)             foundation_payout,
        coalesce(trew.zero_wallet, 0)            zero_wallet_payout,
        coalesce(preves.min_score_for_invite, 0) min_score_for_invite,
-       coalesce(es.candidate_count, 0)          candidate_count
+       coalesce(es.candidate_count, 0)          candidate_count,
+       e.discrimination_stake_threshold
 FROM epochs e
          LEFT JOIN epoch_summaries es ON es.epoch = e.epoch
          LEFT JOIN epoch_summaries preves ON preves.epoch = e.epoch - 1

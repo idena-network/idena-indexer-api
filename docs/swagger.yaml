@@ -431,6 +431,8 @@ definitions:
     properties:
       candidateCount:
         type: integer
+      discriminationStakeThreshold:
+        type: string
       epoch:
         type: integer
       minScoreForInvite:
@@ -517,6 +519,8 @@ definitions:
       coins:
         $ref: '#/definitions/Coins'
         type: object
+      discriminationStakeThreshold:
+        type: string
       emptyBlockCount:
         type: integer
       epoch:

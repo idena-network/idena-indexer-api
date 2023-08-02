@@ -6932,6 +6932,9 @@
                 "candidateCount": {
                     "type": "integer"
                 },
+                "discriminationStakeThreshold": {
+                    "type": "string"
+                },
                 "epoch": {
                     "type": "integer"
                 },
@@ -7051,6 +7054,9 @@
                 "coins": {
                     "type": "object",
                     "$ref": "#/definitions/Coins"
+                },
+                "discriminationStakeThreshold": {
+                    "type": "string"
                 },
                 "emptyBlockCount": {
                     "type": "integer"

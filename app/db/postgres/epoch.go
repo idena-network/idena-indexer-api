@@ -79,6 +79,7 @@ func (a *postgresAccessor) Epoch(epoch uint64) (types.EpochDetail, error) {
 func (a *postgresAccessor) epoch(queryName string, args ...interface{}) (types.EpochDetail, error) {
 	res := types.EpochDetail{}
 	var validationTime int64
+	var discriminationStakeThreshold NullDecimal
 	err := a.db.QueryRow(a.getQuery(queryName), args...).Scan(
 		&res.Epoch,
 		&validationTime,
@@ -86,6 +87,7 @@ func (a *postgresAccessor) epoch(queryName string, args ...interface{}) (types.E
 		&res.ValidationFirstBlockHeight,
 		&res.MinScoreForInvite,
 		&res.CandidateCount,
+		&discriminationStakeThreshold,
 	)
 	if err == sql.ErrNoRows {
 		err = NoDataFound
@@ -94,6 +96,9 @@ func (a *postgresAccessor) epoch(queryName string, args ...interface{}) (types.E
 		return types.EpochDetail{}, err
 	}
 	res.ValidationTime = timestampToTimeUTC(validationTime)
+	if discriminationStakeThreshold.Valid {
+		res.DiscriminationStakeThreshold = &discriminationStakeThreshold.Decimal
+	}
 	return res, nil
 }
 

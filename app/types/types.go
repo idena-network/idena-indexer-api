@@ -26,18 +26,19 @@ type Entity struct {
 } // @Name Entity
 
 type EpochSummary struct {
-	Epoch             uint64         `json:"epoch"`
-	ValidationTime    time.Time      `json:"validationTime" example:"2020-01-01T00:00:00Z"`
-	ValidatedCount    uint32         `json:"validatedCount"`
-	BlockCount        uint32         `json:"blockCount"`
-	EmptyBlockCount   uint32         `json:"emptyBlockCount"`
-	TxCount           uint32         `json:"txCount"`
-	InviteCount       uint32         `json:"inviteCount"`
-	CandidateCount    uint32         `json:"candidateCount"`
-	FlipCount         uint32         `json:"flipCount"`
-	Coins             AllCoins       `json:"coins"`
-	Rewards           RewardsSummary `json:"rewards"`
-	MinScoreForInvite float32        `json:"minScoreForInvite"`
+	Epoch                        uint64           `json:"epoch"`
+	ValidationTime               time.Time        `json:"validationTime" example:"2020-01-01T00:00:00Z"`
+	ValidatedCount               uint32           `json:"validatedCount"`
+	BlockCount                   uint32           `json:"blockCount"`
+	EmptyBlockCount              uint32           `json:"emptyBlockCount"`
+	TxCount                      uint32           `json:"txCount"`
+	InviteCount                  uint32           `json:"inviteCount"`
+	CandidateCount               uint32           `json:"candidateCount"`
+	FlipCount                    uint32           `json:"flipCount"`
+	Coins                        AllCoins         `json:"coins"`
+	Rewards                      RewardsSummary   `json:"rewards"`
+	MinScoreForInvite            float32          `json:"minScoreForInvite"`
+	DiscriminationStakeThreshold *decimal.Decimal `json:"discriminationStakeThreshold,omitempty" swaggertype:"string"`
 } // @Name EpochSummary
 
 type AllCoins struct {
@@ -71,12 +72,13 @@ type RewardsSummary struct {
 } // @Name RewardsSummary
 
 type EpochDetail struct {
-	Epoch                      uint64    `json:"epoch"`
-	ValidationTime             time.Time `json:"validationTime" example:"2020-01-01T00:00:00Z"`
-	StateRoot                  *string   `json:"stateRoot,omitempty"`
-	ValidationFirstBlockHeight uint64    `json:"validationFirstBlockHeight"`
-	MinScoreForInvite          float32   `json:"minScoreForInvite"`
-	CandidateCount             uint32    `json:"candidateCount"`
+	Epoch                        uint64           `json:"epoch"`
+	ValidationTime               time.Time        `json:"validationTime" example:"2020-01-01T00:00:00Z"`
+	StateRoot                    *string          `json:"stateRoot,omitempty"`
+	ValidationFirstBlockHeight   uint64           `json:"validationFirstBlockHeight"`
+	MinScoreForInvite            float32          `json:"minScoreForInvite"`
+	CandidateCount               uint32           `json:"candidateCount"`
+	DiscriminationStakeThreshold *decimal.Decimal `json:"discriminationStakeThreshold,omitempty" swaggertype:"string"`
 } // @Name Epoch
 
 type BlockSummary struct {
