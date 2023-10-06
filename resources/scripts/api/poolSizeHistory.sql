@@ -8,6 +8,5 @@ FROM pool_size_history psh
 WHERE psh.address_id = (SELECT id FROM addresses WHERE lower(address) = lower($1))
   AND ($3::bigint IS NULL OR psh.epoch <= $3)
   AND psh.validation_size > 0
-  AND coalesce(prev_psh.end_size, 0) > 0
 ORDER BY psh.epoch DESC
 LIMIT $2
