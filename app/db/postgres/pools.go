@@ -142,7 +142,7 @@ func (a *postgresAccessor) PoolDelegators(address string, count uint64, continua
 }
 
 func (a *postgresAccessor) PoolSizeHistory(address string, count uint64, continuationToken *string) ([]types.PoolSizeHistoryItem, *string, error) {
-	res, nextContinuationToken, err := a.page(poolSizeHistoryQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
+	list, nextContinuationToken, err := a.page(poolSizeHistoryQuery, func(rows *sql.Rows) (interface{}, uint64, error) {
 		defer rows.Close()
 		var res []types.PoolSizeHistoryItem
 		var epoch uint64
@@ -164,5 +164,46 @@ func (a *postgresAccessor) PoolSizeHistory(address string, count uint64, continu
 	if err != nil {
 		return nil, nil, err
 	}
-	return res.([]types.PoolSizeHistoryItem), nextContinuationToken, nil
+	res, nextContinuationToken := extendPoolSizeHistory(list.([]types.PoolSizeHistoryItem), count, continuationToken, nextContinuationToken)
+	return res, nextContinuationToken, nil
+}
+
+func extendPoolSizeHistory(history []types.PoolSizeHistoryItem, count uint64, continuationToken, nextContinuationToken *string) ([]types.PoolSizeHistoryItem, *string) {
+	res := history
+	resContinuationToken := nextContinuationToken
+	if len(res) > 0 {
+		i := 0
+		for i < len(res) {
+			item := res[i]
+			if (i == 0 || res[i-1].Epoch > item.Epoch+1) && item.EndSize > 0 {
+				extended := append([]types.PoolSizeHistoryItem{}, res[0:i]...)
+				extended = append(extended, types.PoolSizeHistoryItem{
+					Epoch:          item.Epoch + 1,
+					StartSize:      item.EndSize,
+					ValidationSize: 0,
+					EndSize:        0,
+				})
+				extended = append(extended, res[i:]...)
+				res = extended
+				i++
+			}
+			i++
+		}
+		continuationEpoch, _ := parseUintContinuationToken(continuationToken)
+		var filtered []types.PoolSizeHistoryItem
+		for i, item := range res {
+			if continuationEpoch == nil || *continuationEpoch >= item.Epoch {
+				filtered = append(filtered, item)
+			}
+			if len(filtered) == int(count) {
+				if len(res) > i+1 {
+					v := strconv.FormatUint(res[i+1].Epoch, 10)
+					resContinuationToken = &v
+				}
+				break
+			}
+		}
+		res = filtered
+	}
+	return res, resContinuationToken
 }
